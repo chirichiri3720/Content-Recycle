@@ -939,11 +939,62 @@ async function selectScript() {
 }
 
 async function regenerateScript() {
-  setStep(2);
-  document.querySelector('.loading-title').textContent = '台本を再生成中...';
-  await startGeneration();
-}
+  // state をリセット
+  state.resumeUrl = null;
+  state.selectedScript = null;
+  state.scriptCandidates = [];
 
+  // ローディング表示をリセット
+  document.querySelectorAll('.loading-step-item').forEach(el => {
+    el.classList.remove('active', 'done');
+  });
+  document.getElementById('ls-1').classList.add('active');
+  document.querySelector('.loading-title').textContent = 'AIが処理中...';
+
+  // Step2 に移動してから再実行
+  setStep(2);
+  const loadingInterval = animateLoadingSteps();
+
+  try {
+    const url = document.getElementById('input-url').value.trim();
+    const contentType = document.getElementById('input-content-type').value;
+    const platform = document.getElementById('input-platform').value;
+    const userName = document.getElementById('input-username').value.trim();
+
+    const proxyUrl = 'https://corsproxy.io/?' +
+      encodeURIComponent('https://weby.app.n8n.cloud/webhook-test/Content-Recycle');
+
+    const res = await fetch(proxyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_name: userName,
+        content_url: url,
+        content_type: contentType,
+        platform: platform
+      })
+    });
+
+    clearInterval(loadingInterval);
+
+    const text = await res.text();
+    if (!text || text.trim() === '') {
+      throw new Error('レスポンスが空です');
+    }
+
+    const data = JSON.parse(text);
+    state.resumeUrl = data.resume_url;
+    state.scriptCandidates = data.script_candidates || [];
+
+    renderScripts(data);
+    setStep(3);
+
+  } catch (err) {
+    clearInterval(loadingInterval);
+    setStep(3);
+    showError('再生成エラー: ' + err.message);
+  }
+}
 // ==================== STEP 4: 画像 ====================
 function renderImages(data) {
   const grid = document.getElementById('image-grid');
