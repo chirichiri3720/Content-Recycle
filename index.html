@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動画生成システム</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --text: #f0f0f8;
+    --text2: #8888aa;
+    --text3: #555570;
+    --radius: 12px;
+    --radius2: 8px;
+
+    /* n8n Webhook URL - ここを変更してください */
+    --webhook-base: "https://YOUR_N8N_URL.app.n8n.cloud/webhook";
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(108,99,255,0.12);
+    border: 1px solid rgba(108,99,255,0.3);
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .header h1 span { color: var(--accent); }
+  .header p { font-size: 14px; color: var(--text2); }
+
+  /* Progress bar */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 8px;
+    overflow: hidden;
+  }
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    color: var(--text3);
+    transition: all 0.3s ease;
+    flex: 1;
+    justify-content: center;
+    white-space: nowrap;
+  }
+  .progress-step.active {
+    background: rgba(108,99,255,0.15);
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .progress-step.done {
+    color: var(--accent3);
+  }
+  .progress-step .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius2);
+    background: rgba(108,99,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* Form elements */
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+  .form-input, .form-select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius2);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+  .form-input:focus, .form-select:focus {
+    border-color: var(--accent);
+  }
+  .form-input::placeholder { color: var(--text3); }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 24px;
+    border-radius: var(--radius2);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    width: 100%;
+    justify-content: center;
+    font-size: 15px;
+    padding: 13px;
+  }
+  .btn-primary:hover { background: #5a52e0; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { background: var(--text3); cursor: not-allowed; transform: none; }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--text);
+    flex: 1;
+    justify-content: center;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-success {
+    background: rgba(67,233,123,0.15);
+    border: 1px solid rgba(67,233,123,0.3);
+    color: var(--accent3);
+    flex: 1;
+    justify-content: center;
+  }
+  .btn-success:hover { background: rgba(67,233,123,0.25); }
+
+  .btn-danger {
+    background: rgba(255,101,132,0.15);
+    border: 1px solid rgba(255,101,132,0.3);
+    color: var(--accent2);
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Loading */
+  .loading-container {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-title { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+  .loading-sub { font-size: 13px; color: var(--text2); }
+  .loading-steps {
+    margin-top: 24px;
+    text-align: left;
+    max-width: 280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .loading-step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 13px;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    transition: color 0.3s;
+  }
+  .loading-step-item.active { color: var(--accent); }
+  .loading-step-item.done { color: var(--accent3); }
+  .step-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  /* Script cards */
+  .script-option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius2);
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .script-option:hover { border-color: var(--accent); }
+  .script-option.selected {
+    border-color: var(--accent);
+    background: rgba(108,99,255,0.08);
+  }
+  .script-option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .script-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .badge-blue { background: rgba(108,99,255,0.15); color: var(--accent); }
+  .badge-green { background: rgba(67,233,123,0.15); color: var(--accent3); }
+  .badge-pink { background: rgba(255,101,132,0.15); color: var(--accent2); }
+  .script-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .script-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .script-score {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .score-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--border2);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .score-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 100px;
+    transition: width 0.5s ease;
+  }
+
+  /* Image grid */
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .image-option {
+    aspect-ratio: 9/16;
+    border-radius: var(--radius2);
+    border: 2px solid var(--border);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.2s;
+    background: var(--surface2);
+  }
+  .image-option:hover { border-color: var(--accent); }
+  .image-option.selected { border-color: var(--accent); }
+  .image-option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+  .image-option img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text3);
+    font-size: 12px;
+  }
+  .image-placeholder .img-icon { font-size: 32px; }
+
+  /* Video player */
+  .video-container {
+    background: #000;
+    border-radius: var(--radius2);
+    overflow: hidden;
+    aspect-ratio: 9/16;
+    max-width: 280px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+  .video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .video-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 13px;
+  }
+  .play-icon { font-size: 48px; color: var(--accent); }
+
+  /* Info row */
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(108,99,255,0.06);
+    border: 1px solid rgba(108,99,255,0.15);
+    border-radius: var(--radius2);
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 16px;
+  }
+  .info-row .icon { color: var(--accent); font-size: 16px; }
+
+  /* Success state */
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(67,233,123,0.15);
+    border: 2px solid rgba(67,233,123,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 20px;
+  }
+
+  /* Button row */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  /* Error toast */
+  .error-toast {
+    background: rgba(255,101,132,0.1);
+    border: 1px solid rgba(255,101,132,0.3);
+    border-radius: var(--radius2);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    display: none;
+  }
+  .error-toast.show { display: block; }
+
+  /* Scenes preview */
+  .scenes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .scene-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius2);
+    padding: 12px;
+    display: flex;
+    gap: 10px;
+  }
+  .scene-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(108,99,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: 'Space Mono', monospace;
+  }
+  .scene-content { flex: 1; }
+  .scene-role {
+    font-size: 10px;
+    color: var(--text3);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: 'Space Mono', monospace;
+  }
+  .scene-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .scene-duration {
+    font-size: 10px;
+    color: var(--text3);
+    font-family: 'Space Mono', monospace;
+    margin-top: 4px;
+  }
+
+  /* Step visibility */
+  .step { display: none; }
+  .step.active { display: block; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 100px; }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .step.active { animation: fadeIn 0.3s ease; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .pulse { animation: pulse 1.5s ease infinite; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">
+      <span>●</span> AI VIDEO GENERATOR
+    </div>
+    <h1>社内コンテンツ<span>動画生成</span>システム</h1>
+    <p>URLを入力するだけで、AIが自動で解説動画を生成します</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-step active" id="prog-1"><span class="dot"></span>入力</div>
+    <div class="progress-step" id="prog-2"><span class="dot"></span>処理中</div>
+    <div class="progress-step" id="prog-3"><span class="dot"></span>台本</div>
+    <div class="progress-step" id="prog-4"><span class="dot"></span>画像</div>
+    <div class="progress-step" id="prog-5"><span class="dot"></span>動画</div>
+    <div class="progress-step" id="prog-6"><span class="dot"></span>完成</div>
+  </div>
+
+  <!-- Error Toast -->
+  <div class="error-toast" id="errorToast"></div>
+
+  <!-- ==================== STEP 1: 入力フォーム ==================== -->
+  <div class="step active" id="step1">
+    <div class="card">
+      <div class="card-title">
+        <div class="icon">📝</div>
+        コンテンツ情報を入力
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">作成者名</label>
+        <input class="form-input" id="input-username" type="text" placeholder="例：田中 太郎">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">コンテンツ URL <span style="color:var(--accent2)">*</span></label>
+        <input class="form-input" id="input-url" type="url" placeholder="https://example.com/article/...">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">コンテンツ種別 <span style="color:var(--accent2)">*</span></label>
+          <select class="form-select" id="input-content-type">
+            <option value="">選択してください</option>
+            <option value="解説系">解説系</option>
+            <option value="FAQ">FAQ</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">プラットフォーム</label>
+          <select class="form-select" id="input-platform">
+            <option value="YouTube Shorts">YouTube Shorts</option>
+            <option value="TikTok">TikTok</option>
+            <option value="Instagram Reels">Instagram Reels</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="icon">ℹ</span>
+        処理には約1〜2分かかります。完了まで画面を開いたままにしてください。
+      </div>
+
+      <button class="btn btn-primary" id="btn-start" onclick="startGeneration()">
+        ▶ 動画生成を開始する
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 2: 処理中 ==================== -->
+  <div class="step" id="step2">
+    <div class="card">
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <div class="loading-title">AIが処理中...</div>
+        <div class="loading-sub">しばらくお待ちください</div>
+
+        <div class="loading-steps">
+          <div class="loading-step-item active" id="ls-1">
+            <span class="step-icon">🌐</span> 記事を取得中
+          </div>
+          <div class="loading-step-item" id="ls-2">
+            <span class="step-icon">🔍</span> コンテンツを解析中
+          </div>
+          <div class="loading-step-item" id="ls-3">
+            <span class="step-icon">🧠</span> AIが要約を生成中
+          </div>
+          <div class="loading-step-item" id="ls-4">
+            <span class="step-icon">📝</span> 台本を作成中
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 3: 台本確認 ==================== -->
+  <div class="step" id="step3">
+    <div class="card">
+      <div class="card-title">
+        <div class="icon">📜</div>
+        台本を選択してください
+      </div>
+
+      <div id="script-list"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="regenerateScript()">🔄 再生成</button>
+        <button class="btn btn-primary" id="btn-select-script" onclick="selectScript()" disabled>
+          この台本で進む →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 4: 画像確認 ==================== -->
+  <div class="step" id="step4">
+    <div class="card">
+      <div class="card-title">
+        <div class="icon">🎨</div>
+        背景画像を選択してください
+      </div>
+
+      <div class="image-grid" id="image-grid"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="regenerateImages()">🔄 再生成</button>
+        <button class="btn btn-primary" id="btn-select-image" onclick="selectImage()" disabled>
+          この画像で進む →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 5: 動画確認 ==================== -->
+  <div class="step" id="step5">
+    <div class="card">
+      <div class="card-title">
+        <div class="icon">🎬</div>
+        動画を確認してください
+      </div>
+
+      <div class="video-container" id="video-container">
+        <div class="video-placeholder">
+          <div class="play-icon">▶</div>
+          <div>動画を読み込み中...</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-danger" onclick="rejectVideo()">✕ やり直す</button>
+        <button class="btn btn-success" onclick="approveVideo()">✓ この動画で確定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 6: 完成 ==================== -->
+  <div class="step" id="step6">
+    <div class="card" style="text-align:center">
+      <div class="success-icon">✓</div>
+      <div style="font-size:20px;font-weight:700;margin-bottom:8px">動画が完成しました！</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:24px">
+        動画のダウンロードまたは共有ができます
+      </div>
+
+      <div id="final-video-container" style="margin-bottom:20px"></div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <a id="btn-download" href="#" class="btn btn-success" download style="text-decoration:none">
+          ⬇ 動画をダウンロード
+        </a>
+        <button class="btn btn-outline" onclick="resetAll()">
+          ＋ 新しい動画を生成する
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ==================== 設定 ====================
+// n8n の Webhook URL をここに設定してください
+const WEBHOOK_URL = 'https://YOUR_N8N_URL.app.n8n.cloud/webhook/video-generator';
+
+// ==================== State ====================
+let state = {
+  currentStep: 1,
+  resumeUrl: null,
+  selectedScript: null,
+  selectedImage: null,
+  videoUrl: null,
+  executionId: null,
+  scriptCandidates: [],
+  images: [],
+};
+
+// ==================== Progress ====================
+function setStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById('prog-' + i);
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  }
+  state.currentStep = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== Error ====================
+function showError(msg) {
+  const el = document.getElementById('errorToast');
+  el.textContent = '⚠ ' + msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+// ==================== Loading steps ====================
+function animateLoadingSteps() {
+  const steps = ['ls-1','ls-2','ls-3','ls-4'];
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i > 0) document.getElementById(steps[i-1]).classList.replace('active','done');
+    if (i < steps.length) {
+      document.getElementById(steps[i]).classList.add('active');
+      i++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 8000);
+  return interval;
+}
+
+// ==================== STEP 1: 開始 ====================
+async function startGeneration() {
+  const url = document.getElementById('input-url').value.trim();
+  const contentType = document.getElementById('input-content-type').value;
+  const platform = document.getElementById('input-platform').value;
+  const userName = document.getElementById('input-username').value.trim();
+
+  if (!url) { showError('コンテンツ URL を入力してください'); return; }
+  if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
+  if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
+
+  setStep(2);
+  const loadingInterval = animateLoadingSteps();
+
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_name: userName,
+        content_url: url,
+        content_type: contentType,
+        platform: platform
+      })
+    });
+
+    clearInterval(loadingInterval);
+
+    if (!res.ok) throw new Error('サーバーエラー: ' + res.status);
+    const data = await res.json();
+
+    state.resumeUrl = data.resume_url;
+    state.executionId = data.execution_id;
+    state.scriptCandidates = data.script_candidates || [];
+
+    renderScripts(data);
+    setStep(3);
+
+  } catch (err) {
+    clearInterval(loadingInterval);
+    setStep(1);
+    showError('処理中にエラーが発生しました: ' + err.message);
+  }
+}
+
+// ==================== STEP 3: 台本 ====================
+function renderScripts(data) {
+  const list = document.getElementById('script-list');
+  list.innerHTML = '';
+  state.selectedScript = null;
+  document.getElementById('btn-select-script').disabled = true;
+
+  const candidates = data.script_candidates || [];
+  const badges = [
+    { label: '推奨', cls: 'badge-blue' },
+    { label: 'バリエーション 2', cls: 'badge-green' },
+    { label: 'バリエーション 3', cls: 'badge-pink' }
+  ];
+
+  candidates.forEach((s, i) => {
+    const score = s.recommended_score || Math.floor(80 + Math.random() * 20);
+    const scenes = s.scenes || [];
+
+    const div = document.createElement('div');
+    div.className = 'script-option';
+    div.dataset.index = i;
+    div.onclick = () => selectScriptOption(i);
+
+    div.innerHTML = `
+      <span class="script-badge ${badges[i]?.cls || 'badge-blue'}">${badges[i]?.label || 'オプション'}</span>
+      <div class="script-title">${s.script_title || 'タイトル未設定'}</div>
+      <div class="script-body">${s.concept || s.total_narration || '概要なし'}</div>
+      <div class="script-score">
+        <span style="font-size:10px;color:var(--text3);width:50px;flex-shrink:0">推奨度</span>
+        <div class="score-bar"><div class="score-fill" style="width:${score}%"></div></div>
+        <span style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;width:28px;text-align:right">${score}</span>
+      </div>
+      ${scenes.length ? `
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.05em">シーン構成</div>
+        <div class="scenes-container">
+          ${scenes.slice(0,4).map((sc, si) => `
+            <div class="scene-item">
+              <div class="scene-num">${si+1}</div>
+              <div class="scene-content">
+                <div class="scene-role">${sc.role || 'narration'}</div>
+                <div class="scene-text">${(sc.narration || '').slice(0, 80)}${(sc.narration || '').length > 80 ? '...' : ''}</div>
+                <div class="scene-duration">${sc.duration_sec || 5}秒</div>
+              </div>
+            </div>
+          `).join('')}
+          ${scenes.length > 4 ? `<div style="text-align:center;font-size:11px;color:var(--text3);padding:6px">他 ${scenes.length - 4} シーン</div>` : ''}
+        </div>
+      </div>` : ''}
+    `;
+    list.appendChild(div);
+  });
+}
+
+function selectScriptOption(index) {
+  document.querySelectorAll('.script-option').forEach(el => el.classList.remove('selected'));
+  document.querySelector(`.script-option[data-index="${index}"]`).classList.add('selected');
+  state.selectedScript = state.scriptCandidates[index];
+  document.getElementById('btn-select-script').disabled = false;
+}
+
+async function selectScript() {
+  if (!state.selectedScript || !state.resumeUrl) return;
+
+  setStep(2);
+  document.querySelector('.loading-title').textContent = '画像を生成中...';
+  document.querySelectorAll('.loading-step-item').forEach(el => {
+    el.classList.remove('active','done');
+  });
+
+  try {
+    const res = await fetch(state.resumeUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        selected_script_id: state.selectedScript.script_id,
+        action: 'select_script'
+      })
+    });
+
+    if (!res.ok) throw new Error('エラー: ' + res.status);
+    const data = await res.json();
+
+    state.resumeUrl = data.resume_url;
+    state.images = data.images || [];
+
+    renderImages(data);
+    setStep(4);
+
+  } catch (err) {
+    setStep(3);
+    showError('台本の選択中にエラーが発生しました: ' + err.message);
+  }
+}
+
+async function regenerateScript() {
+  setStep(2);
+  document.querySelector('.loading-title').textContent = '台本を再生成中...';
+  await startGeneration();
+}
+
+// ==================== STEP 4: 画像 ====================
+function renderImages(data) {
+  const grid = document.getElementById('image-grid');
+  grid.innerHTML = '';
+  state.selectedImage = null;
+  document.getElementById('btn-select-image').disabled = true;
+
+  const images = data.images || [];
+
+  for (let i = 0; i < 3; i++) {
+    const div = document.createElement('div');
+    div.className = 'image-option';
+    div.dataset.index = i;
+    div.onclick = () => selectImageOption(i);
+
+    if (images[i]) {
+      div.innerHTML = `<img src="${images[i].url}" alt="背景画像 ${i+1}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=image-placeholder><div class=img-icon>🖼</div><div>読込エラー</div></div>'">`;
+    } else {
+      div.innerHTML = `<div class="image-placeholder"><div class="img-icon">🖼</div><div>画像 ${i+1}</div></div>`;
+    }
+    grid.appendChild(div);
+  }
+}
+
+function selectImageOption(index) {
+  document.querySelectorAll('.image-option').forEach(el => el.classList.remove('selected'));
+  document.querySelector(`.image-option[data-index="${index}"]`).classList.add('selected');
+  state.selectedImage = index;
+  document.getElementById('btn-select-image').disabled = false;
+}
+
+async function selectImage() {
+  if (state.selectedImage === null || !state.resumeUrl) return;
+
+  setStep(2);
+  document.querySelector('.loading-title').textContent = '動画を生成中...';
+  document.querySelectorAll('.loading-step-item').forEach(el => el.classList.remove('active','done'));
+
+  try {
+    const res = await fetch(state.resumeUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        selected_image_index: state.selectedImage,
+        action: 'select_image'
+      })
+    });
+
+    if (!res.ok) throw new Error('エラー: ' + res.status);
+    const data = await res.json();
+
+    state.resumeUrl = data.resume_url;
+    state.videoUrl = data.video_url;
+
+    renderVideo(data);
+    setStep(5);
+
+  } catch (err) {
+    setStep(4);
+    showError('画像の選択中にエラーが発生しました: ' + err.message);
+  }
+}
+
+async function regenerateImages() {
+  if (!state.resumeUrl) return;
+  setStep(2);
+  document.querySelector('.loading-title').textContent = '画像を再生成中...';
+  const data = { resume_url: state.resumeUrl, action: 'regenerate_images' };
+  renderImages(data);
+  setStep(4);
+}
+
+// ==================== STEP 5: 動画 ====================
+function renderVideo(data) {
+  const container = document.getElementById('video-container');
+  const videoUrl = data.video_url || '';
+  state.videoUrl = videoUrl;
+
+  if (videoUrl) {
+    container.innerHTML = `<video src="${videoUrl}" controls playsinline style="width:100%;height:100%;object-fit:cover"></video>`;
+  } else {
+    container.innerHTML = `<div class="video-placeholder"><div class="play-icon">▶</div><div>動画の準備ができました</div></div>`;
+  }
+}
+
+async function approveVideo() {
+  if (!state.resumeUrl) return;
+
+  try {
+    await fetch(state.resumeUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'approve_video' })
+    });
+  } catch (err) {
+    console.warn('承認送信エラー（無視）:', err);
+  }
+
+  const finalContainer = document.getElementById('final-video-container');
+  if (state.videoUrl) {
+    finalContainer.innerHTML = `
+      <div class="video-container" style="margin-bottom:0">
+        <video src="${state.videoUrl}" controls playsinline style="width:100%;height:100%;object-fit:cover"></video>
+      </div>`;
+    document.getElementById('btn-download').href = state.videoUrl;
+  }
+  setStep(6);
+}
+
+async function rejectVideo() {
+  if (!state.resumeUrl) { setStep(4); return; }
+
+  setStep(2);
+  document.querySelector('.loading-title').textContent = '動画を再生成中...';
+
+  try {
+    const res = await fetch(state.resumeUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'reject_video' })
+    });
+    const data = await res.json();
+    state.resumeUrl = data.resume_url;
+    state.videoUrl = data.video_url;
+    renderVideo(data);
+    setStep(5);
+  } catch (err) {
+    setStep(4);
+    showError('動画の再生成中にエラーが発生しました: ' + err.message);
+  }
+}
+
+// ==================== Reset ====================
+function resetAll() {
+  state = {
+    currentStep: 1,
+    resumeUrl: null,
+    selectedScript: null,
+    selectedImage: null,
+    videoUrl: null,
+    executionId: null,
+    scriptCandidates: [],
+    images: [],
+  };
+  document.getElementById('input-url').value = '';
+  document.getElementById('input-username').value = '';
+  document.getElementById('input-content-type').value = '';
+  setStep(1);
+}
+</script>
+</body>
+</html>
