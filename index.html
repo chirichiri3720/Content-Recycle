@@ -908,13 +908,14 @@ async function selectScript() {
   if (!state.selectedScript || !state.resumeUrl) return;
 
   setStep(2);
-  document.querySelector('.loading-title').textContent = '画像を生成中...';
-  document.querySelectorAll('.loading-step-item').forEach(el => {
-    el.classList.remove('active','done');
-  });
+  document.querySelector('.loading-title').textContent = '画像を準備中...';
+  document.querySelectorAll('.loading-step-item')
+    .forEach(el => el.classList.remove('active','done'));
 
   try {
-    const res = await fetch(state.resumeUrl, {
+    // n8n に台本選択を通知
+    const res = await fetch(
+      'https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -923,20 +924,28 @@ async function selectScript() {
       })
     });
 
-    if (!res.ok) throw new Error('エラー: ' + res.status);
-    const data = await res.json();
-
-    state.resumeUrl = data.resume_url;
-    state.images = data.images || [];
-
-    renderImages(data);
-    setStep(4);
+    console.log('script select response status:', res.status);
 
   } catch (err) {
-    setStep(3);
-    showError('台本の選択中にエラーが発生しました: ' + err.message);
+    console.warn('n8n 通知エラー（無視）:', err);
   }
+
+  // 固定画像を直接設定
+  const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
+
+  const imageData = {
+    images: [
+      { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風' },
+      { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風' },
+      { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
+    ]
+  };
+
+  // 画像を表示
+  renderImages(imageData);
+  setStep(4);
 }
+
 
 async function regenerateScript() {
   // state をリセット
@@ -995,6 +1004,7 @@ async function regenerateScript() {
     showError('再生成エラー: ' + err.message);
   }
 }
+
 // ==================== STEP 4: 画像 ====================
 function renderImages(data) {
   const grid = document.getElementById('image-grid');
@@ -1029,23 +1039,57 @@ function selectImageOption(index) {
 async function selectImage() {
   if (state.selectedImage === null || !state.resumeUrl) return;
 
+  // 選択したスタイル情報を取得
+  const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
+  const imageStyles = [
+    { 
+      index: 0, 
+      url: `${BASE_URL}/realistic.png`, 
+      style: '実写風',
+      dalle_style: 'photorealistic, professional photography, natural lighting, Japanese setting, cinematic quality'
+    },
+    { 
+      index: 1, 
+      url: `${BASE_URL}/cinematic.png`, 
+      style: 'シネマティック風',
+      dalle_style: 'cinematic dramatic lighting, film photography style, warm golden tones, emotional atmosphere, movie still'
+    },
+    { 
+      index: 2, 
+      url: `${BASE_URL}/anime.png`, 
+      style: 'アニメーション風',
+      dalle_style: 'Japanese anime illustration style, vibrant colors, clean lines, Studio Ghibli inspired, soft warm tones'
+    }
+  ];
+
+  const selected = imageStyles[state.selectedImage];
+
   setStep(2);
-  document.querySelector('.loading-title').textContent = '動画を生成中...';
-  document.querySelectorAll('.loading-step-item').forEach(el => el.classList.remove('active','done'));
+  document.querySelector('.loading-title').textContent = '動画用画像を生成中...';
+  document.querySelectorAll('.loading-step-item')
+    .forEach(el => el.classList.remove('active','done'));
 
   try {
-    const res = await fetch(state.resumeUrl, {
+    const res = await fetch(
+      'https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         selected_image_index: state.selectedImage,
+        selected_style: selected.style,
+        dalle_style_prompt: selected.dalle_style,
         action: 'select_image'
       })
     });
 
-    if (!res.ok) throw new Error('エラー: ' + res.status);
-    const data = await res.json();
+    const text = await res.text();
+    console.log('image select response:', text);
 
+    if (!text || text.trim() === '') {
+      throw new Error('レスポンスが空です');
+    }
+
+    const data = JSON.parse(text);
     state.resumeUrl = data.resume_url;
     state.videoUrl = data.video_url;
 
@@ -1054,7 +1098,7 @@ async function selectImage() {
 
   } catch (err) {
     setStep(4);
-    showError('画像の選択中にエラーが発生しました: ' + err.message);
+    showError('画像選択中にエラーが発生しました: ' + err.message);
   }
 }
 
