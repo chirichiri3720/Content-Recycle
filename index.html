@@ -587,6 +587,7 @@ function selectImageOption(index) {
 
 async function selectImage() {
   if (state.selectedImage === null || !state.resumeUrl) return;
+
   const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
   const imageStyles = [
     { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風',
@@ -596,13 +597,40 @@ async function selectImage() {
     { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風',
       dalle_style: 'Japanese anime illustration style, vibrant colors, Studio Ghibli inspired' }
   ];
+
   const selected = imageStyles[state.selectedImage];
+
+  // ローディング画面に切り替え
   setStep(2);
-  document.querySelector('.loading-title').textContent = 'シーン画像を生成中...';
-  document.querySelectorAll('.loading-step-item').forEach(el => el.classList.remove('active','done'));
+  document.querySelector('.loading-title').textContent = '画像を生成中...';
+  document.querySelector('.loading-sub').textContent = selected.style + 'で生成しています';
+  document.querySelectorAll('.loading-step-item')
+    .forEach(el => el.classList.remove('active','done'));
+
+  // ローディングステップを画像生成用に変更
+  document.getElementById('ls-1').innerHTML = '<span class="step-icon">🎨</span> スタイルを適用中';
+  document.getElementById('ls-2').innerHTML = '<span class="step-icon">🖼</span> 画像を生成中';
+  document.getElementById('ls-3').innerHTML = '<span class="step-icon">✨</span> 仕上げ中';
+  document.getElementById('ls-4').innerHTML = '<span class="step-icon">✅</span> 完了';
+  document.getElementById('ls-1').classList.add('active');
+
+  // ローディングアニメーション
+  const loadingInterval = setInterval(() => {
+    const items = ['ls-1','ls-2','ls-3','ls-4'];
+    const activeIdx = items.findIndex(id =>
+      document.getElementById(id).classList.contains('active')
+    );
+    if (activeIdx >= 0) {
+      document.getElementById(items[activeIdx]).classList.replace('active','done');
+      if (activeIdx + 1 < items.length) {
+        document.getElementById(items[activeIdx + 1]).classList.add('active');
+      }
+    }
+  }, 5000);
 
   try {
-    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
+    const res = await fetch(
+      'https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -612,16 +640,38 @@ async function selectImage() {
         action: 'select_image'
       })
     });
+
+    clearInterval(loadingInterval);
+
     const text = await res.text();
     console.log('image select response:', text);
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
+
     const data = JSON.parse(text);
     state.resumeUrl = data.resume_url;
+
+    // シーン画像を表示
     const scenes = state.selectedScript?.scenes || [];
     const imageUrls = data.scene_image_urls || [];
+
+    // ローディングステップをリセット
+    document.getElementById('ls-1').innerHTML = '<span class="step-icon">🌐</span> 記事を取得中';
+    document.getElementById('ls-2').innerHTML = '<span class="step-icon">🔍</span> コンテンツを解析中';
+    document.getElementById('ls-3').innerHTML = '<span class="step-icon">🧠</span> AIが要約を生成中';
+    document.getElementById('ls-4').innerHTML = '<span class="step-icon">📝</span> 台本を作成中';
+
     renderSceneImages(scenes, imageUrls);
     setStep(5);
+
   } catch (err) {
+    clearInterval(loadingInterval);
+
+    // ローディングステップをリセット
+    document.getElementById('ls-1').innerHTML = '<span class="step-icon">🌐</span> 記事を取得中';
+    document.getElementById('ls-2').innerHTML = '<span class="step-icon">🔍</span> コンテンツを解析中';
+    document.getElementById('ls-3').innerHTML = '<span class="step-icon">🧠</span> AIが要約を生成中';
+    document.getElementById('ls-4').innerHTML = '<span class="step-icon">📝</span> 台本を作成中';
+
     setStep(4);
     showError('画像選択中にエラーが発生しました: ' + err.message);
   }
