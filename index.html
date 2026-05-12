@@ -553,23 +553,63 @@ function selectScriptOption(index) {
 async function selectScript() {
   if (!state.selectedScript || !state.resumeUrl) return;
 
+  showLoading(
+    '台本を確定中...',
+    'しばらくお待ちください',
+    [
+      { icon: '📝', text: '台本を確定中' },
+      { icon: '📊', text: 'データを保存中' },
+      { icon: '✅', text: '完了' },
+    ]
+  );
+
   try {
-    await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
+    const res = await fetch(
+      'https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, action: 'select_script' })
+      body: JSON.stringify({
+        selected_script_id: state.selectedScript.script_id,
+        action: 'select_script'
+      })
     });
-  } catch (err) { console.warn('n8n 通知エラー（無視）:', err); }
 
-  const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
-  renderImages({
-    images: [
-      { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風' },
-      { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風' },
-      { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
-    ]
-  });
-  setStep(3);
+    const text = await res.text();
+    console.log('selectScript response:', text);
+    console.log('selectScript status:', res.status);
+
+    if (!text || text.trim() === '') {
+      throw new Error('レスポンスが空です');
+    }
+
+    const data = JSON.parse(text);
+    console.log('selectScript data:', data);
+
+    // Wait5 の resume_url を保存
+    if (data.resume_url) {
+      state.resumeUrl = data.resume_url;
+      console.log('resumeUrl updated to Wait5:', state.resumeUrl);
+    }
+
+    hideLoading();
+
+    // resume_url が更新されてから画像スタイル画面へ
+    const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
+    renderImages({
+      images: [
+        { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風' },
+        { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風' },
+        { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
+      ]
+    });
+    setStep(3);
+
+  } catch (err) {
+    hideLoading();
+    console.error('selectScript error:', err);
+    showError('台本確定エラー: ' + err.message);
+    setStep(2);
+  }
 }
 
 async function regenerateScript() {
