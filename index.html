@@ -609,7 +609,7 @@
       <span>●</span> AI VIDEO GENERATOR
     </div>
     <h1>社内コンテンツ<span>動画生成</span>システム</h1>
-    <p>URLを入力するだけで、AIが自動で解説動画を生成します</p>
+    <p>URLを入力するだけで、AIが自動でクリエイティブを生成します</p>
   </div>
 
   <!-- Progress -->
@@ -822,18 +822,23 @@ let state = {
 // ==================== Progress ====================
 function setStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-  document.getElementById('step' + n).classList.add('active');
+  
+  const stepEl = document.getElementById('step' + n);
+  if (stepEl) stepEl.classList.add('active');
 
+  // プログレスバーの更新（45 は 4 として扱う）
+  const progressN = n === 45 ? 4 : n;
   for (let i = 1; i <= 6; i++) {
     const el = document.getElementById('prog-' + i);
+    if (!el) continue;
     el.classList.remove('active', 'done');
-    if (i < n) el.classList.add('done');
-    else if (i === n) el.classList.add('active');
+    if (i < progressN) el.classList.add('done');
+    else if (i === progressN) el.classList.add('active');
   }
+
   state.currentStep = n;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 // ==================== Error ====================
 function showError(msg) {
   const el = document.getElementById('errorToast');
