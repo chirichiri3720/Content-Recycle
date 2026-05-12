@@ -814,8 +814,19 @@ async function startGeneration() {
 
     clearInterval(loadingInterval);
 
-    if (!res.ok) throw new Error('サーバーエラー: ' + res.status);
-    const data = await res.json();
+    // まずテキストで取得
+    const text = await res.text();
+    console.log('n8n response:', text);
+
+    if (!text || text.trim() === '') {
+      throw new Error('n8n からのレスポンスが空です');
+    }
+
+    const data = JSON.parse(text);
+
+    if (!data.resume_url) {
+      throw new Error('resume_url が返されていません: ' + JSON.stringify(data));
+    }
 
     state.resumeUrl = data.resume_url;
     state.executionId = data.execution_id;
@@ -827,7 +838,8 @@ async function startGeneration() {
   } catch (err) {
     clearInterval(loadingInterval);
     setStep(1);
-    showError('処理中にエラーが発生しました: ' + err.message);
+    showError('エラー: ' + err.message);
+    console.error('詳細エラー:', err);
   }
 }
 
