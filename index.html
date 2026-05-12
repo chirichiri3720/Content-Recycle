@@ -71,6 +71,7 @@
   .header h1 span { color: var(--accent); }
   .header p { font-size: 14px; color: var(--text2); }
 
+  /* プログレスバー（5ステップ：入力・台本・画像スタイル・シーン確認・完成）*/
   .progress-bar {
     display: flex;
     align-items: center;
@@ -85,9 +86,9 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 100px;
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text3);
     transition: all 0.3s ease;
     flex: 1;
@@ -96,7 +97,7 @@
   }
   .progress-step.active { background: rgba(108,99,255,0.15); color: var(--accent); font-weight: 500; }
   .progress-step.done { color: var(--accent3); }
-  .progress-step .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .progress-step .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
   .card-title { font-size: 16px; font-weight: 500; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
@@ -121,16 +122,23 @@
   .btn-danger { background: rgba(255,101,132,0.15); border: 1px solid rgba(255,101,132,0.3); color: var(--accent2); flex: 1; justify-content: center; }
   .btn-row { display: flex; gap: 10px; margin-top: 16px; }
 
-  .loading-container { text-align: center; padding: 40px 20px; }
-  .spinner { width: 48px; height: 48px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+  /* ローディング（プログレスバーなしの独立表示） */
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,15,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner { width: 48px; height: 48px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-title { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
-  .loading-sub { font-size: 13px; color: var(--text2); }
-  .loading-steps { margin-top: 24px; text-align: left; max-width: 280px; margin-left: auto; margin-right: auto; }
-  .loading-step-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; color: var(--text3); border-bottom: 1px solid var(--border); transition: color 0.3s; }
-  .loading-step-item.active { color: var(--accent); }
-  .loading-step-item.done { color: var(--accent3); }
-  .step-icon { font-size: 16px; width: 20px; text-align: center; }
+  .loading-text { font-size: 16px; font-weight: 500; color: var(--text); }
+  .loading-sub-text { font-size: 13px; color: var(--text2); }
 
   .script-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; position: relative; }
   .script-option:hover { border-color: var(--accent); }
@@ -145,6 +153,14 @@
   .script-score { display: flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 11px; color: var(--text3); }
   .score-bar { flex: 1; height: 3px; background: var(--border2); border-radius: 100px; overflow: hidden; }
   .score-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 0.5s ease; }
+
+  .scenes-container { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
+  .scene-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 12px; display: flex; gap: 10px; }
+  .scene-num { width: 24px; height: 24px; border-radius: 6px; background: rgba(108,99,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--accent); font-weight: 700; flex-shrink: 0; font-family: 'Space Mono', monospace; }
+  .scene-content { flex: 1; }
+  .scene-role { font-size: 10px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Space Mono', monospace; }
+  .scene-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .scene-duration { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 4px; }
 
   .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
   .image-option { aspect-ratio: 9/16; border-radius: var(--radius2); border: 2px solid var(--border); cursor: pointer; overflow: hidden; position: relative; transition: all 0.2s; background: var(--surface2); }
@@ -177,14 +193,6 @@
   .error-toast { background: rgba(255,101,132,0.1); border: 1px solid rgba(255,101,132,0.3); border-radius: var(--radius2); padding: 12px 16px; font-size: 13px; color: var(--accent2); margin-bottom: 16px; display: none; }
   .error-toast.show { display: block; }
 
-  .scenes-container { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
-  .scene-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 12px; display: flex; gap: 10px; }
-  .scene-num { width: 24px; height: 24px; border-radius: 6px; background: rgba(108,99,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--accent); font-weight: 700; flex-shrink: 0; font-family: 'Space Mono', monospace; }
-  .scene-content { flex: 1; }
-  .scene-role { font-size: 10px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Space Mono', monospace; }
-  .scene-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
-  .scene-duration { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 4px; }
-
   .step { display: none; }
   .step.active { display: block; }
 
@@ -199,6 +207,14 @@
 </style>
 </head>
 <body>
+
+<!-- ローディングオーバーレイ（プログレスバーに影響しない） -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">処理中...</div>
+  <div class="loading-sub-text" id="loadingSubText">しばらくお待ちください</div>
+</div>
+
 <div class="app">
 
   <div class="header">
@@ -207,15 +223,13 @@
     <p>URLを入力するだけで、AIが自動でクリエイティブを生成します</p>
   </div>
 
-  <!-- Progress: 7ステップ -->
+  <!-- プログレスバー（5ステップ：処理中は含めない） -->
   <div class="progress-bar" id="progressBar">
     <div class="progress-step active" id="prog-1"><span class="dot"></span>入力</div>
-    <div class="progress-step" id="prog-2"><span class="dot"></span>処理中</div>
-    <div class="progress-step" id="prog-3"><span class="dot"></span>台本</div>
-    <div class="progress-step" id="prog-4"><span class="dot"></span>画像</div>
-    <div class="progress-step" id="prog-5"><span class="dot"></span>シーン</div>
-    <div class="progress-step" id="prog-6"><span class="dot"></span>動画</div>
-    <div class="progress-step" id="prog-7"><span class="dot"></span>完成</div>
+    <div class="progress-step" id="prog-2"><span class="dot"></span>台本</div>
+    <div class="progress-step" id="prog-3"><span class="dot"></span>画像スタイル</div>
+    <div class="progress-step" id="prog-4"><span class="dot"></span>シーン確認</div>
+    <div class="progress-step" id="prog-5"><span class="dot"></span>完成</div>
   </div>
 
   <div class="error-toast" id="errorToast"></div>
@@ -258,25 +272,8 @@
     </div>
   </div>
 
-  <!-- STEP 2: 処理中 -->
+  <!-- STEP 2: 台本確認 -->
   <div class="step" id="step2">
-    <div class="card">
-      <div class="loading-container">
-        <div class="spinner"></div>
-        <div class="loading-title">AIが処理中...</div>
-        <div class="loading-sub">しばらくお待ちください</div>
-        <div class="loading-steps">
-          <div class="loading-step-item active" id="ls-1"><span class="step-icon">🌐</span> 記事を取得中</div>
-          <div class="loading-step-item" id="ls-2"><span class="step-icon">🔍</span> コンテンツを解析中</div>
-          <div class="loading-step-item" id="ls-3"><span class="step-icon">🧠</span> AIが要約を生成中</div>
-          <div class="loading-step-item" id="ls-4"><span class="step-icon">📝</span> 台本を作成中</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- STEP 3: 台本確認 -->
-  <div class="step" id="step3">
     <div class="card">
       <div class="card-title"><div class="icon">📜</div>台本を選択してください</div>
       <div id="script-list"></div>
@@ -287,32 +284,32 @@
     </div>
   </div>
 
-  <!-- STEP 4: 背景画像スタイル選択 -->
-  <div class="step" id="step4">
+  <!-- STEP 3: 画像スタイル選択 -->
+  <div class="step" id="step3">
     <div class="card">
       <div class="card-title"><div class="icon">🎨</div>背景画像スタイルを選択してください</div>
       <div class="image-grid" id="image-grid"></div>
       <div class="btn-row">
-        <button class="btn btn-outline" onclick="regenerateImages()">🔄 再生成</button>
+        <button class="btn btn-outline" onclick="regenerateImages()">🔄 再選択</button>
         <button class="btn btn-primary" id="btn-select-image" onclick="selectImage()" disabled>この画像スタイルで進む →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 5: シーンごとの画像確認 -->
-  <div class="step" id="step5">
+  <!-- STEP 4: シーンごとの画像確認 -->
+  <div class="step" id="step4">
     <div class="card">
       <div class="card-title"><div class="icon">🖼</div>シーンごとの画像を確認してください</div>
       <div id="scene-image-list"></div>
       <div class="btn-row">
-        <button class="btn btn-outline" onclick="setStep(4)">← 戻る</button>
+        <button class="btn btn-outline" onclick="setStep(3)">← 戻る</button>
         <button class="btn btn-primary" onclick="proceedToVideo()">動画を生成する →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 6: 動画確認 -->
-  <div class="step" id="step6">
+  <!-- STEP 5: 動画確認 -->
+  <div class="step" id="step5">
     <div class="card">
       <div class="card-title"><div class="icon">🎬</div>動画を確認してください</div>
       <div class="video-container" id="video-container">
@@ -328,8 +325,8 @@
     </div>
   </div>
 
-  <!-- STEP 7: 完成 -->
-  <div class="step" id="step7">
+  <!-- STEP 6: 完成 -->
+  <div class="step" id="step6">
     <div class="card" style="text-align:center">
       <div class="success-icon">✓</div>
       <div style="font-size:20px;font-weight:700;margin-bottom:8px">動画が完成しました！</div>
@@ -343,6 +340,7 @@
   </div>
 
 </div>
+
 <script>
 const WEBHOOK_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';
 
@@ -354,24 +352,39 @@ let state = {
   videoUrl: null,
   executionId: null,
   scriptCandidates: [],
-  images: [],
 };
 
-// 7ステップ対応
+// プログレスバー（5ステップ）
+// step1=入力, step2=台本, step3=画像スタイル, step4=シーン確認, step5=動画確認, step6=完成
+// プログレスバーは prog-1〜5 に対応
+const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:4, 6:5 };
+
 function setStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   const stepEl = document.getElementById('step' + n);
   if (stepEl) stepEl.classList.add('active');
 
-  for (let i = 1; i <= 7; i++) {
+  const progN = progressMap[n] || n;
+  for (let i = 1; i <= 5; i++) {
     const el = document.getElementById('prog-' + i);
     if (!el) continue;
     el.classList.remove('active', 'done');
-    if (i < n) el.classList.add('done');
-    else if (i === n) el.classList.add('active');
+    if (i < progN) el.classList.add('done');
+    else if (i === progN) el.classList.add('active');
   }
   state.currentStep = n;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ローディングオーバーレイ（プログレスバーに影響しない）
+function showLoading(text = '処理中...', subText = 'しばらくお待ちください') {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingSubText').textContent = subText;
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('show');
 }
 
 function showError(msg) {
@@ -381,18 +394,7 @@ function showError(msg) {
   setTimeout(() => el.classList.remove('show'), 5000);
 }
 
-function animateLoadingSteps() {
-  const steps = ['ls-1','ls-2','ls-3','ls-4'];
-  let i = 0;
-  const interval = setInterval(() => {
-    if (i > 0) document.getElementById(steps[i-1]).classList.replace('active','done');
-    if (i < steps.length) { document.getElementById(steps[i]).classList.add('active'); i++; }
-    else clearInterval(interval);
-  }, 8000);
-  return interval;
-}
-
-// STEP 1
+// STEP 1: 開始
 async function startGeneration() {
   const url = document.getElementById('input-url').value.trim();
   const contentType = document.getElementById('input-content-type').value;
@@ -403,8 +405,7 @@ async function startGeneration() {
   if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
 
-  setStep(2);
-  const loadingInterval = animateLoadingSteps();
+  showLoading('記事を解析中...', 'AIが台本を生成しています');
 
   try {
     const res = await fetch(WEBHOOK_URL, {
@@ -412,37 +413,42 @@ async function startGeneration() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform: platform })
     });
-    clearInterval(loadingInterval);
+
+    hideLoading();
     const text = await res.text();
     console.log('n8n response:', text);
     if (!text || text.trim() === '') throw new Error('n8n からのレスポンスが空です');
+
     const data = JSON.parse(text);
-    if (!data.resume_url) throw new Error('resume_url が返されていません: ' + JSON.stringify(data));
+    if (!data.resume_url) throw new Error('resume_url が返されていません');
+
     state.resumeUrl = data.resume_url;
-    state.executionId = data.execution_id;
     state.scriptCandidates = data.script_candidates || [];
+
     renderScripts(data);
-    setStep(3);
+    setStep(2);
+
   } catch (err) {
-    clearInterval(loadingInterval);
-    setStep(1);
+    hideLoading();
     showError('エラー: ' + err.message);
     console.error(err);
   }
 }
 
-// STEP 3
+// STEP 2: 台本
 function renderScripts(data) {
   const list = document.getElementById('script-list');
   list.innerHTML = '';
   state.selectedScript = null;
   document.getElementById('btn-select-script').disabled = true;
+
   const candidates = data.script_candidates || [];
   const badges = [
     { label: '推奨', cls: 'badge-blue' },
     { label: 'バリエーション 2', cls: 'badge-green' },
     { label: 'バリエーション 3', cls: 'badge-pink' }
   ];
+
   candidates.forEach((s, i) => {
     const score = s.recommended_score || Math.floor(80 + Math.random() * 20);
     const scenes = s.scenes || [];
@@ -490,9 +496,8 @@ function selectScriptOption(index) {
 
 async function selectScript() {
   if (!state.selectedScript || !state.resumeUrl) return;
-  setStep(2);
-  document.querySelector('.loading-title').textContent = '画像を準備中...';
-  document.querySelectorAll('.loading-step-item').forEach(el => el.classList.remove('active','done'));
+
+  showLoading('台本を保存中...', 'しばらくお待ちください');
 
   try {
     await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
@@ -502,6 +507,8 @@ async function selectScript() {
     });
   } catch (err) { console.warn('n8n 通知エラー（無視）:', err); }
 
+  hideLoading();
+
   const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
   renderImages({
     images: [
@@ -510,49 +517,53 @@ async function selectScript() {
       { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
     ]
   });
-  setStep(4);
+  setStep(3);
 }
 
 async function regenerateScript() {
   state.resumeUrl = null;
   state.selectedScript = null;
   state.scriptCandidates = [];
-  document.querySelectorAll('.loading-step-item').forEach(el => el.classList.remove('active', 'done'));
-  document.getElementById('ls-1').classList.add('active');
-  document.querySelector('.loading-title').textContent = 'AIが処理中...';
-  setStep(2);
-  const loadingInterval = animateLoadingSteps();
+
+  showLoading('台本を再生成中...', 'AIが新しい台本を作成しています');
+
   try {
     const url = document.getElementById('input-url').value.trim();
     const contentType = document.getElementById('input-content-type').value;
     const platform = document.getElementById('input-platform').value;
     const userName = document.getElementById('input-username').value.trim();
+
     const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(WEBHOOK_URL), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform: platform })
     });
-    clearInterval(loadingInterval);
+
+    hideLoading();
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
+
     const data = JSON.parse(text);
     state.resumeUrl = data.resume_url;
     state.scriptCandidates = data.script_candidates || [];
+
     renderScripts(data);
-    setStep(3);
+    setStep(2);
+
   } catch (err) {
-    clearInterval(loadingInterval);
-    setStep(3);
+    hideLoading();
+    setStep(2);
     showError('再生成エラー: ' + err.message);
   }
 }
 
-// STEP 4
+// STEP 3: 画像スタイル
 function renderImages(data) {
   const grid = document.getElementById('image-grid');
   grid.innerHTML = '';
   state.selectedImage = null;
   document.getElementById('btn-select-image').disabled = true;
+
   const images = data.images || [];
   for (let i = 0; i < 3; i++) {
     const div = document.createElement('div');
@@ -600,37 +611,11 @@ async function selectImage() {
 
   const selected = imageStyles[state.selectedImage];
 
-  // ローディング画面に切り替え
-  setStep(2);
-  document.querySelector('.loading-title').textContent = '画像を生成中...';
-  document.querySelector('.loading-sub').textContent = selected.style + 'で生成しています';
-  document.querySelectorAll('.loading-step-item')
-    .forEach(el => el.classList.remove('active','done'));
-
-  // ローディングステップを画像生成用に変更
-  document.getElementById('ls-1').innerHTML = '<span class="step-icon">🎨</span> スタイルを適用中';
-  document.getElementById('ls-2').innerHTML = '<span class="step-icon">🖼</span> 画像を生成中';
-  document.getElementById('ls-3').innerHTML = '<span class="step-icon">✨</span> 仕上げ中';
-  document.getElementById('ls-4').innerHTML = '<span class="step-icon">✅</span> 完了';
-  document.getElementById('ls-1').classList.add('active');
-
-  // ローディングアニメーション
-  const loadingInterval = setInterval(() => {
-    const items = ['ls-1','ls-2','ls-3','ls-4'];
-    const activeIdx = items.findIndex(id =>
-      document.getElementById(id).classList.contains('active')
-    );
-    if (activeIdx >= 0) {
-      document.getElementById(items[activeIdx]).classList.replace('active','done');
-      if (activeIdx + 1 < items.length) {
-        document.getElementById(items[activeIdx + 1]).classList.add('active');
-      }
-    }
-  }, 5000);
+  // ローディングオーバーレイ表示（プログレスバーはそのまま）
+  showLoading('シーン画像を生成中...', selected.style + 'スタイルで生成しています');
 
   try {
-    const res = await fetch(
-      'https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
+    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -641,8 +626,6 @@ async function selectImage() {
       })
     });
 
-    clearInterval(loadingInterval);
-
     const text = await res.text();
     console.log('image select response:', text);
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
@@ -650,29 +633,18 @@ async function selectImage() {
     const data = JSON.parse(text);
     state.resumeUrl = data.resume_url;
 
-    // シーン画像を表示
+    hideLoading();
+
     const scenes = state.selectedScript?.scenes || [];
     const imageUrls = data.scene_image_urls || [];
 
-    // ローディングステップをリセット
-    document.getElementById('ls-1').innerHTML = '<span class="step-icon">🌐</span> 記事を取得中';
-    document.getElementById('ls-2').innerHTML = '<span class="step-icon">🔍</span> コンテンツを解析中';
-    document.getElementById('ls-3').innerHTML = '<span class="step-icon">🧠</span> AIが要約を生成中';
-    document.getElementById('ls-4').innerHTML = '<span class="step-icon">📝</span> 台本を作成中';
-
+    console.log('scene_image_urls:', imageUrls);
     renderSceneImages(scenes, imageUrls);
-    setStep(5);
+    setStep(4);
 
   } catch (err) {
-    clearInterval(loadingInterval);
-
-    // ローディングステップをリセット
-    document.getElementById('ls-1').innerHTML = '<span class="step-icon">🌐</span> 記事を取得中';
-    document.getElementById('ls-2').innerHTML = '<span class="step-icon">🔍</span> コンテンツを解析中';
-    document.getElementById('ls-3').innerHTML = '<span class="step-icon">🧠</span> AIが要約を生成中';
-    document.getElementById('ls-4').innerHTML = '<span class="step-icon">📝</span> 台本を作成中';
-
-    setStep(4);
+    hideLoading();
+    setStep(3);
     showError('画像選択中にエラーが発生しました: ' + err.message);
   }
 }
@@ -686,13 +658,16 @@ async function regenerateImages() {
       { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
     ]
   });
-  setStep(4);
+  setStep(3);
 }
 
-// STEP 5
+// STEP 4: シーン確認
 function renderSceneImages(scenes, imageUrls) {
   const list = document.getElementById('scene-image-list');
   list.innerHTML = '';
+
+  console.log('renderSceneImages:', scenes.length, imageUrls);
+
   scenes.forEach((scene, i) => {
     const div = document.createElement('div');
     div.className = 'scene-image-item';
@@ -700,6 +675,7 @@ function renderSceneImages(scenes, imageUrls) {
       <div class="scene-image-thumb">
         ${imageUrls[i]
           ? `<img src="${imageUrls[i]}" alt="シーン${scene.scene}"
+               style="width:100%;height:100%;object-fit:cover;"
                onerror="this.parentElement.innerHTML='<div class=scene-loading>🖼</div>'">`
           : '<div class="scene-loading pulse">⏳</div>'
         }
@@ -716,28 +692,35 @@ function renderSceneImages(scenes, imageUrls) {
 
 async function proceedToVideo() {
   if (!state.resumeUrl) return;
-  setStep(2);
-  document.querySelector('.loading-title').textContent = '動画を生成中...';
+
+  showLoading('動画を生成中...', 'Shotstackが動画を合成しています');
+
   try {
     const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'approve_scenes' })
     });
+
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
+
     const data = JSON.parse(text);
     state.resumeUrl = data.resume_url;
     state.videoUrl = data.video_url;
+
+    hideLoading();
     renderVideo(data);
-    setStep(6);
-  } catch (err) {
     setStep(5);
+
+  } catch (err) {
+    hideLoading();
+    setStep(4);
     showError('動画生成エラー: ' + err.message);
   }
 }
 
-// STEP 6
+// STEP 5: 動画確認
 function renderVideo(data) {
   const container = document.getElementById('video-container');
   const videoUrl = data.video_url || '';
@@ -758,6 +741,7 @@ async function approveVideo() {
       body: JSON.stringify({ action: 'approve_video' })
     });
   } catch (err) { console.warn('承認送信エラー（無視）:', err); }
+
   const finalContainer = document.getElementById('final-video-container');
   if (state.videoUrl) {
     finalContainer.innerHTML = `
@@ -766,13 +750,12 @@ async function approveVideo() {
       </div>`;
     document.getElementById('btn-download').href = state.videoUrl;
   }
-  setStep(7);
+  setStep(6);
 }
 
 async function rejectVideo() {
-  if (!state.resumeUrl) { setStep(4); return; }
-  setStep(2);
-  document.querySelector('.loading-title').textContent = '動画を再生成中...';
+  if (!state.resumeUrl) { setStep(3); return; }
+  showLoading('動画を再生成中...', 'しばらくお待ちください');
   try {
     const res = await fetch(state.resumeUrl, {
       method: 'POST',
@@ -782,16 +765,18 @@ async function rejectVideo() {
     const data = await res.json();
     state.resumeUrl = data.resume_url;
     state.videoUrl = data.video_url;
+    hideLoading();
     renderVideo(data);
-    setStep(6);
-  } catch (err) {
     setStep(5);
+  } catch (err) {
+    hideLoading();
+    setStep(4);
     showError('動画の再生成中にエラーが発生しました: ' + err.message);
   }
 }
 
 function resetAll() {
-  state = { currentStep: 1, resumeUrl: null, selectedScript: null, selectedImage: null, videoUrl: null, executionId: null, scriptCandidates: [], images: [] };
+  state = { currentStep: 1, resumeUrl: null, selectedScript: null, selectedImage: null, videoUrl: null, executionId: null, scriptCandidates: [] };
   document.getElementById('input-url').value = '';
   document.getElementById('input-username').value = '';
   document.getElementById('input-content-type').value = '';
