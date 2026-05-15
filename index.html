@@ -688,12 +688,13 @@ function selectImageOption(index) {
   document.getElementById('btn-select-image').disabled = false;
 }
 
-async function selectImage() {
-  if (state.selectedImage === null || !state.resumeUrl) return;
-  
+function selectImage() {
+  // if (state.selectedImage === null || !state.resumeUrl) return;
+  if (state.selectedImage === null) return;
+
   // selectImage() の中を以下に差し替え
 
-  const BASE = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Tmp_Image';
+  const BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
 
   const scenes = state.selectedScript?.scenes || [];
 
