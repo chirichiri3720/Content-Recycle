@@ -6,210 +6,463 @@
 <title>動画生成システム</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.15);
-    --accent: #6c63ff;
-    --accent2: #ff6584;
-    --accent3: #43e97b;
-    --text: #f0f0f8;
-    --text2: #8888aa;
-    --text3: #555570;
-    --radius: 12px;
-    --radius2: 8px;
-  }
+:root {
+--bg: #0a0a0f;
+--surface: #12121a;
+--surface2: #1a1a26;
+--border: rgba(255,255,255,0.08);
+--border2: rgba(255,255,255,0.15);
+--accent: #6c63ff;
+--accent2: #ff6584;
+--accent3: #43e97b;
+--text: #f0f0f8;
+--text2: #8888aa;
+--text3: #555570;
+--radius: 12px;
+--radius2: 8px;
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: 'Noto Sans JP', sans-serif;
+background: var(--bg);
+color: var(--text);
+min-height: 100vh;
+overflow-x: hidden;
+}
+body::before {
+content: '';
+position: fixed;
+inset: 0;
+background-image:
+linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px);
+background-size: 40px 40px;
+pointer-events: none;
+z-index: 0;
+}
+.app {
+position: relative;
+z-index: 1;
+max-width: 760px;
+margin: 0 auto;
+padding: 40px 20px 80px;
+}
+.header { text-align: center; margin-bottom: 48px; }
+.header-badge {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+background: rgba(108,99,255,0.12);
+border: 1px solid rgba(108,99,255,0.3);
+border-radius: 100px;
+padding: 4px 14px;
+font-family: 'Space Mono', monospace;
+font-size: 11px;
+color: var(--accent);
+margin-bottom: 16px;
+letter-spacing: 0.05em;
+}
+.header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+.header h1 span { color: var(--accent); }
+.header p { font-size: 14px; color: var(--text2); }
 
-  body {
-    font-family: 'Noto Sans JP', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* プログレスバー（5ステップ） */
+.progress-bar {
+display: flex;
+align-items: center;
+margin-bottom: 40px;
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 100px;
+padding: 6px 8px;
+overflow: hidden;
+}
+.progress-step {
+display: flex;
+align-items: center;
+gap: 4px;
+padding: 4px 10px;
+border-radius: 100px;
+font-size: 11px;
+color: var(--text3);
+transition: all 0.3s ease;
+flex: 1;
+justify-content: center;
+white-space: nowrap;
+}
+.progress-step.active { background: rgba(108,99,255,0.15); color: var(--accent); font-weight: 500; }
+.progress-step.done { color: var(--accent3); }
+.progress-step .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
+.card-title { font-size: 16px; font-weight: 500; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.card-title .icon { width: 32px; height: 32px; border-radius: var(--radius2); background: rgba(108,99,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
 
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 40px 20px 80px;
-  }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 500; letter-spacing: 0.03em; }
+.form-input, .form-select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; padding: 10px 14px; outline: none; transition: border-color 0.2s; appearance: none; }
+.form-input:focus, .form-select:focus { border-color: var(--accent); }
+.form-input::placeholder { color: var(--text3); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  .header { text-align: center; margin-bottom: 48px; }
-  .header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(108,99,255,0.12);
-    border: 1px solid rgba(108,99,255,0.3);
-    border-radius: 100px;
-    padding: 4px 14px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    margin-bottom: 16px;
-    letter-spacing: 0.05em;
-  }
-  .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
-  .header h1 span { color: var(--accent); }
-  .header p { font-size: 14px; color: var(--text2); }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; border-radius: var(--radius2); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+.btn-primary { background: var(--accent); color: #fff; width: 100%; justify-content: center; font-size: 15px; padding: 13px; }
+.btn-primary:hover { background: #5a52e0; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { background: var(--text3); cursor: not-allowed; transform: none; }
+.btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text); flex: 1; justify-content: center; }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-success { background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.3); color: var(--accent3); flex: 1; justify-content: center; }
+.btn-success:hover { background: rgba(67,233,123,0.25); }
+.btn-danger { background: rgba(255,101,132,0.15); border: 1px solid rgba(255,101,132,0.3); color: var(--accent2); flex: 1; justify-content: center; }
+.btn-row { display: flex; gap: 10px; margin-top: 16px; }
 
-  /* プログレスバー（5ステップ） */
-  .progress-bar {
-    display: flex;
-    align-items: center;
-    margin-bottom: 40px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 6px 8px;
-    overflow: hidden;
-  }
-  .progress-step {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 100px;
-    font-size: 11px;
-    color: var(--text3);
-    transition: all 0.3s ease;
-    flex: 1;
-    justify-content: center;
-    white-space: nowrap;
-  }
-  .progress-step.active { background: rgba(108,99,255,0.15); color: var(--accent); font-weight: 500; }
-  .progress-step.done { color: var(--accent3); }
-  .progress-step .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+/* ローディング（元のデザイン） */
+.loading-container { text-align: center; padding: 40px 20px; }
+.spinner { width: 48px; height: 48px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-title { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+.loading-sub { font-size: 13px; color: var(--text2); }
+.loading-steps { margin-top: 24px; text-align: left; max-width: 280px; margin-left: auto; margin-right: auto; }
+.loading-step-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; color: var(--text3); border-bottom: 1px solid var(--border); transition: color 0.3s; }
+.loading-step-item.active { color: var(--accent); }
+.loading-step-item.done { color: var(--accent3); }
+.step-icon { font-size: 16px; width: 20px; text-align: center; }
 
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
-  .card-title { font-size: 16px; font-weight: 500; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-  .card-title .icon { width: 32px; height: 32px; border-radius: var(--radius2); background: rgba(108,99,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.script-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; position: relative; }
+.script-option:hover { border-color: var(--accent); }
+.script-option.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
+.script-option.selected::after { content: '✓'; position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+.script-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 100px; margin-bottom: 8px; font-weight: 500; }
+.badge-blue { background: rgba(108,99,255,0.15); color: var(--accent); }
+.badge-green { background: rgba(67,233,123,0.15); color: var(--accent3); }
+.badge-pink { background: rgba(255,101,132,0.15); color: var(--accent2); }
+.script-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+.script-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.script-score { display: flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 11px; color: var(--text3); }
+.score-bar { flex: 1; height: 3px; background: var(--border2); border-radius: 100px; overflow: hidden; }
+.score-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 0.5s ease; }
 
-  .form-group { margin-bottom: 16px; }
-  .form-label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 500; letter-spacing: 0.03em; }
-  .form-input, .form-select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; padding: 10px 14px; outline: none; transition: border-color 0.2s; appearance: none; }
-  .form-input:focus, .form-select:focus { border-color: var(--accent); }
-  .form-input::placeholder { color: var(--text3); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.scenes-container { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
+.scene-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 12px; display: flex; gap: 10px; }
+.scene-num { width: 24px; height: 24px; border-radius: 6px; background: rgba(108,99,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--accent); font-weight: 700; flex-shrink: 0; font-family: 'Space Mono', monospace; }
+.scene-content { flex: 1; }
+.scene-role { font-size: 10px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Space Mono', monospace; }
+.scene-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.scene-duration { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 4px; }
 
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; border-radius: var(--radius2); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
-  .btn-primary { background: var(--accent); color: #fff; width: 100%; justify-content: center; font-size: 15px; padding: 13px; }
-  .btn-primary:hover { background: #5a52e0; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
-  .btn-primary:disabled { background: var(--text3); cursor: not-allowed; transform: none; }
-  .btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text); flex: 1; justify-content: center; }
-  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-success { background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.3); color: var(--accent3); flex: 1; justify-content: center; }
-  .btn-success:hover { background: rgba(67,233,123,0.25); }
-  .btn-danger { background: rgba(255,101,132,0.15); border: 1px solid rgba(255,101,132,0.3); color: var(--accent2); flex: 1; justify-content: center; }
-  .btn-row { display: flex; gap: 10px; margin-top: 16px; }
+.image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.image-option { aspect-ratio: 9/16; border-radius: var(--radius2); border: 2px solid var(--border); cursor: pointer; overflow: hidden; position: relative; transition: all 0.2s; background: var(--surface2); }
+.image-option:hover { border-color: var(--accent); }
+.image-option.selected { border-color: var(--accent); }
+.image-option.selected::after { content: '✓'; position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; z-index: 2; }
+.image-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.image-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text3); font-size: 12px; }
+.image-placeholder .img-icon { font-size: 32px; }
 
-  /* ローディング（元のデザイン） */
-  .loading-container { text-align: center; padding: 40px 20px; }
-  .spinner { width: 48px; height: 48px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-title { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
-  .loading-sub { font-size: 13px; color: var(--text2); }
-  .loading-steps { margin-top: 24px; text-align: left; max-width: 280px; margin-left: auto; margin-right: auto; }
-  .loading-step-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; color: var(--text3); border-bottom: 1px solid var(--border); transition: color 0.3s; }
-  .loading-step-item.active { color: var(--accent); }
-  .loading-step-item.done { color: var(--accent3); }
-  .step-icon { font-size: 16px; width: 20px; text-align: center; }
+/* ============================================
+   STEP 4: シーン確認 — ナレーション編集UI
+   ============================================ */
+.scene-image-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.scene-image-item.editing {
+  border-color: var(--accent);
+}
 
-  .script-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; position: relative; }
-  .script-option:hover { border-color: var(--accent); }
-  .script-option.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
-  .script-option.selected::after { content: '✓'; position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; }
-  .script-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 100px; margin-bottom: 8px; font-weight: 500; }
-  .badge-blue { background: rgba(108,99,255,0.15); color: var(--accent); }
-  .badge-green { background: rgba(67,233,123,0.15); color: var(--accent3); }
-  .badge-pink { background: rgba(255,101,132,0.15); color: var(--accent2); }
-  .script-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
-  .script-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
-  .script-score { display: flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 11px; color: var(--text3); }
-  .score-bar { flex: 1; height: 3px; background: var(--border2); border-radius: 100px; overflow: hidden; }
-  .score-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 0.5s ease; }
+/* サムネイル＋メタ情報の横並び行 */
+.scene-main-row {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  align-items: flex-start;
+}
 
-  .scenes-container { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
-  .scene-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 12px; display: flex; gap: 10px; }
-  .scene-num { width: 24px; height: 24px; border-radius: 6px; background: rgba(108,99,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--accent); font-weight: 700; flex-shrink: 0; font-family: 'Space Mono', monospace; }
-  .scene-content { flex: 1; }
-  .scene-role { font-size: 10px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Space Mono', monospace; }
-  .scene-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
-  .scene-duration { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 4px; }
+.scene-image-thumb {
+  width: 72px;
+  height: 128px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s;
+}
+.scene-image-thumb:hover { transform: scale(1.03); }
+.scene-image-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scene-image-thumb .thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(108,99,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+  font-size: 20px;
+}
+.scene-image-thumb:hover .thumb-overlay { opacity: 1; }
 
-  .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
-  .image-option { aspect-ratio: 9/16; border-radius: var(--radius2); border: 2px solid var(--border); cursor: pointer; overflow: hidden; position: relative; transition: all 0.2s; background: var(--surface2); }
-  .image-option:hover { border-color: var(--accent); }
-  .image-option.selected { border-color: var(--accent); }
-  .image-option.selected::after { content: '✓'; position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; z-index: 2; }
-  .image-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .image-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text3); font-size: 12px; }
-  .image-placeholder .img-icon { font-size: 32px; }
+.scene-image-info { flex: 1; min-width: 0; }
+.scene-image-role {
+  font-size: 10px;
+  color: var(--accent);
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-  .scene-image-item { display: flex; gap: 12px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); margin-bottom: 12px; align-items: flex-start; }
-  .scene-image-thumb { width: 80px; height: 142px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); }
-  .scene-image-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .scene-image-info { flex: 1; }
-  .scene-image-role { font-size: 10px; color: var(--accent); font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 4px; }
-  .scene-image-narration { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 6px; }
-  .scene-image-duration { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; }
-  .scene-loading { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+/* ナレーション表示テキスト */
+.scene-narration-display {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+.scene-narration-display.edited {
+  color: var(--text);
+}
 
-  .video-container { background: #000; border-radius: var(--radius2); overflow: hidden; aspect-ratio: 9/16; max-width: 280px; margin: 0 auto 20px; position: relative; }
-  .video-container video { width: 100%; height: 100%; object-fit: cover; }
-  .video-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--surface2); color: var(--text2); font-size: 13px; }
-  .play-icon { font-size: 48px; color: var(--accent); }
+.scene-image-duration {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'Space Mono', monospace;
+}
 
-  .info-row { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(108,99,255,0.06); border: 1px solid rgba(108,99,255,0.15); border-radius: var(--radius2); font-size: 12px; color: var(--text2); margin-bottom: 16px; }
-  .info-row .icon { color: var(--accent); font-size: 16px; }
+/* 編集ボタン（鉛筆アイコン） */
+.btn-edit-narration {
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--text3);
+  font-size: 11px;
+  padding: 3px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-edit-narration:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.scene-image-item.editing .btn-edit-narration {
+  background: rgba(108,99,255,0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
 
-  .success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(67,233,123,0.15); border: 2px solid rgba(67,233,123,0.3); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; }
+/* 編集エリア（折りたたみ） */
+.scene-edit-area {
+  display: none;
+  padding: 0 12px 12px;
+  animation: slideDown 0.18s ease;
+}
+.scene-edit-area.open { display: block; }
 
-  .error-toast { background: rgba(255,101,132,0.1); border: 1px solid rgba(255,101,132,0.3); border-radius: var(--radius2); padding: 12px 16px; font-size: 13px; color: var(--accent2); margin-bottom: 16px; display: none; }
-  .error-toast.show { display: block; }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-  .step { display: none; }
-  .step.active { display: block; }
+.narration-textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius2);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s;
+}
+.narration-textarea:focus { border-color: #9c95ff; }
 
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 100px; }
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+.btn-save-narration {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-save-narration:hover { background: #5a52e0; }
+.btn-cancel-narration {
+  background: transparent;
+  color: var(--text3);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-cancel-narration:hover { color: var(--text2); border-color: var(--text3); }
 
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .step.active { animation: fadeIn 0.3s ease; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-  .pulse { animation: pulse 1.5s ease infinite; }
+.char-count {
+  font-size: 10px;
+  color: var(--text3);
+  margin-left: auto;
+  font-family: 'Space Mono', monospace;
+}
+
+/* 編集済みバッジ */
+.edited-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(108,99,255,0.15);
+  border: 1px solid rgba(108,99,255,0.3);
+  border-radius: 100px;
+  font-size: 9px;
+  color: var(--accent);
+  padding: 1px 6px;
+  margin-left: 4px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* 保存中インジケータ */
+.save-status {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.save-status.saving { color: var(--accent); }
+.save-status.saved  { color: var(--accent3); }
+.save-status.error  { color: var(--accent2); }
+
+/* ライトボックス */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInBg 0.2s ease;
+}
+@keyframes fadeInBg { from { opacity:0; } to { opacity:1; } }
+.lightbox-inner {
+  position: relative;
+  max-width: min(340px, 90vw);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  animation: zoomIn 0.2s ease;
+}
+@keyframes zoomIn { from { transform: scale(0.93); opacity:0; } to { transform: scale(1); opacity:1; } }
+.lightbox-inner img { width: 100%; display: block; }
+.lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lightbox-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  color: #fff;
+  font-size: 12px;
+  padding: 24px 12px 10px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* 編集サマリーバナー */
+.edit-summary-banner {
+  background: rgba(108,99,255,0.08);
+  border: 1px solid rgba(108,99,255,0.2);
+  border-radius: var(--radius2);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 14px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.edit-summary-banner.visible { display: flex; }
+.edit-summary-banner .icon { color: var(--accent); font-size: 14px; }
+
+/* その他 */
+.scene-loading { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.video-container { background: #000; border-radius: var(--radius2); overflow: hidden; aspect-ratio: 9/16; max-width: 280px; margin: 0 auto 20px; position: relative; }
+.video-container video { width: 100%; height: 100%; object-fit: cover; }
+.video-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--surface2); color: var(--text2); font-size: 13px; }
+.play-icon { font-size: 48px; color: var(--accent); }
+.info-row { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(108,99,255,0.06); border: 1px solid rgba(108,99,255,0.15); border-radius: var(--radius2); font-size: 12px; color: var(--text2); margin-bottom: 16px; }
+.info-row .icon { color: var(--accent); font-size: 16px; }
+.success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(67,233,123,0.15); border: 2px solid rgba(67,233,123,0.3); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; }
+.error-toast { background: rgba(255,101,132,0.1); border: 1px solid rgba(255,101,132,0.3); border-radius: var(--radius2); padding: 12px 16px; font-size: 13px; color: var(--accent2); margin-bottom: 16px; display: none; }
+.error-toast.show { display: block; }
+.step { display: none; }
+.step.active { display: block; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 100px; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.step.active { animation: fadeIn 0.3s ease; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 1.5s ease infinite; }
 </style>
 </head>
 <body>
 <div class="app">
-
   <div class="header">
     <div class="header-badge"><span>●</span> AI VIDEO GENERATOR</div>
     <h1>社内コンテンツ<span>動画生成</span>システム</h1>
     <p>URLを入力するだけで、AIが自動でクリエイティブを生成します</p>
   </div>
 
-  <!-- プログレスバー（5ステップ：処理中を含めない） -->
+  <!-- プログレスバー（5ステップ） -->
   <div class="progress-bar" id="progressBar">
     <div class="progress-step active" id="prog-1"><span class="dot"></span>入力</div>
     <div class="progress-step" id="prog-2"><span class="dot"></span>台本</div>
@@ -258,7 +511,7 @@
     </div>
   </div>
 
-  <!-- STEP loading: 処理中（プログレスバーに影響しない） -->
+  <!-- STEP loading: 処理中 -->
   <div class="step" id="step-loading">
     <div class="card">
       <div class="loading-container">
@@ -266,18 +519,10 @@
         <div class="loading-title" id="loading-title">AIが処理中...</div>
         <div class="loading-sub" id="loading-sub">しばらくお待ちください</div>
         <div class="loading-steps" id="loading-steps-container">
-          <div class="loading-step-item active" id="ls-1">
-            <span class="step-icon">🌐</span> 記事を取得中
-          </div>
-          <div class="loading-step-item" id="ls-2">
-            <span class="step-icon">🔍</span> コンテンツを解析中
-          </div>
-          <div class="loading-step-item" id="ls-3">
-            <span class="step-icon">🧠</span> AIが要約を生成中
-          </div>
-          <div class="loading-step-item" id="ls-4">
-            <span class="step-icon">📝</span> 台本を作成中
-          </div>
+          <div class="loading-step-item active" id="ls-1"><span class="step-icon">🌐</span> 記事を取得中</div>
+          <div class="loading-step-item" id="ls-2"><span class="step-icon">🔍</span> コンテンツを解析中</div>
+          <div class="loading-step-item" id="ls-3"><span class="step-icon">🧠</span> AIが要約を生成中</div>
+          <div class="loading-step-item" id="ls-4"><span class="step-icon">📝</span> 台本を作成中</div>
         </div>
       </div>
     </div>
@@ -307,11 +552,19 @@
     </div>
   </div>
 
-  <!-- STEP 4: シーンごとの画像確認 -->
+  <!-- STEP 4: シーンごとの画像確認 + ナレーション編集 -->
   <div class="step" id="step4">
     <div class="card">
-      <div class="card-title"><div class="icon">🖼</div>シーンごとの画像を確認してください</div>
+      <div class="card-title"><div class="icon">🖼</div>シーンごとの画像・ナレーションを確認</div>
+
+      <!-- 編集件数サマリー -->
+      <div class="edit-summary-banner" id="edit-summary-banner">
+        <span class="icon">✏️</span>
+        <span id="edit-summary-text">ナレーションを編集中...</span>
+      </div>
+
       <div id="scene-image-list"></div>
+
       <div class="btn-row">
         <button class="btn btn-outline" onclick="setStep(3)">← 戻る</button>
         <button class="btn btn-primary" onclick="proceedToVideo()">動画を生成する →</button>
@@ -349,7 +602,15 @@
       </div>
     </div>
   </div>
+</div>
 
+<!-- ライトボックス（DOM外に配置） -->
+<div class="lightbox-overlay" id="lightbox" style="display:none" onclick="closeLightbox(event)">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
 </div>
 
 <script>
@@ -363,19 +624,16 @@ let state = {
   videoUrl: null,
   scriptCandidates: [],
   loadingInterval: null,
+  // ナレーション編集データ: { sceneIndex: { original, current, edited } }
+  narrationEdits: {},
 };
 
-// プログレスバー（5ステップ）
-// step1=入力, step2=台本, step3=画像スタイル, step4=シーン確認, step5=動画, step6=完成
-// step-loading はプログレスバーに影響しない
 const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:4, 6:5 };
 
 function setStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   const stepEl = document.getElementById('step' + n);
   if (stepEl) stepEl.classList.add('active');
-
-  // プログレスバー更新（loading は影響しない）
   if (n !== 'loading') {
     const progN = progressMap[n] || 1;
     for (let i = 1; i <= 5; i++) {
@@ -390,9 +648,7 @@ function setStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ローディング表示（プログレスバーに影響しない）
 function showLoading(title, sub, steps) {
-  // デフォルトステップ
   const defaultSteps = [
     { icon: '🌐', text: '記事を取得中' },
     { icon: '🔍', text: 'コンテンツを解析中' },
@@ -400,19 +656,14 @@ function showLoading(title, sub, steps) {
     { icon: '📝', text: '台本を作成中' },
   ];
   const useSteps = steps || defaultSteps;
-
   document.getElementById('loading-title').textContent = title || 'AIが処理中...';
   document.getElementById('loading-sub').textContent = sub || 'しばらくお待ちください';
-
-  // ステップを更新
   const container = document.getElementById('loading-steps-container');
   container.innerHTML = useSteps.map((s, i) => `
     <div class="loading-step-item ${i === 0 ? 'active' : ''}" id="ls-${i+1}">
       <span class="step-icon">${s.icon}</span> ${s.text}
     </div>
   `).join('');
-
-  // ローディングアニメーション
   if (state.loadingInterval) clearInterval(state.loadingInterval);
   let idx = 0;
   state.loadingInterval = setInterval(() => {
@@ -429,8 +680,6 @@ function showLoading(title, sub, steps) {
       clearInterval(state.loadingInterval);
     }
   }, 6000);
-
-  // プログレスバーを変えずにローディング画面へ
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step-loading').classList.add('active');
 }
@@ -455,39 +704,29 @@ async function startGeneration() {
   const contentType = document.getElementById('input-content-type').value;
   const platform = document.getElementById('input-platform').value;
   const userName = document.getElementById('input-username').value.trim();
-
   if (!url) { showError('コンテンツ URL を入力してください'); return; }
   if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
-
   showLoading('AIが処理中...', 'しばらくお待ちください');
-
   try {
     const res = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform: platform })
     });
-
     hideLoading();
     const text = await res.text();
-    console.log('n8n response:', text);
     if (!text || text.trim() === '') throw new Error('n8n からのレスポンスが空です');
-
     const data = JSON.parse(text);
     if (!data.resume_url) throw new Error('resume_url が返されていません');
-
     state.resumeUrl = data.resume_url;
     state.scriptCandidates = data.script_candidates || [];
-
     renderScripts(data);
     setStep(2);
-
   } catch (err) {
     hideLoading();
     setStep(1);
     showError('エラー: ' + err.message);
-    console.error(err);
   }
 }
 
@@ -497,14 +736,12 @@ function renderScripts(data) {
   list.innerHTML = '';
   state.selectedScript = null;
   document.getElementById('btn-select-script').disabled = true;
-
   const candidates = data.script_candidates || [];
   const badges = [
     { label: '推奨', cls: 'badge-blue' },
     { label: 'バリエーション 2', cls: 'badge-green' },
     { label: 'バリエーション 3', cls: 'badge-pink' }
   ];
-
   candidates.forEach((s, i) => {
     const score = s.recommended_score || Math.floor(80 + Math.random() * 20);
     const scenes = s.scenes || [];
@@ -552,61 +789,31 @@ function selectScriptOption(index) {
 
 async function selectScript() {
   if (!state.selectedScript || !state.resumeUrl) return;
-
-  showLoading(
-    '台本を確定中...',
-    'しばらくお待ちください',
-    [
-      { icon: '📝', text: '台本を確定中' },
-      { icon: '📊', text: 'データを保存中' },
-      { icon: '✅', text: '完了' },
-    ]
-  );
-
+  showLoading('台本を確定中...', 'しばらくお待ちください', [
+    { icon: '📝', text: '台本を確定中' },
+    { icon: '📊', text: 'データを保存中' },
+    { icon: '✅', text: '完了' },
+  ]);
   try {
-    const res = await fetch(
-      'https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
+    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        selected_script_id: state.selectedScript.script_id,
-        action: 'select_script'
-      })
+      body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, action: 'select_script' })
     });
-
     const text = await res.text();
-    console.log('selectScript response:', text);
-    console.log('selectScript status:', res.status);
-
-    if (!text || text.trim() === '') {
-      throw new Error('レスポンスが空です');
-    }
-
+    if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
-    console.log('selectScript data:', data);
-
-    // Wait5 の resume_url を保存
-    if (data.resume_url) {
-      state.resumeUrl = data.resume_url;
-      console.log('resumeUrl updated to Wait5:', state.resumeUrl);
-    }
-
+    if (data.resume_url) state.resumeUrl = data.resume_url;
     hideLoading();
-
-    // resume_url が更新されてから画像スタイル画面へ
     const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
-    renderImages({
-      images: [
-        { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風' },
-        { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風' },
-        { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
-      ]
-    });
+    renderImages({ images: [
+      { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風' },
+      { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風' },
+      { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
+    ]});
     setStep(3);
-
   } catch (err) {
     hideLoading();
-    console.error('selectScript error:', err);
     showError('台本確定エラー: ' + err.message);
     setStep(2);
   }
@@ -616,32 +823,25 @@ async function regenerateScript() {
   state.resumeUrl = null;
   state.selectedScript = null;
   state.scriptCandidates = [];
-
   showLoading('台本を再生成中...', 'AIが新しい台本を作成しています');
-
   try {
     const url = document.getElementById('input-url').value.trim();
     const contentType = document.getElementById('input-content-type').value;
     const platform = document.getElementById('input-platform').value;
     const userName = document.getElementById('input-username').value.trim();
-
     const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(WEBHOOK_URL), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform: platform })
     });
-
     hideLoading();
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-
     const data = JSON.parse(text);
     state.resumeUrl = data.resume_url;
     state.scriptCandidates = data.script_candidates || [];
-
     renderScripts(data);
     setStep(2);
-
   } catch (err) {
     hideLoading();
     setStep(2);
@@ -655,7 +855,6 @@ function renderImages(data) {
   grid.innerHTML = '';
   state.selectedImage = null;
   document.getElementById('btn-select-image').disabled = true;
-
   const images = data.images || [];
   for (let i = 0; i < 3; i++) {
     const div = document.createElement('div');
@@ -688,8 +887,9 @@ function selectImageOption(index) {
   document.getElementById('btn-select-image').disabled = false;
 }
 
-function selectImage() {
-  // if (state.selectedImage === null || !state.resumeUrl) return;
+async function selectImage() {
+
+    // if (state.selectedImage === null || !state.resumeUrl) return;
   if (state.selectedImage === null) return;
 
   // selectImage() の中を以下に差し替え
@@ -704,29 +904,20 @@ function selectImage() {
 
   setStep(4);
 }
+  // if (state.selectedImage === null || !state.resumeUrl) return;
   // const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
   // const imageStyles = [
-  //   { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風',
-  //     dalle_style: 'photorealistic, professional photography, natural lighting, Japanese setting' },
-  //   { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風',
-  //     dalle_style: 'cinematic dramatic lighting, warm golden tones, emotional atmosphere' },
-  //   { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風',
-  //     dalle_style: 'Japanese anime illustration style, vibrant colors, Studio Ghibli inspired' }
+  //   { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風', dalle_style: 'photorealistic, professional photography, natural lighting, Japanese setting' },
+  //   { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風', dalle_style: 'cinematic dramatic lighting, warm golden tones, emotional atmosphere' },
+  //   { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風', dalle_style: 'Japanese anime illustration style, vibrant colors, Studio Ghibli inspired' }
   // ];
-
   // const selected = imageStyles[state.selectedImage];
-
-  // // 画像生成中のローディング（プログレスバーはそのまま）
-  // showLoading(
-  //   'シーン画像を生成中...',
-  //   selected.style + 'スタイルで生成しています',
-  //   [
-  //     { icon: '🖼', text: '画像を生成中' },
-  //     { icon: '✨', text: '仕上げ中' },
-  //     { icon: '✅', text: '完了' },
-  //   ]
-  // );
-
+  // showLoading('シーン画像を生成中...', selected.style + 'スタイルで生成しています', [
+  //   { icon: '🎨', text: 'スタイルを適用中' },
+  //   { icon: '🖼', text: '画像を生成中' },
+  //   { icon: '✨', text: '仕上げ中' },
+  //   { icon: '✅', text: '完了' },
+  // ]);
   // try {
   //   const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
   //     method: 'POST',
@@ -738,71 +929,244 @@ function selectImage() {
   //       action: 'select_image'
   //     })
   //   });
-
   //   const text = await res.text();
-  //   console.log('image select response:', text);
   //   if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-
   //   const data = JSON.parse(text);
   //   state.resumeUrl = data.resume_url;
-
   //   hideLoading();
-
   //   const scenes = state.selectedScript?.scenes || [];
   //   const imageUrls = data.scene_image_urls || [];
-
-  //   console.log('scene_image_urls:', imageUrls);
+  //   // ナレーション編集状態をリセット
+  //   state.narrationEdits = {};
   //   renderSceneImages(scenes, imageUrls);
   //   setStep(4);
-
   // } catch (err) {
   //   hideLoading();
   //   setStep(3);
   //   showError('画像選択中にエラーが発生しました: ' + err.message);
   // }
-// }
+
 
 async function regenerateImages() {
   const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
-  renderImages({
-    images: [
-      { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風' },
-      { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風' },
-      { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
-    ]
-  });
+  renderImages({ images: [
+    { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風' },
+    { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風' },
+    { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
+  ]});
   setStep(3);
 }
 
-// STEP 4: シーン確認
+// ============================================
+// STEP 4: シーン確認 + ナレーション編集
+// ============================================
+
 function renderSceneImages(scenes, imageUrls) {
   const list = document.getElementById('scene-image-list');
   list.innerHTML = '';
+  updateEditSummaryBanner();
 
   scenes.forEach((scene, i) => {
-    const div = document.createElement('div');
-    div.className = 'scene-image-item';
-    div.innerHTML = `
-      <div class="scene-image-thumb">
-        ${imageUrls[i]
-          ? `<img src="${imageUrls[i]}" alt="シーン${scene.scene}"
-               style="width:100%;height:100%;object-fit:cover;"
-               onerror="this.parentElement.innerHTML='<div class=scene-loading>🖼</div>'">`
-          : '<div class="scene-loading pulse">⏳</div>'
-        }
+    const originalNarration = scene.narration || '';
+    // 既存の編集があれば引き継ぐ
+    if (!state.narrationEdits[i]) {
+      state.narrationEdits[i] = { original: originalNarration, current: originalNarration, edited: false };
+    }
+
+    const item = document.createElement('div');
+    item.className = 'scene-image-item';
+    item.id = `scene-item-${i}`;
+
+    const imgUrl = imageUrls[i];
+    const thumbHtml = imgUrl
+      ? `<img src="${imgUrl}" alt="シーン${scene.scene}"
+           style="width:100%;height:100%;object-fit:cover;"
+           onerror="this.parentElement.innerHTML='<div class=scene-loading>🖼</div>'">`
+      : '<div class="scene-loading pulse">⏳</div>';
+
+    item.innerHTML = `
+      <!-- サムネイル＋メタ情報 -->
+      <div class="scene-main-row">
+        <div class="scene-image-thumb" onclick="openLightbox('${imgUrl || ''}', 'Scene ${scene.scene} · ${scene.role || 'narration'}')">
+          ${thumbHtml}
+          <div class="thumb-overlay">🔍</div>
+        </div>
+        <div class="scene-image-info">
+          <div class="scene-image-role">
+            <span>Scene ${scene.scene} · ${scene.role || 'narration'}</span>
+            <button class="btn-edit-narration" id="edit-btn-${i}" onclick="toggleEditArea(${i})">
+              ✏️ 編集
+            </button>
+          </div>
+          <div class="scene-narration-display" id="narration-display-${i}">${originalNarration}</div>
+          <div class="scene-image-duration">${scene.duration_sec || 5}秒</div>
+        </div>
       </div>
-      <div class="scene-image-info">
-        <div class="scene-image-role">Scene ${scene.scene} · ${scene.role || 'narration'}</div>
-        <div class="scene-image-narration">${scene.narration || ''}</div>
-        <div class="scene-image-duration">${scene.duration_sec || 5}秒</div>
+
+      <!-- 編集エリア（折りたたみ） -->
+      <div class="scene-edit-area" id="edit-area-${i}">
+        <textarea class="narration-textarea" id="textarea-${i}"
+          oninput="onNarrationInput(${i})"
+          placeholder="ナレーションを入力...">${originalNarration}</textarea>
+        <div class="edit-actions">
+          <button class="btn-save-narration" onclick="saveNarration(${i})">保存</button>
+          <button class="btn-cancel-narration" onclick="cancelEdit(${i})">キャンセル</button>
+          <span class="char-count" id="char-count-${i}">${originalNarration.length}文字</span>
+          <span class="save-status" id="save-status-${i}"></span>
+        </div>
       </div>
     `;
-    list.appendChild(div);
+
+    list.appendChild(item);
   });
 }
 
+function onNarrationInput(index) {
+  const textarea = document.getElementById(`textarea-${index}`);
+  const charCount = document.getElementById(`char-count-${index}`);
+  if (charCount) charCount.textContent = textarea.value.length + '文字';
+}
+
+function toggleEditArea(index) {
+  const area = document.getElementById(`edit-area-${index}`);
+  const item = document.getElementById(`scene-item-${index}`);
+  const btn  = document.getElementById(`edit-btn-${index}`);
+  const isOpen = area.classList.contains('open');
+
+  if (isOpen) {
+    area.classList.remove('open');
+    item.classList.remove('editing');
+    btn.textContent = '✏️ 編集';
+  } else {
+    // 現在値をテキストエリアに反映
+    const textarea = document.getElementById(`textarea-${index}`);
+    textarea.value = state.narrationEdits[index]?.current || '';
+    onNarrationInput(index);
+    area.classList.add('open');
+    item.classList.add('editing');
+    btn.textContent = '▲ 閉じる';
+    textarea.focus();
+  }
+}
+
+function cancelEdit(index) {
+  const textarea = document.getElementById(`textarea-${index}`);
+  textarea.value = state.narrationEdits[index]?.current || '';
+  toggleEditArea(index);
+}
+
+async function saveNarration(index) {
+  const textarea = document.getElementById(`textarea-${index}`);
+  const newText = textarea.value.trim();
+  const statusEl = document.getElementById(`save-status-${index}`);
+
+  if (!newText) { showError('ナレーションを入力してください'); return; }
+
+  const prev = state.narrationEdits[index];
+  const isChanged = newText !== prev.original;
+
+  // UIを即時更新
+  const displayEl = document.getElementById(`narration-display-${index}`);
+  displayEl.textContent = newText;
+  displayEl.classList.toggle('edited', isChanged);
+
+  state.narrationEdits[index] = {
+    original: prev.original,
+    current: newText,
+    edited: isChanged
+  };
+
+  // 編集バッジの更新
+  const roleEl = document.querySelector(`#scene-item-${index} .scene-image-role`);
+  const badge = roleEl.querySelector('.edited-badge');
+  if (isChanged && !badge) {
+    roleEl.querySelector('span').insertAdjacentHTML('afterend', '<span class="edited-badge">✏ 編集済み</span>');
+  } else if (!isChanged && badge) {
+    badge.remove();
+  }
+
+  updateEditSummaryBanner();
+
+  // バックエンドへ送信
+  if (state.resumeUrl) {
+    statusEl.className = 'save-status saving';
+    statusEl.textContent = '⟳ 保存中...';
+
+    const scenes = state.selectedScript?.scenes || [];
+    const updatedNarrations = scenes.map((sc, i) => ({
+      scene: sc.scene,
+      narration: state.narrationEdits[i]?.current ?? sc.narration,
+      duration_sec: sc.duration_sec,
+      role: sc.role,
+    }));
+
+    try {
+      await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_narration',
+          scene_index: index,
+          narration: newText,
+          all_narrations: updatedNarrations,
+        })
+      });
+      statusEl.className = 'save-status saved';
+      statusEl.textContent = '✓ 保存済み';
+      setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'save-status'; }, 2500);
+    } catch (err) {
+      console.warn('ナレーション保存エラー（ローカルには反映済み）:', err);
+      statusEl.className = 'save-status saved';
+      statusEl.textContent = '✓ ローカル保存済み';
+      setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'save-status'; }, 2500);
+    }
+  }
+
+  // 編集エリアを閉じる
+  toggleEditArea(index);
+}
+
+function updateEditSummaryBanner() {
+  const editedCount = Object.values(state.narrationEdits).filter(e => e.edited).length;
+  const banner = document.getElementById('edit-summary-banner');
+  const text   = document.getElementById('edit-summary-text');
+  if (editedCount > 0) {
+    text.textContent = `${editedCount}件のシーンのナレーションを編集済み`;
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+  }
+}
+
+// ライトボックス
+function openLightbox(imgUrl, caption) {
+  if (!imgUrl) return;
+  const overlay = document.getElementById('lightbox');
+  document.getElementById('lightbox-img').src = imgUrl;
+  document.getElementById('lightbox-caption').textContent = caption || '';
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(event) {
+  if (event && event.target !== document.getElementById('lightbox')) return;
+  document.getElementById('lightbox').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// 動画生成（編集済みナレーションも含めて送信）
 async function proceedToVideo() {
   if (!state.resumeUrl) return;
+
+  // 最終的な全ナレーションを収集
+  const scenes = state.selectedScript?.scenes || [];
+  const finalNarrations = scenes.map((sc, i) => ({
+    scene: sc.scene,
+    narration: state.narrationEdits[i]?.current ?? sc.narration,
+    duration_sec: sc.duration_sec,
+    role: sc.role,
+  }));
+  const editedScenes = finalNarrations.filter((sc, i) => state.narrationEdits[i]?.edited);
 
   showLoading('動画を生成中...', 'Shotstackが動画を合成しています', [
     { icon: '🎵', text: '音声を合成中' },
@@ -815,20 +1179,20 @@ async function proceedToVideo() {
     const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'approve_scenes' })
+      body: JSON.stringify({
+        action: 'approve_scenes',
+        final_narrations: finalNarrations,
+        edited_scene_count: editedScenes.length,
+      })
     });
-
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-
     const data = JSON.parse(text);
     state.resumeUrl = data.resume_url;
     state.videoUrl = data.video_url;
-
     hideLoading();
     renderVideo(data);
     setStep(5);
-
   } catch (err) {
     hideLoading();
     setStep(4);
@@ -857,7 +1221,6 @@ async function approveVideo() {
       body: JSON.stringify({ action: 'approve_video' })
     });
   } catch (err) { console.warn('承認送信エラー（無視）:', err); }
-
   const finalContainer = document.getElementById('final-video-container');
   if (state.videoUrl) {
     finalContainer.innerHTML = `
@@ -897,7 +1260,7 @@ async function rejectVideo() {
 }
 
 function resetAll() {
-  state = { currentStep: 1, resumeUrl: null, selectedScript: null, selectedImage: null, videoUrl: null, scriptCandidates: [], loadingInterval: null };
+  state = { currentStep: 1, resumeUrl: null, selectedScript: null, selectedImage: null, videoUrl: null, scriptCandidates: [], loadingInterval: null, narrationEdits: {} };
   document.getElementById('input-url').value = '';
   document.getElementById('input-username').value = '';
   document.getElementById('input-content-type').value = '';
