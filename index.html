@@ -648,7 +648,7 @@ function setStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function showLoading(title, sub, steps) {
+function showLoading(title, sub, steps,interval=6000) {
   const defaultSteps = [
     { icon: '🌐', text: '記事を取得中' },
     { icon: '🔍', text: 'コンテンツを解析中' },
@@ -679,7 +679,7 @@ function showLoading(title, sub, steps) {
     } else {
       clearInterval(state.loadingInterval);
     }
-  }, 6000);
+  }, interval);
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step-loading').classList.add('active');
 }
@@ -720,6 +720,7 @@ async function startGeneration() {
     const data = JSON.parse(text);
     if (!data.resume_url) throw new Error('resume_url が返されていません');
     state.resumeUrl = data.resume_url;
+    state.sessionId = data.session_id; 
     state.scriptCandidates = data.script_candidates || [];
     renderScripts(data);
     setStep(2);
@@ -793,13 +794,13 @@ async function selectScript() {
     { icon: '📝', text: '台本を確定中' },
     { icon: '💾', text: 'データを保存中' },
     { icon: '✅', text: '完了' },
-  ]);
+  ],1000);
   try {
     const [res] = await Promise.all([
       fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, action: 'select_script' })
+        body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, session_id: state.sessionId,　action: 'select_script' })
       }),
       new Promise(resolve => setTimeout(resolve, 4000))
     ]);
