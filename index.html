@@ -690,65 +690,76 @@ function selectImageOption(index) {
 
 async function selectImage() {
   if (state.selectedImage === null || !state.resumeUrl) return;
+  
+  // selectImage() の中を以下に差し替え
 
-  const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
-  const imageStyles = [
-    { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風',
-      dalle_style: 'photorealistic, professional photography, natural lighting, Japanese setting' },
-    { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風',
-      dalle_style: 'cinematic dramatic lighting, warm golden tones, emotional atmosphere' },
-    { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風',
-      dalle_style: 'Japanese anime illustration style, vibrant colors, Studio Ghibli inspired' }
-  ];
+  const BASE = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Tmp_Image';
 
-  const selected = imageStyles[state.selectedImage];
+  const scenes = state.selectedScript?.scenes || [];
 
-  // 画像生成中のローディング（プログレスバーはそのまま）
-  showLoading(
-    'シーン画像を生成中...',
-    selected.style + 'スタイルで生成しています',
-    [
-      { icon: '🎨', text: 'スタイルを適用中' },
-      { icon: '🖼', text: '画像を生成中' },
-      { icon: '✨', text: '仕上げ中' },
-      { icon: '✅', text: '完了' },
-    ]
-  );
+  const imageUrls = scenes.map((_, i) => `${BASE}/tmp${i + 1}.png`);
 
-  try {
-    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        selected_image_index: state.selectedImage,
-        selected_style: selected.style,
-        dalle_style_prompt: selected.dalle_style,
-        action: 'select_image'
-      })
-    });
+  renderSceneImages(scenes, imageUrls);
 
-    const text = await res.text();
-    console.log('image select response:', text);
-    if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-
-    const data = JSON.parse(text);
-    state.resumeUrl = data.resume_url;
-
-    hideLoading();
-
-    const scenes = state.selectedScript?.scenes || [];
-    const imageUrls = data.scene_image_urls || [];
-
-    console.log('scene_image_urls:', imageUrls);
-    renderSceneImages(scenes, imageUrls);
-    setStep(4);
-
-  } catch (err) {
-    hideLoading();
-    setStep(3);
-    showError('画像選択中にエラーが発生しました: ' + err.message);
-  }
+  setStep(4);
 }
+  // const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
+  // const imageStyles = [
+  //   { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風',
+  //     dalle_style: 'photorealistic, professional photography, natural lighting, Japanese setting' },
+  //   { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風',
+  //     dalle_style: 'cinematic dramatic lighting, warm golden tones, emotional atmosphere' },
+  //   { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風',
+  //     dalle_style: 'Japanese anime illustration style, vibrant colors, Studio Ghibli inspired' }
+  // ];
+
+  // const selected = imageStyles[state.selectedImage];
+
+  // // 画像生成中のローディング（プログレスバーはそのまま）
+  // showLoading(
+  //   'シーン画像を生成中...',
+  //   selected.style + 'スタイルで生成しています',
+  //   [
+  //     { icon: '🖼', text: '画像を生成中' },
+  //     { icon: '✨', text: '仕上げ中' },
+  //     { icon: '✅', text: '完了' },
+  //   ]
+  // );
+
+  // try {
+  //   const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({
+  //       selected_image_index: state.selectedImage,
+  //       selected_style: selected.style,
+  //       dalle_style_prompt: selected.dalle_style,
+  //       action: 'select_image'
+  //     })
+  //   });
+
+  //   const text = await res.text();
+  //   console.log('image select response:', text);
+  //   if (!text || text.trim() === '') throw new Error('レスポンスが空です');
+
+  //   const data = JSON.parse(text);
+  //   state.resumeUrl = data.resume_url;
+
+  //   hideLoading();
+
+  //   const scenes = state.selectedScript?.scenes || [];
+  //   const imageUrls = data.scene_image_urls || [];
+
+  //   console.log('scene_image_urls:', imageUrls);
+  //   renderSceneImages(scenes, imageUrls);
+  //   setStep(4);
+
+  // } catch (err) {
+  //   hideLoading();
+  //   setStep(3);
+  //   showError('画像選択中にエラーが発生しました: ' + err.message);
+  // }
+// }
 
 async function regenerateImages() {
   const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
