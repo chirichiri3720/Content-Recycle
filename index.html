@@ -791,15 +791,18 @@ async function selectScript() {
   if (!state.selectedScript || !state.resumeUrl) return;
   showLoading('台本を確定中...', 'しばらくお待ちください', [
     { icon: '📝', text: '台本を確定中' },
-    { icon: '📊', text: 'データを保存中' },
+    { icon: '💾', text: 'データを保存中' },
     { icon: '✅', text: '完了' },
   ]);
   try {
-    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, action: 'select_script' })
-    });
+    const [res] = await Promise.all([
+      fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, action: 'select_script' })
+      }),
+      new Promise(resolve => setTimeout(resolve, 4000))
+    ]);
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
