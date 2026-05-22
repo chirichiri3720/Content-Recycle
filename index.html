@@ -67,7 +67,6 @@ letter-spacing: 0.05em;
 .header h1 span { color: var(--accent); }
 .header p { font-size: 14px; color: var(--text2); }
 
-/* プログレスバー（5ステップ） */
 .progress-bar {
 display: flex;
 align-items: center;
@@ -118,7 +117,6 @@ white-space: nowrap;
 .btn-danger { background: rgba(255,101,132,0.15); border: 1px solid rgba(255,101,132,0.3); color: var(--accent2); flex: 1; justify-content: center; }
 .btn-row { display: flex; gap: 10px; margin-top: 16px; }
 
-/* ローディング（元のデザイン） */
 .loading-container { text-align: center; padding: 40px 20px; }
 .spinner { width: 48px; height: 48px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -179,7 +177,6 @@ white-space: nowrap;
   border-color: var(--accent);
 }
 
-/* サムネイル＋メタ情報の横並び行 */
 .scene-main-row {
   display: flex;
   gap: 12px;
@@ -224,9 +221,10 @@ white-space: nowrap;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
-/* ナレーション表示テキスト */
 .scene-narration-display {
   font-size: 12px;
   color: var(--text2);
@@ -242,9 +240,122 @@ white-space: nowrap;
   font-size: 10px;
   color: var(--text3);
   font-family: 'Space Mono', monospace;
+  margin-bottom: 8px;
 }
 
-/* 編集ボタン（鉛筆アイコン） */
+/* ============================================
+   音声プレイヤー（シーンごと）
+   ============================================ */
+.scene-audio-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(108,99,255,0.06);
+  border: 1px solid rgba(108,99,255,0.15);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-top: 4px;
+}
+
+.audio-play-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.1s;
+  line-height: 1;
+}
+.audio-play-btn:hover { background: #5a52e0; transform: scale(1.05); }
+.audio-play-btn:active { transform: scale(0.95); }
+.audio-play-btn.playing { background: var(--accent2); }
+
+.audio-waveform {
+  flex: 1;
+  height: 24px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.audio-progress-track {
+  width: 100%;
+  height: 3px;
+  background: var(--border2);
+  border-radius: 100px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.audio-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 100px;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+.audio-time {
+  font-size: 9px;
+  color: var(--text3);
+  font-family: 'Space Mono', monospace;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.audio-load-state {
+  font-size: 9px;
+  color: var(--text3);
+  font-family: 'Space Mono', monospace;
+}
+.audio-load-state.loading { color: var(--accent); }
+.audio-load-state.error { color: var(--accent2); }
+
+/* 全シーン一括再生ボタン */
+.play-all-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(108,99,255,0.08);
+  border: 1px solid rgba(108,99,255,0.2);
+  border-radius: var(--radius2);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+.play-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.play-all-btn:hover { background: #5a52e0; }
+.play-all-btn.playing { background: var(--accent2); }
+.play-all-label {
+  font-size: 11px;
+  color: var(--text2);
+}
+.play-all-progress {
+  font-size: 10px;
+  color: var(--accent);
+  font-family: 'Space Mono', monospace;
+  margin-left: auto;
+}
+
+/* 編集ボタン */
 .btn-edit-narration {
   background: transparent;
   border: 1px solid var(--border2);
@@ -270,7 +381,7 @@ white-space: nowrap;
   color: var(--accent);
 }
 
-/* 編集エリア（折りたたみ） */
+/* 編集エリア */
 .scene-edit-area {
   display: none;
   padding: 0 12px 12px;
@@ -339,7 +450,6 @@ white-space: nowrap;
   font-family: 'Space Mono', monospace;
 }
 
-/* 編集済みバッジ */
 .edited-badge {
   display: inline-flex;
   align-items: center;
@@ -354,7 +464,6 @@ white-space: nowrap;
   font-family: 'Space Mono', monospace;
 }
 
-/* 保存中インジケータ */
 .save-status {
   font-size: 10px;
   font-family: 'Space Mono', monospace;
@@ -416,7 +525,6 @@ white-space: nowrap;
   font-family: 'Space Mono', monospace;
 }
 
-/* 編集サマリーバナー */
 .edit-summary-banner {
   background: rgba(108,99,255,0.08);
   border: 1px solid rgba(108,99,255,0.2);
@@ -432,7 +540,6 @@ white-space: nowrap;
 .edit-summary-banner.visible { display: flex; }
 .edit-summary-banner .icon { color: var(--accent); font-size: 14px; }
 
-/* その他 */
 .scene-loading { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 .video-container { background: #000; border-radius: var(--radius2); overflow: hidden; aspect-ratio: 9/16; max-width: 280px; margin: 0 auto 20px; position: relative; }
 .video-container video { width: 100%; height: 100%; object-fit: cover; }
@@ -462,7 +569,6 @@ white-space: nowrap;
     <p>URLを入力するだけで、AIが自動でクリエイティブを生成します</p>
   </div>
 
-  <!-- プログレスバー（5ステップ） -->
   <div class="progress-bar" id="progressBar">
     <div class="progress-step active" id="prog-1"><span class="dot"></span>入力</div>
     <div class="progress-step" id="prog-2"><span class="dot"></span>台本</div>
@@ -511,19 +617,14 @@ white-space: nowrap;
     </div>
   </div>
 
-  <!-- STEP loading: 処理中 -->
+  <!-- STEP loading -->
   <div class="step" id="step-loading">
     <div class="card">
       <div class="loading-container">
         <div class="spinner"></div>
         <div class="loading-title" id="loading-title">AIが処理中...</div>
         <div class="loading-sub" id="loading-sub">しばらくお待ちください</div>
-        <div class="loading-steps" id="loading-steps-container">
-          <div class="loading-step-item active" id="ls-1"><span class="step-icon">🌐</span> 記事を取得中</div>
-          <div class="loading-step-item" id="ls-2"><span class="step-icon">🔍</span> コンテンツを解析中</div>
-          <div class="loading-step-item" id="ls-3"><span class="step-icon">🧠</span> AIが要約を生成中</div>
-          <div class="loading-step-item" id="ls-4"><span class="step-icon">📝</span> 台本を作成中</div>
-        </div>
+        <div class="loading-steps" id="loading-steps-container"></div>
       </div>
     </div>
   </div>
@@ -552,10 +653,17 @@ white-space: nowrap;
     </div>
   </div>
 
-  <!-- STEP 4: シーンごとの画像確認 + ナレーション編集 -->
+  <!-- STEP 4: シーンごとの画像確認 + ナレーション編集 + 音声確認 -->
   <div class="step" id="step4">
     <div class="card">
-      <div class="card-title"><div class="icon">🖼</div>シーンごとの画像・ナレーションを確認</div>
+      <div class="card-title"><div class="icon">🖼</div>シーンごとの画像・ナレーション・音声を確認</div>
+
+      <!-- 一括再生バー -->
+      <div class="play-all-bar" id="play-all-bar">
+        <button class="play-all-btn" id="play-all-btn" onclick="togglePlayAll()">▶ 全シーン再生</button>
+        <span class="play-all-label">全シーンの音声を順番に確認できます</span>
+        <span class="play-all-progress" id="play-all-progress"></span>
+      </div>
 
       <!-- 編集件数サマリー -->
       <div class="edit-summary-banner" id="edit-summary-banner">
@@ -604,7 +712,7 @@ white-space: nowrap;
   </div>
 </div>
 
-<!-- ライトボックス（DOM外に配置） -->
+<!-- ライトボックス -->
 <div class="lightbox-overlay" id="lightbox" style="display:none" onclick="closeLightbox(event)">
   <div class="lightbox-inner">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
@@ -615,6 +723,8 @@ white-space: nowrap;
 
 <script>
 const WEBHOOK_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';
+const TTS_BASE    = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_TTS';
+const IMG_BASE    = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
 
 let state = {
   currentStep: 1,
@@ -624,13 +734,20 @@ let state = {
   videoUrl: null,
   scriptCandidates: [],
   loadingInterval: null,
-  // ナレーション編集データ: { sceneIndex: { original, current, edited } }
   narrationEdits: {},
+  // 音声管理
+  audioElements: [],      // Audio インスタンスの配列（シーン順）
+  playAllActive: false,
+  playAllIndex: 0,
+  currentPlayingIndex: -1,
 };
 
 const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:4, 6:5 };
 
 function setStep(n) {
+  // STEP4 を離れるとき全音声停止
+  if (state.currentStep === 4) stopAllAudio();
+
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   const stepEl = document.getElementById('step' + n);
   if (stepEl) stepEl.classList.add('active');
@@ -648,7 +765,7 @@ function setStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function showLoading(title, sub, steps,interval=6000) {
+function showLoading(title, sub, steps, interval=6000) {
   const defaultSteps = [
     { icon: '🌐', text: '記事を取得中' },
     { icon: '🔍', text: 'コンテンツを解析中' },
@@ -698,12 +815,14 @@ function showError(msg) {
   setTimeout(() => el.classList.remove('show'), 5000);
 }
 
-// STEP 1: 開始
+// ============================================
+// STEP 1
+// ============================================
 async function startGeneration() {
-  const url = document.getElementById('input-url').value.trim();
+  const url         = document.getElementById('input-url').value.trim();
   const contentType = document.getElementById('input-content-type').value;
-  const platform = document.getElementById('input-platform').value;
-  const userName = document.getElementById('input-username').value.trim();
+  const platform    = document.getElementById('input-platform').value;
+  const userName    = document.getElementById('input-username').value.trim();
   if (!url) { showError('コンテンツ URL を入力してください'); return; }
   if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
@@ -712,15 +831,15 @@ async function startGeneration() {
     const res = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform: platform })
+      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform })
     });
     hideLoading();
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('n8n からのレスポンスが空です');
     const data = JSON.parse(text);
     if (!data.resume_url) throw new Error('resume_url が返されていません');
-    state.resumeUrl = data.resume_url;
-    state.sessionId = data.session_id; 
+    state.resumeUrl        = data.resume_url;
+    state.sessionId        = data.session_id;
     state.scriptCandidates = data.script_candidates || [];
     renderScripts(data);
     setStep(2);
@@ -731,7 +850,9 @@ async function startGeneration() {
   }
 }
 
+// ============================================
 // STEP 2: 台本
+// ============================================
 function renderScripts(data) {
   const list = document.getElementById('script-list');
   list.innerHTML = '';
@@ -739,14 +860,14 @@ function renderScripts(data) {
   document.getElementById('btn-select-script').disabled = true;
   const candidates = data.script_candidates || [];
   const badges = [
-    { label: '推奨', cls: 'badge-blue' },
+    { label: 'バリエーション 1', cls: 'badge-blue' },
     { label: 'バリエーション 2', cls: 'badge-green' },
     { label: 'バリエーション 3', cls: 'badge-pink' }
   ];
   candidates.forEach((s, i) => {
-    const score = s.recommended_score || Math.floor(80 + Math.random() * 20);
+    const score  = s.recommended_score || Math.floor(80 + Math.random() * 20);
     const scenes = s.scenes || [];
-    const div = document.createElement('div');
+    const div    = document.createElement('div');
     div.className = 'script-option';
     div.dataset.index = i;
     div.onclick = () => selectScriptOption(i);
@@ -794,13 +915,13 @@ async function selectScript() {
     { icon: '📝', text: '台本を確定中' },
     { icon: '💾', text: 'データを保存中' },
     { icon: '✅', text: '完了' },
-  ],1000);
+  ], 1000);
   try {
     const [res] = await Promise.all([
       fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, session_id: state.sessionId,　action: 'select_script' })
+        body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, session_id: state.sessionId, action: 'select_script' })
       }),
       new Promise(resolve => setTimeout(resolve, 4000))
     ]);
@@ -811,9 +932,9 @@ async function selectScript() {
     hideLoading();
     const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
     renderImages({ images: [
-      { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風' },
-      { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風' },
-      { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
+      { index: 0, url: `${BASE_URL}/realistic.png`,  style: '実写風' },
+      { index: 1, url: `${BASE_URL}/cinematic.png`,  style: 'シネマティック風' },
+      { index: 2, url: `${BASE_URL}/anime.png`,      style: 'アニメーション風' }
     ]});
     setStep(3);
   } catch (err) {
@@ -829,20 +950,20 @@ async function regenerateScript() {
   state.scriptCandidates = [];
   showLoading('台本を再生成中...', 'AIが新しい台本を作成しています');
   try {
-    const url = document.getElementById('input-url').value.trim();
+    const url         = document.getElementById('input-url').value.trim();
     const contentType = document.getElementById('input-content-type').value;
-    const platform = document.getElementById('input-platform').value;
-    const userName = document.getElementById('input-username').value.trim();
+    const platform    = document.getElementById('input-platform').value;
+    const userName    = document.getElementById('input-username').value.trim();
     const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(WEBHOOK_URL), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform: platform })
+      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform })
     });
     hideLoading();
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
-    state.resumeUrl = data.resume_url;
+    state.resumeUrl        = data.resume_url;
     state.scriptCandidates = data.script_candidates || [];
     renderScripts(data);
     setStep(2);
@@ -853,7 +974,9 @@ async function regenerateScript() {
   }
 }
 
+// ============================================
 // STEP 3: 画像スタイル
+// ============================================
 function renderImages(data) {
   const grid = document.getElementById('image-grid');
   grid.innerHTML = '';
@@ -892,87 +1015,66 @@ function selectImageOption(index) {
 }
 
 async function selectImage() {
-
-    // if (state.selectedImage === null || !state.resumeUrl) return;
   if (state.selectedImage === null) return;
 
-  // selectImage() の中を以下に差し替え
+  const scenes    = state.selectedScript?.scenes || [];
+  const imageUrls = scenes.map((_, i) => `${IMG_BASE}/tmp${i + 1}.png`);
+  const ttsUrls   = scenes.map((_, i) => `${TTS_BASE}/tts${i + 1}.mp3`);
 
-  const BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
+  // ナレーション編集状態をリセット（初回）
+  state.narrationEdits = {};
 
-  const scenes = state.selectedScript?.scenes || [];
-
-  const imageUrls = scenes.map((_, i) => `${BASE}/tmp${i + 1}.png`);
-
-  renderSceneImages(scenes, imageUrls);
-
+  renderSceneImages(scenes, imageUrls, ttsUrls);
   setStep(4);
 }
-  // if (state.selectedImage === null || !state.resumeUrl) return;
-  // const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
-  // const imageStyles = [
-  //   { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風', dalle_style: 'photorealistic, professional photography, natural lighting, Japanese setting' },
-  //   { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風', dalle_style: 'cinematic dramatic lighting, warm golden tones, emotional atmosphere' },
-  //   { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風', dalle_style: 'Japanese anime illustration style, vibrant colors, Studio Ghibli inspired' }
-  // ];
-  // const selected = imageStyles[state.selectedImage];
-  // showLoading('シーン画像を生成中...', selected.style + 'スタイルで生成しています', [
-  //   { icon: '🎨', text: 'スタイルを適用中' },
-  //   { icon: '🖼', text: '画像を生成中' },
-  //   { icon: '✨', text: '仕上げ中' },
-  //   { icon: '✅', text: '完了' },
-  // ]);
-  // try {
-  //   const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({
-  //       selected_image_index: state.selectedImage,
-  //       selected_style: selected.style,
-  //       dalle_style_prompt: selected.dalle_style,
-  //       action: 'select_image'
-  //     })
-  //   });
-  //   const text = await res.text();
-  //   if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-  //   const data = JSON.parse(text);
-  //   state.resumeUrl = data.resume_url;
-  //   hideLoading();
-  //   const scenes = state.selectedScript?.scenes || [];
-  //   const imageUrls = data.scene_image_urls || [];
-  //   // ナレーション編集状態をリセット
-  //   state.narrationEdits = {};
-  //   renderSceneImages(scenes, imageUrls);
-  //   setStep(4);
-  // } catch (err) {
-  //   hideLoading();
-  //   setStep(3);
-  //   showError('画像選択中にエラーが発生しました: ' + err.message);
-  // }
-
 
 async function regenerateImages() {
   const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
   renderImages({ images: [
-    { index: 0, url: `${BASE_URL}/realistic.png`, style: '実写風' },
-    { index: 1, url: `${BASE_URL}/cinematic.png`, style: 'シネマティック風' },
-    { index: 2, url: `${BASE_URL}/anime.png`, style: 'アニメーション風' }
+    { index: 0, url: `${BASE_URL}/realistic.png`,  style: '実写風' },
+    { index: 1, url: `${BASE_URL}/cinematic.png`,  style: 'シネマティック風' },
+    { index: 2, url: `${BASE_URL}/anime.png`,      style: 'アニメーション風' }
   ]});
   setStep(3);
 }
 
 // ============================================
-// STEP 4: シーン確認 + ナレーション編集
+// STEP 4: シーン確認 + ナレーション編集 + 音声
 // ============================================
 
-function renderSceneImages(scenes, imageUrls) {
+/**
+ * 全Audio要素を停止・リセット
+ */
+function stopAllAudio() {
+  state.audioElements.forEach((audio, i) => {
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    updatePlayBtn(i, false);
+    updateAudioProgress(i, 0);
+  });
+  state.playAllActive   = false;
+  state.playAllIndex    = 0;
+  state.currentPlayingIndex = -1;
+  const btn = document.getElementById('play-all-btn');
+  if (btn) { btn.textContent = '▶ 全シーン再生'; btn.classList.remove('playing'); }
+  const prog = document.getElementById('play-all-progress');
+  if (prog) prog.textContent = '';
+}
+
+/**
+ * シーンカード一覧を描画
+ */
+function renderSceneImages(scenes, imageUrls, ttsUrls) {
+  stopAllAudio();
+  state.audioElements = [];
+
   const list = document.getElementById('scene-image-list');
   list.innerHTML = '';
   updateEditSummaryBanner();
 
   scenes.forEach((scene, i) => {
     const originalNarration = scene.narration || '';
-    // 既存の編集があれば引き継ぐ
     if (!state.narrationEdits[i]) {
       state.narrationEdits[i] = { original: originalNarration, current: originalNarration, edited: false };
     }
@@ -981,7 +1083,9 @@ function renderSceneImages(scenes, imageUrls) {
     item.className = 'scene-image-item';
     item.id = `scene-item-${i}`;
 
-    const imgUrl = imageUrls[i];
+    const imgUrl = imageUrls[i] || '';
+    const ttsUrl = ttsUrls[i]   || '';
+
     const thumbHtml = imgUrl
       ? `<img src="${imgUrl}" alt="シーン${scene.scene}"
            style="width:100%;height:100%;object-fit:cover;"
@@ -989,9 +1093,8 @@ function renderSceneImages(scenes, imageUrls) {
       : '<div class="scene-loading pulse">⏳</div>';
 
     item.innerHTML = `
-      <!-- サムネイル＋メタ情報 -->
       <div class="scene-main-row">
-        <div class="scene-image-thumb" onclick="openLightbox('${imgUrl || ''}', 'Scene ${scene.scene} · ${scene.role || 'narration'}')">
+        <div class="scene-image-thumb" onclick="openLightbox('${imgUrl}', 'Scene ${scene.scene} · ${scene.role || 'narration'}')">
           ${thumbHtml}
           <div class="thumb-overlay">🔍</div>
         </div>
@@ -1004,10 +1107,29 @@ function renderSceneImages(scenes, imageUrls) {
           </div>
           <div class="scene-narration-display" id="narration-display-${i}">${originalNarration}</div>
           <div class="scene-image-duration">${scene.duration_sec || 5}秒</div>
+
+          <!-- 音声プレイヤー -->
+          ${ttsUrl ? `
+          <div class="scene-audio-player" id="audio-player-${i}">
+            <button class="audio-play-btn" id="play-btn-${i}" onclick="toggleSceneAudio(${i})"
+              title="再生 / 停止">▶</button>
+            <div class="audio-waveform" onclick="seekAudio(event, ${i})">
+              <div class="audio-progress-track">
+                <div class="audio-progress-fill" id="audio-fill-${i}"></div>
+              </div>
+            </div>
+            <span class="audio-time" id="audio-time-${i}">--:--</span>
+            <span class="audio-load-state loading" id="audio-state-${i}">読込中</span>
+          </div>
+          ` : `
+          <div class="scene-audio-player" style="opacity:0.4">
+            <span style="font-size:10px;color:var(--text3);font-family:'Space Mono',monospace">音声なし</span>
+          </div>
+          `}
         </div>
       </div>
 
-      <!-- 編集エリア（折りたたみ） -->
+      <!-- 編集エリア -->
       <div class="scene-edit-area" id="edit-area-${i}">
         <textarea class="narration-textarea" id="textarea-${i}"
           oninput="onNarrationInput(${i})"
@@ -1022,9 +1144,181 @@ function renderSceneImages(scenes, imageUrls) {
     `;
 
     list.appendChild(item);
+
+    // Audio インスタンスを生成してバインド
+    if (ttsUrl) {
+      const audio = new Audio(ttsUrl);
+      audio.preload = 'metadata';
+      state.audioElements[i] = audio;
+
+      audio.addEventListener('loadedmetadata', () => {
+        const stateEl = document.getElementById(`audio-state-${i}`);
+        const timeEl  = document.getElementById(`audio-time-${i}`);
+        if (stateEl) { stateEl.textContent = ''; stateEl.className = 'audio-load-state'; }
+        if (timeEl)  timeEl.textContent = formatTime(audio.duration);
+      });
+
+      audio.addEventListener('error', () => {
+        const stateEl = document.getElementById(`audio-state-${i}`);
+        if (stateEl) { stateEl.textContent = 'エラー'; stateEl.className = 'audio-load-state error'; }
+        state.audioElements[i] = null;
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        if (!audio.duration) return;
+        const pct = (audio.currentTime / audio.duration) * 100;
+        updateAudioProgress(i, pct);
+        const timeEl = document.getElementById(`audio-time-${i}`);
+        if (timeEl) timeEl.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+      });
+
+      audio.addEventListener('ended', () => {
+        updatePlayBtn(i, false);
+        updateAudioProgress(i, 100);
+        // 全シーン連続再生中なら次へ
+        if (state.playAllActive && state.currentPlayingIndex === i) {
+          advancePlayAll();
+        }
+      });
+    } else {
+      state.audioElements[i] = null;
+    }
   });
 }
 
+function formatTime(sec) {
+  if (!sec || isNaN(sec)) return '--:--';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function updatePlayBtn(index, isPlaying) {
+  const btn = document.getElementById(`play-btn-${index}`);
+  if (!btn) return;
+  btn.textContent = isPlaying ? '⏸' : '▶';
+  btn.classList.toggle('playing', isPlaying);
+}
+
+function updateAudioProgress(index, pct) {
+  const fill = document.getElementById(`audio-fill-${index}`);
+  if (fill) fill.style.width = pct + '%';
+}
+
+/**
+ * シーン単体の再生/停止トグル
+ */
+function toggleSceneAudio(index) {
+  const audio = state.audioElements[index];
+  if (!audio) return;
+
+  // 連続再生中なら停止
+  if (state.playAllActive) {
+    stopAllAudio();
+    return;
+  }
+
+  if (!audio.paused) {
+    // 再生中 → 停止
+    audio.pause();
+    updatePlayBtn(index, false);
+    state.currentPlayingIndex = -1;
+  } else {
+    // 他のシーンを停止してからこのシーンを再生
+    state.audioElements.forEach((a, j) => {
+      if (a && j !== index) {
+        a.pause();
+        a.currentTime = 0;
+        updatePlayBtn(j, false);
+        updateAudioProgress(j, 0);
+      }
+    });
+    state.currentPlayingIndex = index;
+    audio.currentTime = 0;
+    audio.play().catch(e => showError('音声の再生に失敗しました: ' + e.message));
+    updatePlayBtn(index, true);
+  }
+}
+
+/**
+ * シークバークリック
+ */
+function seekAudio(event, index) {
+  const audio = state.audioElements[index];
+  if (!audio || !audio.duration) return;
+  const track = event.currentTarget;
+  const rect  = track.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  audio.currentTime = ratio * audio.duration;
+  updateAudioProgress(index, ratio * 100);
+}
+
+/**
+ * 全シーン連続再生
+ */
+function togglePlayAll() {
+  if (state.playAllActive) {
+    stopAllAudio();
+    return;
+  }
+  stopAllAudio();
+  state.playAllActive = true;
+  state.playAllIndex  = 0;
+
+  const btn  = document.getElementById('play-all-btn');
+  if (btn) { btn.textContent = '⏹ 停止'; btn.classList.add('playing'); }
+
+  playSceneInSequence(0);
+}
+
+function playSceneInSequence(index) {
+  const total = state.audioElements.length;
+
+  // 有効な音声を持つシーンを探す
+  let targetIndex = index;
+  while (targetIndex < total && !state.audioElements[targetIndex]) {
+    targetIndex++;
+  }
+
+  if (targetIndex >= total) {
+    // 全シーン再生完了
+    stopAllAudio();
+    const prog = document.getElementById('play-all-progress');
+    if (prog) prog.textContent = '✓ 再生完了';
+    return;
+  }
+
+  const prog = document.getElementById('play-all-progress');
+  if (prog) prog.textContent = `${targetIndex + 1} / ${total}`;
+
+  state.playAllIndex        = targetIndex;
+  state.currentPlayingIndex = targetIndex;
+
+  const audio = state.audioElements[targetIndex];
+  audio.currentTime = 0;
+  audio.play().catch(e => {
+    showError('音声の再生に失敗しました: ' + e.message);
+    stopAllAudio();
+  });
+  updatePlayBtn(targetIndex, true);
+
+  // スクロールしてシーンカードを見せる
+  const card = document.getElementById(`scene-item-${targetIndex}`);
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function advancePlayAll() {
+  const prev = state.playAllIndex;
+  updatePlayBtn(prev, false);
+  updateAudioProgress(prev, 100);
+
+  if (!state.playAllActive) return;
+  playSceneInSequence(state.playAllIndex + 1);
+}
+
+// ============================================
+// ナレーション編集
+// ============================================
 function onNarrationInput(index) {
   const textarea = document.getElementById(`textarea-${index}`);
   const charCount = document.getElementById(`char-count-${index}`);
@@ -1036,13 +1330,11 @@ function toggleEditArea(index) {
   const item = document.getElementById(`scene-item-${index}`);
   const btn  = document.getElementById(`edit-btn-${index}`);
   const isOpen = area.classList.contains('open');
-
   if (isOpen) {
     area.classList.remove('open');
     item.classList.remove('editing');
     btn.textContent = '✏️ 編集';
   } else {
-    // 現在値をテキストエリアに反映
     const textarea = document.getElementById(`textarea-${index}`);
     textarea.value = state.narrationEdits[index]?.current || '';
     onNarrationInput(index);
@@ -1060,42 +1352,32 @@ function cancelEdit(index) {
 }
 
 async function saveNarration(index) {
-  const textarea = document.getElementById(`textarea-${index}`);
-  const newText = textarea.value.trim();
-  const statusEl = document.getElementById(`save-status-${index}`);
-
+  const textarea  = document.getElementById(`textarea-${index}`);
+  const newText   = textarea.value.trim();
+  const statusEl  = document.getElementById(`save-status-${index}`);
   if (!newText) { showError('ナレーションを入力してください'); return; }
 
-  const prev = state.narrationEdits[index];
+  const prev      = state.narrationEdits[index];
   const isChanged = newText !== prev.original;
 
-  // UIを即時更新
   const displayEl = document.getElementById(`narration-display-${index}`);
   displayEl.textContent = newText;
   displayEl.classList.toggle('edited', isChanged);
 
-  state.narrationEdits[index] = {
-    original: prev.original,
-    current: newText,
-    edited: isChanged
-  };
+  state.narrationEdits[index] = { original: prev.original, current: newText, edited: isChanged };
 
-  // 編集バッジの更新
   const roleEl = document.querySelector(`#scene-item-${index} .scene-image-role`);
-  const badge = roleEl.querySelector('.edited-badge');
+  const badge  = roleEl.querySelector('.edited-badge');
   if (isChanged && !badge) {
     roleEl.querySelector('span').insertAdjacentHTML('afterend', '<span class="edited-badge">✏ 編集済み</span>');
   } else if (!isChanged && badge) {
     badge.remove();
   }
-
   updateEditSummaryBanner();
 
-  // バックエンドへ送信
   if (state.resumeUrl) {
     statusEl.className = 'save-status saving';
     statusEl.textContent = '⟳ 保存中...';
-
     const scenes = state.selectedScript?.scenes || [];
     const updatedNarrations = scenes.map((sc, i) => ({
       scene: sc.scene,
@@ -1103,30 +1385,21 @@ async function saveNarration(index) {
       duration_sec: sc.duration_sec,
       role: sc.role,
     }));
-
     try {
       await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'update_narration',
-          scene_index: index,
-          narration: newText,
-          all_narrations: updatedNarrations,
-        })
+        body: JSON.stringify({ action: 'update_narration', scene_index: index, narration: newText, all_narrations: updatedNarrations })
       });
       statusEl.className = 'save-status saved';
       statusEl.textContent = '✓ 保存済み';
       setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'save-status'; }, 2500);
-    } catch (err) {
-      console.warn('ナレーション保存エラー（ローカルには反映済み）:', err);
+    } catch {
       statusEl.className = 'save-status saved';
       statusEl.textContent = '✓ ローカル保存済み';
       setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'save-status'; }, 2500);
     }
   }
-
-  // 編集エリアを閉じる
   toggleEditArea(index);
 }
 
@@ -1142,27 +1415,28 @@ function updateEditSummaryBanner() {
   }
 }
 
+// ============================================
 // ライトボックス
+// ============================================
 function openLightbox(imgUrl, caption) {
   if (!imgUrl) return;
-  const overlay = document.getElementById('lightbox');
   document.getElementById('lightbox-img').src = imgUrl;
   document.getElementById('lightbox-caption').textContent = caption || '';
-  overlay.style.display = 'flex';
+  document.getElementById('lightbox').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
-
 function closeLightbox(event) {
   if (event && event.target !== document.getElementById('lightbox')) return;
   document.getElementById('lightbox').style.display = 'none';
   document.body.style.overflow = '';
 }
 
-// 動画生成（編集済みナレーションも含めて送信）
+// ============================================
+// 動画生成（TTS URLリストも含めて送信）
+// ============================================
 async function proceedToVideo() {
-  if (!state.resumeUrl) return;
+  stopAllAudio();
 
-  // 最終的な全ナレーションを収集
   const scenes = state.selectedScript?.scenes || [];
   const finalNarrations = scenes.map((sc, i) => ({
     scene: sc.scene,
@@ -1170,10 +1444,20 @@ async function proceedToVideo() {
     duration_sec: sc.duration_sec,
     role: sc.role,
   }));
-  const editedScenes = finalNarrations.filter((sc, i) => state.narrationEdits[i]?.edited);
+  const editedScenes = finalNarrations.filter((_, i) => state.narrationEdits[i]?.edited);
+
+  // TTS URLリスト（GitHub上の静的ファイル）
+  const ttsUrls = scenes.map((_, i) => `${TTS_BASE}/tts${i + 1}.mp3`);
+
+  if (!state.resumeUrl) {
+    // resume_url がない場合もフォールバックでSTEP5へ
+    showError('resume_url がありません。動画生成をスキップします。');
+    setStep(5);
+    return;
+  }
 
   showLoading('動画を生成中...', 'Shotstackが動画を合成しています', [
-    { icon: '🎵', text: '音声を合成中' },
+    { icon: '🎵', text: '音声を結合中' },
     { icon: '🎞', text: '映像を合成中' },
     { icon: '✂️', text: '編集中' },
     { icon: '✅', text: '完成' },
@@ -1187,13 +1471,14 @@ async function proceedToVideo() {
         action: 'approve_scenes',
         final_narrations: finalNarrations,
         edited_scene_count: editedScenes.length,
+        tts_urls: ttsUrls,           // ← GitHubの音声URLリストを送信
       })
     });
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
     state.resumeUrl = data.resume_url;
-    state.videoUrl = data.video_url;
+    state.videoUrl  = data.video_url;
     hideLoading();
     renderVideo(data);
     setStep(5);
@@ -1204,11 +1489,13 @@ async function proceedToVideo() {
   }
 }
 
+// ============================================
 // STEP 5: 動画確認
+// ============================================
 function renderVideo(data) {
   const container = document.getElementById('video-container');
-  const videoUrl = data.video_url || '';
-  state.videoUrl = videoUrl;
+  const videoUrl  = data.video_url || '';
+  state.videoUrl  = videoUrl;
   if (videoUrl) {
     container.innerHTML = `<video src="${videoUrl}" controls playsinline style="width:100%;height:100%;object-fit:cover"></video>`;
   } else {
@@ -1245,14 +1532,14 @@ async function rejectVideo() {
     { icon: '✅', text: '完成' },
   ]);
   try {
-    const res = await fetch(state.resumeUrl, {
+    const res  = await fetch(state.resumeUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'reject_video' })
     });
     const data = await res.json();
     state.resumeUrl = data.resume_url;
-    state.videoUrl = data.video_url;
+    state.videoUrl  = data.video_url;
     hideLoading();
     renderVideo(data);
     setStep(5);
@@ -1263,8 +1550,25 @@ async function rejectVideo() {
   }
 }
 
+// ============================================
+// リセット
+// ============================================
 function resetAll() {
-  state = { currentStep: 1, resumeUrl: null, selectedScript: null, selectedImage: null, videoUrl: null, scriptCandidates: [], loadingInterval: null, narrationEdits: {} };
+  stopAllAudio();
+  state = {
+    currentStep: 1,
+    resumeUrl: null,
+    selectedScript: null,
+    selectedImage: null,
+    videoUrl: null,
+    scriptCandidates: [],
+    loadingInterval: null,
+    narrationEdits: {},
+    audioElements: [],
+    playAllActive: false,
+    playAllIndex: 0,
+    currentPlayingIndex: -1,
+  };
   document.getElementById('input-url').value = '';
   document.getElementById('input-username').value = '';
   document.getElementById('input-content-type').value = '';
