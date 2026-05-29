@@ -3,23 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
 <title>動画生成システム</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
---bg: #0a0a0f;
---surface: #12121a;
---surface2: #1a1a26;
---border: rgba(255,255,255,0.08);
---border2: rgba(255,255,255,0.15);
---accent: #6c63ff;
---accent2: #ff6584;
---accent3: #43e97b;
---text: #f0f0f8;
---text2: #8888aa;
---text3: #555570;
---radius: 12px;
---radius2: 8px;
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --surface2: #1a1a26;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+  --accent: #6c63ff;
+  --accent2: #ff6584;
+  --accent3: #43e97b;
+  --text: #f0f0f8;
+  --text2: #8888aa;
+  --text3: #555570;
+  --radius: 12px;
+  --radius2: 8px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
@@ -64,7 +65,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .spinner { width: 48px; height: 48px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-title { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
-.loading-sub { font-size: 13px; color: var(--text2); }
+.loading-sub { font-size: 13px; color: var(--text2); line-height: 1.6; }
 .loading-steps { margin-top: 24px; text-align: left; max-width: 280px; margin-left: auto; margin-right: auto; }
 .loading-step-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; color: var(--text3); border-bottom: 1px solid var(--border); transition: color 0.3s; }
 .loading-step-item.active { color: var(--accent); }
@@ -101,7 +102,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .image-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text3); font-size: 12px; }
 .image-placeholder .img-icon { font-size: 32px; }
 
-/* ============ STEP 4: シーン確認 ============ */
+/* STEP 4: シーン確認 */
 .scene-image-item { display: flex; flex-direction: column; gap: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s; }
 .scene-image-item.editing { border-color: var(--accent); }
 .scene-main-row { display: flex; gap: 12px; padding: 12px; align-items: flex-start; }
@@ -134,6 +135,16 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .edit-summary-banner.visible { display: flex; }
 .edit-summary-banner .icon { color: var(--accent); font-size: 14px; }
 
+/* 動画生成中の長時間待機バナー */
+.wait-banner { background: rgba(108,99,255,0.07); border: 1px solid rgba(108,99,255,0.2); border-radius: var(--radius2); padding: 12px 16px; font-size: 12px; color: var(--text2); margin-top: 16px; display: flex; align-items: flex-start; gap: 10px; line-height: 1.6; }
+.wait-banner .icon { color: var(--accent); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+/* ポーリング進捗バー */
+.polling-progress { margin-top: 20px; max-width: 280px; margin-left: auto; margin-right: auto; }
+.polling-bar-wrap { height: 3px; background: var(--border2); border-radius: 100px; overflow: hidden; margin-top: 8px; }
+.polling-bar-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 15s linear; width: 0; }
+.polling-status { font-size: 11px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 6px; text-align: center; }
+
 /* ライトボックス */
 .lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 9999; display: flex; align-items: center; justify-content: center; animation: fadeInBg 0.2s ease; }
 @keyframes fadeInBg { from { opacity:0; } to { opacity:1; } }
@@ -163,6 +174,18 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .step.active { animation: fadeIn 0.3s ease; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 .pulse { animation: pulse 1.5s ease infinite; }
+
+/* ダウンロードボタン */
+.btn-download-main {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 14px; border-radius: var(--radius2);
+  background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.4);
+  color: var(--accent3); font-family: 'Noto Sans JP', sans-serif;
+  font-size: 15px; font-weight: 500; text-decoration: none;
+  transition: all 0.2s; cursor: pointer;
+}
+.btn-download-main:hover { background: rgba(67,233,123,0.28); transform: translateY(-1px); }
+.btn-download-main:active { transform: translateY(0); }
 </style>
 </head>
 <body>
@@ -229,6 +252,16 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
         <div class="loading-title" id="loading-title">AIが処理中...</div>
         <div class="loading-sub" id="loading-sub">しばらくお待ちください</div>
         <div class="loading-steps" id="loading-steps-container"></div>
+        <!-- 動画生成中の長時間案内（動画生成ステップのみ表示） -->
+        <div class="wait-banner" id="wait-banner" style="display:none">
+          <span class="icon">⏱</span>
+          <span>動画の合成には最大5分かかる場合があります。<br>完了まで<strong>ページを閉じないでください。</strong></span>
+        </div>
+        <!-- ポーリングフォールバック用進捗表示 -->
+        <div class="polling-progress" id="polling-progress" style="display:none">
+          <div class="polling-bar-wrap"><div class="polling-bar-fill" id="polling-bar"></div></div>
+          <div class="polling-status" id="polling-status">Shotstackでレンダリング中...</div>
+        </div>
       </div>
     </div>
   </div>
@@ -239,8 +272,9 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
       <div class="card-title"><div class="icon">📜</div>台本を選択してください</div>
       <div id="script-list"></div>
       <div class="btn-row">
+        <button class="btn btn-outline" onclick="goBackToStep1()">← 戻る</button>
         <button class="btn btn-outline" onclick="regenerateScript()">🔄 再生成</button>
-        <button class="btn btn-primary" id="btn-select-script" onclick="selectScript()" disabled>この台本で進む →</button>
+        <button class="btn btn-primary" id="btn-select-script" onclick="selectScript()" disabled style="flex:2">この台本で進む →</button>
       </div>
     </div>
   </div>
@@ -251,8 +285,9 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
       <div class="card-title"><div class="icon">🎨</div>背景画像スタイルを選択してください</div>
       <div class="image-grid" id="image-grid"></div>
       <div class="btn-row">
+        <button class="btn btn-outline" onclick="goBackToStep2()">← 戻る</button>
         <button class="btn btn-outline" onclick="regenerateImages()">🔄 再選択</button>
-        <button class="btn btn-primary" id="btn-select-image" onclick="selectImage()" disabled>この画像スタイルで進む →</button>
+        <button class="btn btn-primary" id="btn-select-image" onclick="selectImage()" disabled style="flex:2">この画像スタイルで進む →</button>
       </div>
     </div>
   </div>
@@ -267,8 +302,8 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
       </div>
       <div id="scene-image-list"></div>
       <div class="btn-row">
-        <button class="btn btn-outline" onclick="setStep(3)">← 戻る</button>
-        <button class="btn btn-primary" onclick="proceedToVideo()">動画を生成する →</button>
+        <button class="btn btn-outline" onclick="goBackToStep3()">← 戻る</button>
+        <button class="btn btn-primary" onclick="proceedToVideo()" style="flex:2">動画を生成する →</button>
       </div>
     </div>
   </div>
@@ -298,9 +333,10 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
       <div style="font-size:13px;color:var(--text2);margin-bottom:24px">動画のダウンロードまたは共有ができます</div>
       <div id="final-video-container" style="margin-bottom:20px"></div>
       <div style="display:flex;flex-direction:column;gap:10px">
-        <a id="btn-download" href="#" class="btn btn-success" download style="text-decoration:none">⬇ 動画をダウンロード</a>
+        <a id="btn-download" href="#" class="btn-download-main" download="video.mp4">⬇ 動画をダウンロード</a>
         <button class="btn btn-outline" onclick="resetAll()">＋ 新しい動画を生成する</button>
       </div>
+      <div id="video-expiry-note" style="font-size:11px;color:var(--text3);margin-top:12px;display:none"></div>
     </div>
   </div>
 </div>
@@ -315,33 +351,90 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 </div>
 
 <script>
-// ============================================
+// ============================================================
 // 定数
-// ============================================
-const WEBHOOK_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';
-const IMG_BASE    = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
+// ============================================================
+const WEBHOOK_URL     = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
+const BACK_STEP_URL   = 'https://weby.app.n8n.cloud/webhook/back-step';
+const CHECK_VIDEO_URL = 'https://weby.app.n8n.cloud/webhook/check-video-status';
+const IMG_BASE        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
+const BASE_IMG_URL    = 'https://chirichiri3720.github.io/Content-Recycle/Images';
 
-// ============================================
-// state
-// ============================================
+// Shotstack動画URLホワイトリスト
+const VIDEO_URL_WHITELIST = [
+  'cdn.shotstack.io',
+  'shotstack-assets.s3.ap-southeast-2.amazonaws.com',
+  'storage.googleapis.com',
+];
+
+// ポーリング設定（フォールバック用）
+const POLL_INTERVAL_MS = 15000; // 15秒
+const POLL_MAX_TRIES   = 20;    // 最大20回 = 5分
+
+// ============================================================
+// state（全ステップのデータを保持）
+// ============================================================
 let state = {
   currentStep: 1,
-  resumeUrl: null,
-  sessionId: null,
-  selectedScript: null,
-  selectedImage: null,
-  videoUrl: null,
+
+  // --- step1 入力値（戻った時に復元） ---
+  input: {
+    userName: '',
+    url: '',
+    contentType: '',
+    platform: 'YouTube Shorts',
+  },
+
+  // --- ステップごとの resume_url（戻り対応） ---
+  resumeUrls: {
+    script: null,   // step2で取得（台本選択待ち）
+    image:  null,   // step3で取得（画像スタイル選択待ち）
+    scene:  null,   // step4で取得（シーン確認待ち）
+  },
+
+  sessionId:        null,
+  selectedScript:   null,
+  selectedImage:    null,
+  videoUrl:         null,
   scriptCandidates: [],
-  loadingInterval: null,
-  // { index: { original, current, edited } }
+  sceneImageUrls:   [],   // step4で使う画像URL配列
+  loadingInterval:  null,
+  pollTimer:        null,
+
+  // ナレーション編集: { index: { original, current, edited } }
   narrationEdits: {},
 };
 
 const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:4, 6:5 };
 
-// ============================================
-// ユーティリティ
-// ============================================
+// ============================================================
+// URL検証（XSS防止）
+// ============================================================
+function validateVideoUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  try {
+    const u = new URL(url);
+    if (u.protocol !== 'https:') return null;
+    if (VIDEO_URL_WHITELIST.some(d => u.hostname === d || u.hostname.endsWith('.' + d))) {
+      return url;
+    }
+  } catch (e) { /* invalid URL */ }
+  console.error('validateVideoUrl: rejected', url);
+  return null;
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// ============================================================
+// ステップ表示
+// ============================================================
 function setStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   const el = document.getElementById('step' + n);
@@ -352,7 +445,7 @@ function setStep(n) {
       const p = document.getElementById('prog-' + i);
       if (!p) continue;
       p.classList.remove('active', 'done');
-      if (i < progN) p.classList.add('done');
+      if (i < progN)      p.classList.add('done');
       else if (i === progN) p.classList.add('active');
     }
   }
@@ -360,7 +453,10 @@ function setStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function showLoading(title, sub, steps, interval = 6000) {
+// ============================================================
+// ローディング
+// ============================================================
+function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false) {
   const defaultSteps = [
     { icon: '🌐', text: '記事を取得中' },
     { icon: '🔍', text: 'コンテンツを解析中' },
@@ -368,63 +464,142 @@ function showLoading(title, sub, steps, interval = 6000) {
     { icon: '📝', text: '台本を作成中' },
   ];
   const useSteps = steps || defaultSteps;
+
   document.getElementById('loading-title').textContent = title || 'AIが処理中...';
   document.getElementById('loading-sub').textContent = sub || 'しばらくお待ちください';
+  document.getElementById('wait-banner').style.display = showWaitBanner ? 'flex' : 'none';
+  document.getElementById('polling-progress').style.display = 'none';
+
   const container = document.getElementById('loading-steps-container');
   container.innerHTML = useSteps.map((s, i) =>
     `<div class="loading-step-item ${i === 0 ? 'active' : ''}" id="ls-${i+1}">
-       <span class="step-icon">${s.icon}</span> ${s.text}
+       <span class="step-icon">${escapeHtml(s.icon)}</span>${escapeHtml(s.text)}
      </div>`
   ).join('');
+
   if (state.loadingInterval) clearInterval(state.loadingInterval);
   let idx = 0;
   state.loadingInterval = setInterval(() => {
-    const ids = useSteps.map((_, i) => `ls-${i+1}`);
-    if (idx > 0) { const p = document.getElementById(ids[idx-1]); if (p) p.classList.replace('active','done'); }
-    if (idx < ids.length) { const c = document.getElementById(ids[idx]); if (c) c.classList.add('active'); idx++; }
-    else clearInterval(state.loadingInterval);
+    if (idx > 0) {
+      const p = document.getElementById(`ls-${idx}`);
+      if (p) p.classList.replace('active', 'done');
+    }
+    if (idx < useSteps.length) {
+      const c = document.getElementById(`ls-${idx + 1}`);
+      if (c) c.classList.add('active');
+      idx++;
+    } else {
+      clearInterval(state.loadingInterval);
+    }
   }, interval);
+
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step-loading').classList.add('active');
 }
 
 function hideLoading() {
   if (state.loadingInterval) { clearInterval(state.loadingInterval); state.loadingInterval = null; }
+  document.getElementById('wait-banner').style.display = 'none';
+  document.getElementById('polling-progress').style.display = 'none';
 }
 
 function showError(msg) {
   const el = document.getElementById('errorToast');
   el.textContent = '⚠ ' + msg;
   el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 5000);
+  setTimeout(() => el.classList.remove('show'), 6000);
 }
 
-// ============================================
+// ============================================================
+// 戻るボタン処理（Supabaseステータスをn8n経由で更新）
+// ============================================================
+async function notifyBackStep(targetStep) {
+  if (!state.sessionId) return;
+  try {
+    await fetch(BACK_STEP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id:  state.sessionId,
+        target_step: targetStep,
+      }),
+    });
+  } catch (e) {
+    console.warn('notifyBackStep failed (non-critical):', e);
+  }
+}
+
+function goBackToStep1() {
+  // step1の入力値を復元
+  const { userName, url, contentType, platform } = state.input;
+  document.getElementById('input-username').value     = userName;
+  document.getElementById('input-url').value          = url;
+  document.getElementById('input-content-type').value = contentType;
+  document.getElementById('input-platform').value     = platform;
+  notifyBackStep('input');
+  setStep(1);
+}
+
+function goBackToStep2() {
+  // 台本リストは state.scriptCandidates が残っているので再描画
+  renderScripts({ script_candidates: state.scriptCandidates });
+  // 選択済み台本を復元
+  if (state.selectedScript !== null) {
+    const idx = state.scriptCandidates.findIndex(
+      s => s.script_id === state.selectedScript?.script_id
+    );
+    if (idx >= 0) selectScriptOption(idx);
+  }
+  notifyBackStep('script_pending');
+  setStep(2);
+}
+
+function goBackToStep3() {
+  // 画像スタイルは固定3種なのでそのまま再描画、選択状態を復元
+  renderImages({ images: [
+    { index: 0, url: `${BASE_IMG_URL}/realistic.png`,  style: '実写風' },
+    { index: 1, url: `${BASE_IMG_URL}/cinematic.png`,  style: 'シネマティック風' },
+    { index: 2, url: `${BASE_IMG_URL}/anime.png`,      style: 'アニメーション風' },
+  ]});
+  if (state.selectedImage !== null) selectImageOption(state.selectedImage);
+  notifyBackStep('image_pending');
+  setStep(3);
+}
+
+// ============================================================
 // STEP 1: 開始
-// ============================================
+// ============================================================
 async function startGeneration() {
   const url         = document.getElementById('input-url').value.trim();
   const contentType = document.getElementById('input-content-type').value;
   const platform    = document.getElementById('input-platform').value;
   const userName    = document.getElementById('input-username').value.trim();
+
   if (!url)         { showError('コンテンツ URL を入力してください'); return; }
   if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
+
+  // 入力値を保存（戻るボタン用）
+  state.input = { userName, url, contentType, platform };
+
   showLoading('AIが処理中...', 'しばらくお待ちください');
   try {
-    const res  = await fetch(WEBHOOK_URL, {
+    const res = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform })
+      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform }),
     });
     hideLoading();
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('n8n からのレスポンスが空です');
     const data = JSON.parse(text);
     if (!data.resume_url) throw new Error('resume_url が返されていません');
-    state.resumeUrl        = data.resume_url;
-    state.sessionId        = data.session_id;
-    state.scriptCandidates = data.script_candidates || [];
+
+    // 台本ステップのresume_urlを保存
+    state.resumeUrls.script = data.resume_url;
+    state.sessionId         = data.session_id;
+    state.scriptCandidates  = data.script_candidates || [];
+
     renderScripts(data);
     setStep(2);
   } catch (err) {
@@ -432,90 +607,115 @@ async function startGeneration() {
   }
 }
 
-// ============================================
+// ============================================================
 // STEP 2: 台本
-// ============================================
+// ============================================================
 function renderScripts(data) {
   const list = document.getElementById('script-list');
   list.innerHTML = '';
-  state.selectedScript = null;
   document.getElementById('btn-select-script').disabled = true;
-  const candidates = data.script_candidates || [];
+
+  const candidates = data.script_candidates || state.scriptCandidates || [];
   const badges = [
-    { label: 'バリエーション 1',           cls: 'badge-blue' },
+    { label: 'バリエーション 1', cls: 'badge-blue' },
     { label: 'バリエーション 2', cls: 'badge-green' },
-    { label: 'バリエーション 3', cls: 'badge-pink' }
+    { label: 'バリエーション 3', cls: 'badge-pink' },
   ];
+
   candidates.forEach((s, i) => {
     const score  = s.recommended_score || Math.floor(80 + Math.random() * 20);
     const scenes = s.scenes || [];
     const div    = document.createElement('div');
     div.className = 'script-option';
     div.dataset.index = i;
-    div.onclick = () => selectScriptOption(i);
-    div.innerHTML = `
-      <span class="script-badge ${badges[i]?.cls || 'badge-blue'}">${badges[i]?.label || 'オプション'}</span>
-      <div class="script-title">${s.script_title || 'タイトル未設定'}</div>
-      <div class="script-body">${s.concept || s.total_narration || '概要なし'}</div>
-      <div class="script-score">
-        <span style="font-size:10px;color:var(--text3);width:50px;flex-shrink:0">推奨度</span>
-        <div class="score-bar"><div class="score-fill" style="width:${score}%"></div></div>
-        <span style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;width:28px;text-align:right">${score}</span>
-      </div>
-      ${scenes.length ? `
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.05em">シーン構成</div>
-          <div class="scenes-container">
-            ${scenes.slice(0,4).map((sc, si) => `
-              <div class="scene-item">
-                <div class="scene-num">${si+1}</div>
-                <div class="scene-content">
-                  <div class="scene-role">${sc.role || 'narration'}</div>
-                  <div class="scene-text">${(sc.narration||'').slice(0,80)}${(sc.narration||'').length>80?'...':''}</div>
-                  <div class="scene-duration">${sc.duration_sec||5}秒</div>
-                </div>
-              </div>`).join('')}
-            ${scenes.length > 4 ? `<div style="text-align:center;font-size:11px;color:var(--text3);padding:6px">他 ${scenes.length-4} シーン</div>` : ''}
-          </div>
-        </div>` : ''}
-    `;
+    div.addEventListener('click', () => selectScriptOption(i));
+
+    const scenesHtml = scenes.length ? `
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.05em">シーン構成</div>
+        <div class="scenes-container">
+          ${scenes.slice(0,4).map((sc, si) => `
+            <div class="scene-item">
+              <div class="scene-num">${si+1}</div>
+              <div class="scene-content">
+                <div class="scene-role">${escapeHtml(sc.role || 'narration')}</div>
+                <div class="scene-text">${escapeHtml((sc.narration||'').slice(0,80))}${(sc.narration||'').length>80?'...':''}</div>
+                <div class="scene-duration">${escapeHtml(String(sc.duration_sec||5))}秒</div>
+              </div>
+            </div>`).join('')}
+          ${scenes.length > 4 ? `<div style="text-align:center;font-size:11px;color:var(--text3);padding:6px">他 ${scenes.length-4} シーン</div>` : ''}
+        </div>
+      </div>` : '';
+
+    // DOM APIでメインコンテンツを構築（スコアバーのwidthはstyle属性として安全に設定）
+    const badge = document.createElement('span');
+    badge.className = `script-badge ${badges[i]?.cls || 'badge-blue'}`;
+    badge.textContent = badges[i]?.label || 'オプション';
+
+    const title = document.createElement('div');
+    title.className = 'script-title';
+    title.textContent = s.script_title || 'タイトル未設定';
+
+    const body = document.createElement('div');
+    body.className = 'script-body';
+    body.textContent = s.concept || s.total_narration || '概要なし';
+
+    const scoreWrap = document.createElement('div');
+    scoreWrap.className = 'script-score';
+    scoreWrap.innerHTML = `
+      <span style="font-size:10px;color:var(--text3);width:50px;flex-shrink:0">推奨度</span>
+      <div class="score-bar"><div class="score-fill" style="width:${Number(score)}%"></div></div>
+      <span style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;width:28px;text-align:right">${Number(score)}</span>`;
+
+    div.appendChild(badge);
+    div.appendChild(title);
+    div.appendChild(body);
+    div.appendChild(scoreWrap);
+    if (scenesHtml) div.insertAdjacentHTML('beforeend', scenesHtml);
+
     list.appendChild(div);
   });
 }
 
 function selectScriptOption(index) {
   document.querySelectorAll('.script-option').forEach(el => el.classList.remove('selected'));
-  document.querySelector(`.script-option[data-index="${index}"]`).classList.add('selected');
+  const target = document.querySelector(`.script-option[data-index="${index}"]`);
+  if (target) target.classList.add('selected');
   state.selectedScript = state.scriptCandidates[index];
   document.getElementById('btn-select-script').disabled = false;
 }
 
 async function selectScript() {
-  if (!state.selectedScript || !state.resumeUrl) return;
+  if (!state.selectedScript || !state.resumeUrls.script) return;
+
   showLoading('台本を確定中...', 'しばらくお待ちください', [
     { icon: '📝', text: '台本を確定中' },
     { icon: '💾', text: 'データを保存中' },
     { icon: '✅', text: '完了' },
   ], 1000);
+
   try {
-    const [res] = await Promise.all([
-      fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, session_id: state.sessionId, action: 'select_script' })
+    const res = await fetch(state.resumeUrls.script, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        selected_script_id: state.selectedScript.script_id,
+        session_id:         state.sessionId,
+        action:             'select_script',
       }),
-      new Promise(r => setTimeout(r, 4000))
-    ]);
+    });
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
-    if (data.resume_url) state.resumeUrl = data.resume_url;
+
+    // 画像ステップのresume_urlを保存
+    if (data.resume_url) state.resumeUrls.image = data.resume_url;
+
     hideLoading();
-    const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
     renderImages({ images: [
-      { index: 0, url: `${BASE_URL}/realistic.png`,  style: '実写風' },
-      { index: 1, url: `${BASE_URL}/cinematic.png`,  style: 'シネマティック風' },
-      { index: 2, url: `${BASE_URL}/anime.png`,      style: 'アニメーション風' }
+      { index: 0, url: `${BASE_IMG_URL}/realistic.png`,  style: '実写風' },
+      { index: 1, url: `${BASE_IMG_URL}/cinematic.png`,  style: 'シネマティック風' },
+      { index: 2, url: `${BASE_IMG_URL}/anime.png`,      style: 'アニメーション風' },
     ]});
     setStep(3);
   } catch (err) {
@@ -524,52 +724,66 @@ async function selectScript() {
 }
 
 async function regenerateScript() {
-  state.resumeUrl = null; state.selectedScript = null; state.scriptCandidates = [];
+  state.resumeUrls.script = null;
+  state.selectedScript    = null;
+  state.scriptCandidates  = [];
+
   showLoading('台本を再生成中...', 'AIが新しい台本を作成しています');
   try {
-    const url         = document.getElementById('input-url').value.trim();
-    const contentType = document.getElementById('input-content-type').value;
-    const platform    = document.getElementById('input-platform').value;
-    const userName    = document.getElementById('input-username').value.trim();
-    const res  = await fetch('https://corsproxy.io/?' + encodeURIComponent(WEBHOOK_URL), {
+    const { userName, url, contentType, platform } = state.input;
+    const res = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform })
+      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform }),
     });
     hideLoading();
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
-    state.resumeUrl = data.resume_url; state.scriptCandidates = data.script_candidates || [];
-    renderScripts(data); setStep(2);
-  } catch (err) { hideLoading(); setStep(2); showError('再生成エラー: ' + err.message); }
+
+    state.resumeUrls.script = data.resume_url;
+    state.sessionId         = data.session_id;
+    state.scriptCandidates  = data.script_candidates || [];
+    renderScripts(data);
+    setStep(2);
+  } catch (err) {
+    hideLoading(); setStep(2); showError('再生成エラー: ' + err.message);
+  }
 }
 
-// ============================================
+// ============================================================
 // STEP 3: 画像スタイル
-// ============================================
+// ============================================================
 function renderImages(data) {
   const grid = document.getElementById('image-grid');
   grid.innerHTML = '';
-  state.selectedImage = null;
   document.getElementById('btn-select-image').disabled = true;
+
   const images = data.images || [];
   for (let i = 0; i < 3; i++) {
     const div = document.createElement('div');
     div.className = 'image-option';
     div.dataset.index = i;
-    div.onclick = () => selectImageOption(i);
+    div.addEventListener('click', () => selectImageOption(i));
+
     if (images[i]?.url) {
-      div.innerHTML = `
-        <img src="${images[i].url}" alt="${images[i].style||''}" loading="lazy"
-          style="width:100%;height:100%;object-fit:cover;display:block;"
-          onerror="this.style.display='none'">
-        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.8));
-          color:white;font-size:12px;font-weight:500;padding:20px 8px 8px;text-align:center;letter-spacing:0.05em;">
-          ${images[i].style || ''}
-        </div>`;
+      const img = document.createElement('img');
+      img.src     = images[i].url;
+      img.alt     = images[i].style || '';
+      img.loading = 'lazy';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+      img.onerror = () => { img.style.display = 'none'; };
+      div.appendChild(img);
+
+      const caption = document.createElement('div');
+      caption.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:white;font-size:12px;font-weight:500;padding:20px 8px 8px;text-align:center;letter-spacing:0.05em;';
+      caption.textContent = images[i].style || '';
+      div.appendChild(caption);
     } else {
-      div.innerHTML = `<div class="image-placeholder"><div class="img-icon">🖼</div><div>画像 ${i+1}</div></div>`;
+      const placeholder = document.createElement('div');
+      placeholder.className = 'image-placeholder';
+      placeholder.innerHTML = `<div class="img-icon">🖼</div><div>画像 ${i+1}</div>`;
+      div.appendChild(placeholder);
     }
     grid.appendChild(div);
   }
@@ -577,33 +791,65 @@ function renderImages(data) {
 
 function selectImageOption(index) {
   document.querySelectorAll('.image-option').forEach(el => el.classList.remove('selected'));
-  document.querySelector(`.image-option[data-index="${index}"]`).classList.add('selected');
+  const target = document.querySelector(`.image-option[data-index="${index}"]`);
+  if (target) target.classList.add('selected');
   state.selectedImage = index;
   document.getElementById('btn-select-image').disabled = false;
 }
 
 async function selectImage() {
-  if (state.selectedImage === null) return;
-  const scenes    = state.selectedScript?.scenes || [];
-  const imageUrls = scenes.map((_, i) => `${IMG_BASE}/tmp${i + 1}.png`);
-  state.narrationEdits = {};
-  renderSceneImages(scenes, imageUrls);
-  setStep(4);
+  if (state.selectedImage === null || !state.resumeUrls.image) return;
+
+  showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
+    { icon: '🎨', text: 'スタイルを確定中' },
+    { icon: '🖼', text: 'シーン画像を生成中' },
+    { icon: '✅', text: '完了' },
+  ], 3000);
+
+  try {
+    const styleNames = ['realistic', 'cinematic', 'anime'];
+    const res = await fetch(state.resumeUrls.image, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        selected_image_style: styleNames[state.selectedImage] || 'realistic',
+        selected_image_index: state.selectedImage,
+        session_id:           state.sessionId,
+        action:               'select_image_style',
+      }),
+    });
+    const text = await res.text();
+    if (!text || text.trim() === '') throw new Error('レスポンスが空です');
+    const data = JSON.parse(text);
+
+    // シーン確認ステップのresume_urlを保存
+    if (data.resume_url) state.resumeUrls.scene = data.resume_url;
+
+    // シーン画像URLを保存（n8nから返ってきた場合）またはデフォルト
+    const scenes = state.selectedScript?.scenes || [];
+    state.sceneImageUrls = data.scene_image_urls
+      || scenes.map((_, i) => `${IMG_BASE}/tmp${i + 1}.png`);
+
+    hideLoading();
+    renderSceneImages(scenes, state.sceneImageUrls);
+    setStep(4);
+  } catch (err) {
+    hideLoading(); showError('画像スタイル確定エラー: ' + err.message); setStep(3);
+  }
 }
 
 async function regenerateImages() {
-  const BASE_URL = 'https://chirichiri3720.github.io/Content-Recycle/Images';
   renderImages({ images: [
-    { index: 0, url: `${BASE_URL}/realistic.png`,  style: '実写風' },
-    { index: 1, url: `${BASE_URL}/cinematic.png`,  style: 'シネマティック風' },
-    { index: 2, url: `${BASE_URL}/anime.png`,       style: 'アニメーション風' }
+    { index: 0, url: `${BASE_IMG_URL}/realistic.png`,  style: '実写風' },
+    { index: 1, url: `${BASE_IMG_URL}/cinematic.png`,  style: 'シネマティック風' },
+    { index: 2, url: `${BASE_IMG_URL}/anime.png`,       style: 'アニメーション風' },
   ]});
   setStep(3);
 }
 
-// ============================================
+// ============================================================
 // STEP 4: シーン確認 + ナレーション編集
-// ============================================
+// ============================================================
 function renderSceneImages(scenes, imageUrls) {
   const list = document.getElementById('scene-image-list');
   list.innerHTML = '';
@@ -615,47 +861,113 @@ function renderSceneImages(scenes, imageUrls) {
       state.narrationEdits[i] = { original: originalNarration, current: originalNarration, edited: false };
     }
 
-    const item    = document.createElement('div');
+    const item = document.createElement('div');
     item.className = 'scene-image-item';
     item.id = `scene-item-${i}`;
 
-    const imgUrl   = imageUrls[i] || '';
-    const thumbHtml = imgUrl
-      ? `<img src="${imgUrl}" alt="シーン${scene.scene}"
-           style="width:100%;height:100%;object-fit:cover;"
-           onerror="this.parentElement.innerHTML='<div class=scene-loading>🖼</div>'">`
-      : '<div class="scene-loading pulse">⏳</div>';
+    const imgUrl = imageUrls[i] || '';
 
-    item.innerHTML = `
-      <div class="scene-main-row">
-        <div class="scene-image-thumb"
-          onclick="openLightbox('${imgUrl}', 'Scene ${scene.scene} · ${scene.role||'narration'}')">
-          ${thumbHtml}
-          <div class="thumb-overlay">🔍</div>
-        </div>
-        <div class="scene-image-info">
-          <div class="scene-image-role">
-            <span>Scene ${scene.scene} · ${scene.role||'narration'}</span>
-            <button class="btn-edit-narration" id="edit-btn-${i}" onclick="toggleEditArea(${i})">
-              ✏️ 編集
-            </button>
-          </div>
-          <div class="scene-narration-display" id="narration-display-${i}">${originalNarration}</div>
-          <div class="scene-image-duration">${scene.duration_sec||5}秒</div>
-        </div>
-      </div>
-      <div class="scene-edit-area" id="edit-area-${i}">
-        <textarea class="narration-textarea" id="textarea-${i}"
-          oninput="onNarrationInput(${i})"
-          placeholder="ナレーションを入力...">${originalNarration}</textarea>
-        <div class="edit-actions">
-          <button class="btn-save-narration" onclick="saveNarration(${i})">保存</button>
-          <button class="btn-cancel-narration" onclick="cancelEdit(${i})">キャンセル</button>
-          <span class="char-count" id="char-count-${i}">${originalNarration.length}文字</span>
-        </div>
-      </div>
-    `;
+    // サムネイル
+    const thumb = document.createElement('div');
+    thumb.className = 'scene-image-thumb';
+    thumb.addEventListener('click', () => openLightbox(imgUrl, `Scene ${scene.scene} · ${scene.role || 'narration'}`));
+    if (imgUrl) {
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      img.alt = `シーン ${scene.scene}`;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      img.onerror = () => { thumb.innerHTML = '<div class="scene-loading">🖼</div>'; };
+      thumb.appendChild(img);
+    } else {
+      thumb.innerHTML = '<div class="scene-loading pulse">⏳</div>';
+    }
+    const overlay = document.createElement('div');
+    overlay.className = 'thumb-overlay';
+    overlay.textContent = '🔍';
+    thumb.appendChild(overlay);
+
+    // 情報エリア
+    const info = document.createElement('div');
+    info.className = 'scene-image-info';
+
+    const roleRow = document.createElement('div');
+    roleRow.className = 'scene-image-role';
+    const roleSpan = document.createElement('span');
+    roleSpan.textContent = `Scene ${scene.scene} · ${scene.role || 'narration'}`;
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn-edit-narration';
+    editBtn.id = `edit-btn-${i}`;
+    editBtn.textContent = '✏️ 編集';
+    editBtn.addEventListener('click', () => toggleEditArea(i));
+    roleRow.appendChild(roleSpan);
+    roleRow.appendChild(editBtn);
+
+    const narrationDisplay = document.createElement('div');
+    narrationDisplay.className = 'scene-narration-display';
+    narrationDisplay.id = `narration-display-${i}`;
+    narrationDisplay.textContent = state.narrationEdits[i].current;
+    if (state.narrationEdits[i].edited) narrationDisplay.classList.add('edited');
+
+    const duration = document.createElement('div');
+    duration.className = 'scene-image-duration';
+    duration.textContent = `${scene.duration_sec || 5}秒`;
+
+    info.appendChild(roleRow);
+    info.appendChild(narrationDisplay);
+    info.appendChild(duration);
+
+    const mainRow = document.createElement('div');
+    mainRow.className = 'scene-main-row';
+    mainRow.appendChild(thumb);
+    mainRow.appendChild(info);
+
+    // 編集エリア
+    const editArea = document.createElement('div');
+    editArea.className = 'scene-edit-area';
+    editArea.id = `edit-area-${i}`;
+
+    const ta = document.createElement('textarea');
+    ta.className = 'narration-textarea';
+    ta.id = `textarea-${i}`;
+    ta.placeholder = 'ナレーションを入力...';
+    ta.value = state.narrationEdits[i].current;
+    ta.addEventListener('input', () => onNarrationInput(i));
+
+    const editActions = document.createElement('div');
+    editActions.className = 'edit-actions';
+
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn-save-narration';
+    saveBtn.textContent = '保存';
+    saveBtn.addEventListener('click', () => saveNarration(i));
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-cancel-narration';
+    cancelBtn.textContent = 'キャンセル';
+    cancelBtn.addEventListener('click', () => cancelEdit(i));
+
+    const charCount = document.createElement('span');
+    charCount.className = 'char-count';
+    charCount.id = `char-count-${i}`;
+    charCount.textContent = `${state.narrationEdits[i].current.length}文字`;
+
+    editActions.appendChild(saveBtn);
+    editActions.appendChild(cancelBtn);
+    editActions.appendChild(charCount);
+    editArea.appendChild(ta);
+    editArea.appendChild(editActions);
+
+    item.appendChild(mainRow);
+    item.appendChild(editArea);
     list.appendChild(item);
+
+    // 既に編集済みのバッジを復元
+    if (state.narrationEdits[i].edited) {
+      const badge = document.createElement('span');
+      badge.className = 'edited-badge';
+      badge.textContent = '✏ 編集済み';
+      roleSpan.insertAdjacentElement('afterend', badge);
+    }
   });
 }
 
@@ -671,12 +983,16 @@ function toggleEditArea(index) {
   const btn  = document.getElementById(`edit-btn-${index}`);
   const isOpen = area.classList.contains('open');
   if (isOpen) {
-    area.classList.remove('open'); item.classList.remove('editing'); btn.textContent = '✏️ 編集';
+    area.classList.remove('open');
+    item.classList.remove('editing');
+    btn.textContent = '✏️ 編集';
   } else {
     const ta = document.getElementById(`textarea-${index}`);
     ta.value = state.narrationEdits[index]?.current || '';
     onNarrationInput(index);
-    area.classList.add('open'); item.classList.add('editing'); btn.textContent = '▲ 閉じる';
+    area.classList.add('open');
+    item.classList.add('editing');
+    btn.textContent = '▲ 閉じる';
     ta.focus();
   }
 }
@@ -695,26 +1011,28 @@ function saveNarration(index) {
   const prev      = state.narrationEdits[index];
   const isChanged = newText !== prev.original;
 
-  // ローカルに即反映
   const displayEl = document.getElementById(`narration-display-${index}`);
   displayEl.textContent = newText;
   displayEl.classList.toggle('edited', isChanged);
 
   state.narrationEdits[index] = { original: prev.original, current: newText, edited: isChanged };
 
-  // 編集バッジ
+  // 編集バッジの更新
   const roleEl = document.querySelector(`#scene-item-${index} .scene-image-role`);
-  const badge  = roleEl.querySelector('.edited-badge');
-  if (isChanged && !badge) {
-    roleEl.querySelector('span').insertAdjacentHTML('afterend',
-      '<span class="edited-badge">✏ 編集済み</span>');
-  } else if (!isChanged && badge) {
-    badge.remove();
+  if (roleEl) {
+    const existingBadge = roleEl.querySelector('.edited-badge');
+    if (isChanged && !existingBadge) {
+      const badge = document.createElement('span');
+      badge.className = 'edited-badge';
+      badge.textContent = '✏ 編集済み';
+      roleEl.querySelector('span').insertAdjacentElement('afterend', badge);
+    } else if (!isChanged && existingBadge) {
+      existingBadge.remove();
+    }
   }
 
   updateEditSummaryBanner();
   toggleEditArea(index);
-  // ※ ここではn8nに送らない。proceedToVideo() でまとめて送信する
 }
 
 function updateEditSummaryBanner() {
@@ -732,8 +1050,11 @@ function updateEditSummaryBanner() {
 // ライトボックス
 function openLightbox(imgUrl, caption) {
   if (!imgUrl) return;
-  document.getElementById('lightbox-img').src = imgUrl;
-  document.getElementById('lightbox-caption').textContent = caption || '';
+  const img = document.getElementById('lightbox-img');
+  const cap = document.getElementById('lightbox-caption');
+  img.src = imgUrl;
+  img.alt = caption || '';
+  cap.textContent = caption || '';
   document.getElementById('lightbox').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -743,139 +1064,288 @@ function closeLightbox(event) {
   document.body.style.overflow = '';
 }
 
-// ============================================
+// ============================================================
 // STEP 4 → 動画生成
-// 全ナレーション確定済みテキストをn8nに送り、
-// n8n側でGoogle TTSを呼び出して mp3 を生成 → Drive保存 → Shotstack合成
-// ============================================
+// n8n側でTTS生成 → Shotstack合成 → 完了後にrespondする（同期）
+// フロントはfetchを待つだけ（最大5分）
+// ============================================================
 async function proceedToVideo() {
   const scenes = state.selectedScript?.scenes || [];
 
-  // 最終ナレーション（編集済みがあれば上書き）
   const finalNarrations = scenes.map((sc, i) => ({
-    scene:       sc.scene,
-    role:        sc.role,
-    narration:   state.narrationEdits[i]?.current ?? sc.narration,
+    scene:        sc.scene,
+    role:         sc.role,
+    narration:    state.narrationEdits[i]?.current ?? sc.narration,
     duration_sec: sc.duration_sec,
-    edited:      state.narrationEdits[i]?.edited ?? false,
+    edited:       state.narrationEdits[i]?.edited ?? false,
   }));
 
-  if (!state.resumeUrl) {
-    showError('resume_url がありません');
-    return;
-  }
+  const resumeUrl = state.resumeUrls.scene || state.resumeUrls.image;
+  if (!resumeUrl) { showError('resume_url がありません'); return; }
 
-  showLoading('動画を生成中...', 'しばらくお待ちください', [
-    { icon: '🎙', text: 'Google TTSで音声を生成中' },
-    { icon: '🎞', text: 'Shotstackで動画を合成中' },
-    { icon: '✂️', text: '編集中' },
-    { icon: '✅', text: '完成' },
-  ], 8000);
+  showLoading(
+    '動画を生成中...',
+    'TTS音声とShotstackで動画を合成しています',
+    [
+      { icon: '🎙', text: 'Google TTSで音声を生成中' },
+      { icon: '🖼', text: '画像を準備中' },
+      { icon: '🎞', text: 'Shotstackで動画を合成中' },
+      { icon: '✅', text: '完成' },
+    ],
+    20000, // 各ステップ20秒間隔（合計約1分でアニメーション完了）
+    true   // wait-banner表示
+  );
+
+  // フォールバックポーリングを同時起動（fetchがタイムアウトした場合の保険）
+  let pollStarted = false;
+  const pollFallbackTimer = setTimeout(() => {
+    if (!pollStarted) {
+      pollStarted = true;
+      startVideoPolling();
+    }
+  }, 290000); // 4分50秒後にポーリング開始
 
   try {
-    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(state.resumeUrl), {
-      method: 'POST',
+    const controller = new AbortController();
+    // 5分30秒でfetch自体をタイムアウト
+    const fetchTimeout = setTimeout(() => controller.abort(), 330000);
+
+    const res = await fetch(resumeUrl, {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      // ----- n8nに渡すペイロード -----
+      signal:  controller.signal,
       body: JSON.stringify({
         action:             'approve_scenes',
         session_id:         state.sessionId,
         final_narrations:   finalNarrations,
         edited_scene_count: finalNarrations.filter(s => s.edited).length,
-        scene_image_urls:   scenes.map((_, i) => `${IMG_BASE}/tmp${i+1}.png`),
-      })
+        scene_image_urls:   state.sceneImageUrls,
+      }),
     });
+
+    clearTimeout(fetchTimeout);
+    clearTimeout(pollFallbackTimer);
 
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
 
-    // n8nからの返却例:
-    // { resume_url, video_url, tts_urls: ["https://...mp3", ...] }
-    if (data.resume_url) state.resumeUrl = data.resume_url;
-    state.videoUrl = data.video_url;
+    if (data.status === 'failed' || data.error) {
+      throw new Error(data.error || '動画生成に失敗しました');
+    }
+
+    const videoUrl = validateVideoUrl(data.video_url);
+    if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
+
+    state.videoUrl = videoUrl;
+    if (data.resume_url) state.resumeUrls.scene = data.resume_url;
 
     hideLoading();
-    renderVideo(data);
+    renderVideo({ video_url: videoUrl });
     setStep(5);
 
   } catch (err) {
-    hideLoading();
-    setStep(4);
-    showError('生成エラー: ' + err.message);
+    clearTimeout(pollFallbackTimer);
+    if (err.name === 'AbortError' || err.message.includes('空')) {
+      // タイムアウト → ポーリングにフォールバック
+      if (!pollStarted) {
+        pollStarted = true;
+        startVideoPolling();
+      }
+    } else {
+      hideLoading();
+      setStep(4);
+      showError('生成エラー: ' + err.message);
+    }
   }
 }
 
-// ============================================
+// ============================================================
+// フォールバック: Supabaseポーリング（fetchタイムアウト時）
+// ============================================================
+function startVideoPolling() {
+  document.getElementById('wait-banner').style.display = 'flex';
+  document.getElementById('polling-progress').style.display = 'block';
+
+  let tries = 0;
+
+  function runPoll() {
+    tries++;
+    const bar = document.getElementById('polling-bar');
+    const statusEl = document.getElementById('polling-status');
+
+    if (bar) {
+      bar.style.width = '0';
+      requestAnimationFrame(() => { bar.style.width = '100%'; });
+    }
+    if (statusEl) statusEl.textContent = `確認中... (${tries}/${POLL_MAX_TRIES})`;
+
+    fetch(`${CHECK_VIDEO_URL}?session_id=${encodeURIComponent(state.sessionId)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.video_status === 'done' && data.video_url) {
+          const videoUrl = validateVideoUrl(data.video_url);
+          if (!videoUrl) throw new Error('Invalid video URL from polling');
+          state.videoUrl = videoUrl;
+          hideLoading();
+          renderVideo({ video_url: videoUrl });
+          setStep(5);
+        } else if (data.video_status === 'failed') {
+          hideLoading();
+          setStep(4);
+          showError('動画生成に失敗しました。シーン確認から再試行してください。');
+        } else if (tries >= POLL_MAX_TRIES) {
+          hideLoading();
+          setStep(4);
+          showError('タイムアウト: 動画生成に時間がかかっています。しばらく後に再度お試しください。');
+        } else {
+          state.pollTimer = setTimeout(runPoll, POLL_INTERVAL_MS);
+        }
+      })
+      .catch(e => {
+        if (tries >= POLL_MAX_TRIES) {
+          hideLoading();
+          setStep(4);
+          showError('通信エラー: ' + e.message);
+        } else {
+          state.pollTimer = setTimeout(runPoll, POLL_INTERVAL_MS);
+        }
+      });
+  }
+
+  runPoll();
+}
+
+// ============================================================
 // STEP 5: 動画確認
-// ============================================
+// ============================================================
 function renderVideo(data) {
   const container = document.getElementById('video-container');
-  const videoUrl  = data.video_url || '';
+  const videoUrl  = validateVideoUrl(data.video_url);
   state.videoUrl  = videoUrl;
+
+  container.innerHTML = '';
   if (videoUrl) {
-    container.innerHTML = `<video src="${videoUrl}" controls playsinline style="width:100%;height:100%;object-fit:cover"></video>`;
+    const video = document.createElement('video');
+    video.controls  = true;
+    video.playsInline = true;
+    video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+    const src = document.createElement('source');
+    src.src  = videoUrl;
+    src.type = 'video/mp4';
+    video.appendChild(src);
+    container.appendChild(video);
   } else {
     container.innerHTML = `<div class="video-placeholder"><div class="play-icon">▶</div><div>動画の準備ができました</div></div>`;
   }
 }
 
 async function approveVideo() {
-  if (state.resumeUrl) {
+  // n8nに承認通知（失敗しても続行）
+  if (state.resumeUrls.scene) {
     try {
-      await fetch(state.resumeUrl, {
+      await fetch(state.resumeUrls.scene, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'approve_video', session_id: state.sessionId })
+        body: JSON.stringify({ action: 'approve_video', session_id: state.sessionId }),
       });
     } catch (err) { console.warn('承認送信エラー（無視）:', err); }
   }
+
   const fc = document.getElementById('final-video-container');
+  fc.innerHTML = '';
+
   if (state.videoUrl) {
-    fc.innerHTML = `<div class="video-container" style="margin-bottom:0">
-      <video src="${state.videoUrl}" controls playsinline style="width:100%;height:100%;object-fit:cover"></video>
-    </div>`;
-    document.getElementById('btn-download').href = state.videoUrl;
+    const videoWrap = document.createElement('div');
+    videoWrap.className = 'video-container';
+    videoWrap.style.marginBottom = '0';
+
+    const video = document.createElement('video');
+    video.controls   = true;
+    video.playsInline = true;
+    video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+    const src = document.createElement('source');
+    src.src  = state.videoUrl;
+    src.type = 'video/mp4';
+    video.appendChild(src);
+    videoWrap.appendChild(video);
+    fc.appendChild(videoWrap);
+
+    // ダウンロードボタン設定
+    const dlBtn = document.getElementById('btn-download');
+    dlBtn.href     = state.videoUrl;
+    dlBtn.download = `video-${state.sessionId || Date.now()}.mp4`;
+    dlBtn.style.display = 'flex';
+
+    // URL有効期限の案内（Shotstackの一時URLは24〜48時間で失効する場合がある）
+    const expiryNote = document.getElementById('video-expiry-note');
+    expiryNote.textContent = '※ 動画URLは生成後24〜48時間で失効する場合があります。早めにダウンロードしてください。';
+    expiryNote.style.display = 'block';
   }
+
   setStep(6);
 }
 
 async function rejectVideo() {
-  if (!state.resumeUrl) { setStep(3); return; }
+  if (!state.resumeUrls.scene) { setStep(4); return; }
+
   showLoading('動画を再生成中...', 'しばらくお待ちください', [
     { icon: '🎙', text: '音声を再生成中' },
     { icon: '🎞', text: '映像を合成中' },
     { icon: '✂️', text: '編集中' },
     { icon: '✅', text: '完成' },
-  ]);
+  ], 20000, true);
+
   try {
-    const res  = await fetch(state.resumeUrl, {
+    const res = await fetch(state.resumeUrls.scene, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'reject_video', session_id: state.sessionId })
+      body: JSON.stringify({ action: 'reject_video', session_id: state.sessionId }),
     });
     const data = await res.json();
-    if (data.resume_url) state.resumeUrl = data.resume_url;
-    state.videoUrl = data.video_url;
-    hideLoading(); renderVideo(data); setStep(5);
+    if (data.resume_url) state.resumeUrls.scene = data.resume_url;
+
+    const videoUrl = validateVideoUrl(data.video_url);
+    if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
+
+    state.videoUrl = videoUrl;
+    hideLoading();
+    renderVideo({ video_url: videoUrl });
+    setStep(5);
   } catch (err) {
     hideLoading(); setStep(4); showError('再生成エラー: ' + err.message);
   }
 }
 
-// ============================================
+// ============================================================
 // リセット
-// ============================================
+// ============================================================
 function resetAll() {
+  if (state.pollTimer) clearTimeout(state.pollTimer);
+  if (state.loadingInterval) clearInterval(state.loadingInterval);
+
   state = {
-    currentStep: 1, resumeUrl: null, sessionId: null,
-    selectedScript: null, selectedImage: null,
-    videoUrl: null, scriptCandidates: [], loadingInterval: null,
-    narrationEdits: {},
+    currentStep: 1,
+    input:        { userName: '', url: '', contentType: '', platform: 'YouTube Shorts' },
+    resumeUrls:   { script: null, image: null, scene: null },
+    sessionId:    null,
+    selectedScript:   null,
+    selectedImage:    null,
+    videoUrl:         null,
+    scriptCandidates: [],
+    sceneImageUrls:   [],
+    loadingInterval:  null,
+    pollTimer:        null,
+    narrationEdits:   {},
   };
-  document.getElementById('input-url').value      = '';
-  document.getElementById('input-username').value = '';
-  document.getElementById('input-content-type').value = '';
+
+  document.getElementById('input-url').value           = '';
+  document.getElementById('input-username').value      = '';
+  document.getElementById('input-content-type').value  = '';
+  document.getElementById('input-platform').value      = 'YouTube Shorts';
+  document.getElementById('btn-download').href         = '#';
+  document.getElementById('video-expiry-note').style.display = 'none';
+
   setStep(1);
 }
 </script>
