@@ -787,16 +787,15 @@ async function selectImage() {
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
 
     const data = JSON.parse(text);
-    console.log('selectImage parsed:', data);
-
-    if (data.resume_url) state.resumeUrls.scene = data.resume_url;
-
-    const scenes = state.selectedScript?.scenes || [];
-    state.sceneImageUrls = data.scene_image_urls
-      || scenes.map((_, i) => `${IMG_BASE}/tmp${i + 1}.png`);
+    if (data.resume_url) state.resumeUrl = data.resume_url;
 
     hideLoading();
-    renderSceneImages(scenes, state.sceneImageUrls);
+
+    const TMP_BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
+    const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_BASE}/tmp${n}.png`);
+    const scenes = state.selectedScript?.scenes || [];
+
+    renderSceneImages(scenes, imageUrls);
     setStep(4);
 
   } catch (err) {
