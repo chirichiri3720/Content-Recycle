@@ -596,6 +596,8 @@ async function startGeneration() {
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('n8n からのレスポンスが空です');
     const data = JSON.parse(text);
+    console.log('startGeneration data:', data);
+
     // if (!data.resume_url) throw new Error('resume_url が返されていません');
 
     // 台本ステップのresume_urlを保存
@@ -701,7 +703,7 @@ async function selectScript() {
   ], 1000);
 
   try {
-    const res = await fetch(state.resumeUrls.script, {
+      const res = await fetch(SELECT_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -725,8 +727,6 @@ async function selectScript() {
     if (data.resume_url) {
       state.resumeUrls.image = data.resume_url;
       console.log('resume_url for image step:', state.resumeUrls.image);
-    } else {
-      throw new Error('resume_urlが返されていません。n8nのRespond to Webhookノードを確認してください。');
     }
 
     hideLoading();
