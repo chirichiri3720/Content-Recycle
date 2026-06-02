@@ -354,9 +354,9 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 // ============================================================
 // 定数
 // ============================================================
-const WEBHOOK_URL     = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
-const BACK_STEP_URL   = 'https://weby.app.n8n.cloud/webhook/back-step';
-const CHECK_VIDEO_URL = 'https://weby.app.n8n.cloud/webhook/check-video-status';
+const WEBHOOK_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';
+const BACK_STEP_URL   = 'https://weby.app.n8n.cloud/webhook-test/back-step';
+const CHECK_VIDEO_URL = 'https://weby.app.n8n.cloud/webhook-test/check-video-status';
 const IMG_BASE        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
 const BASE_IMG_URL    = 'https://chirichiri3720.github.io/Content-Recycle/Images';
 
@@ -787,16 +787,16 @@ async function selectImage() {
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
 
     const data = JSON.parse(text);
-    if (data.resume_url) state.resumeUrl = data.resume_url;
+      if (data.resume_url) state.resumeUrl = data.resume_url;
 
-    hideLoading();
+      hideLoading();
 
-    const TMP_BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
-    const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_BASE}/tmp${n}.png`);
-    const scenes = state.selectedScript?.scenes || [];
+      const TMP_BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
+      const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_BASE}/tmp${n}.png`);
+      const scenes = state.selectedScript?.scenes || [];
 
-    renderSceneImages(scenes, imageUrls);
-    setStep(4);
+      renderSceneImages(scenes, imageUrls);
+      setStep(4);
 
   } catch (err) {
     hideLoading();
