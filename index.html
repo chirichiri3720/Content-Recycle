@@ -686,7 +686,10 @@ function selectScriptOption(index) {
 }
 
 async function selectScript() {
-  if (!state.selectedScript || !state.resumeUrls.script) return;
+  if (!state.selectedScript || !state.resumeUrls.script) {
+    showError('台本またはresume_urlがありません');
+    return;
+  }
 
   showLoading('台本を確定中...', 'しばらくお待ちください', [
     { icon: '📝', text: '台本を確定中' },
@@ -704,12 +707,24 @@ async function selectScript() {
         action:             'select_script',
       }),
     });
-    const text = await res.text();
-    if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-    const data = JSON.parse(text);
 
-    // 画像ステップのresume_urlを保存
-    if (data.resume_url) state.resumeUrls.image = data.resume_url;
+    const text = await res.text();
+    console.log('selectScript raw response:', text);  // ← デバッグ用
+    console.log('selectScript status:', res.status);
+
+    if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
+    if (!text || text.trim() === '') throw new Error('レスポンスが空です');
+
+    const data = JSON.parse(text);
+    console.log('selectScript parsed:', data);  // ← resume_urlが入っているか確認
+
+    // ★ resume_urlの保存（Wait5のURL）
+    if (data.resume_url) {
+      state.resumeUrls.image = data.resume_url;
+      console.log('resume_url for image step:', state.resumeUrls.image);
+    } else {
+      throw new Error('resume_urlが返されていません。n8nのRespond to Webhookノードを確認してください。');
+    }
 
     hideLoading();
     renderImages({ images: [
@@ -718,8 +733,77 @@ async function selectScript() {
       { index: 2, url: `${BASE_IMG_URL}/anime.png`,      style: 'アニメーション風' },
     ]});
     setStep(3);
+
   } catch (err) {
-    hideLoading(); showError('台本確定エラー: ' + err.message); setStep(2);
+    hideLoading();
+    console.error('selectScript error:', err);
+    showError('台本確定エラー: ' + err.message);
+    setStep(2);
+  }
+}
+
+async function selectImage() {
+  // ★ デバッグ用ログを追加
+  console.log('selectImage called');
+  console.log('state.selectedImage:', state.selectedImage);
+  console.log('state.resumeUrls.image:', state.resumeUrls.image);
+
+  if (state.selectedImage === null) {
+    showError('画像スタイルを選択してください');
+    return;
+  }
+  if (!state.resumeUrls.image) {
+    showError('resume_urlがありません。台本選択からやり直してください。');
+    return;
+  }
+
+  showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
+    { icon: '🎨', text: 'スタイルを確定中' },
+    { icon: '🖼', text: 'シーン画像を準備中' },
+    { icon: '✅', text: '完了' },
+  ], 3000);
+
+  try {
+    const styleNames = ['realistic', 'cinematic', 'anime'];
+
+    console.log('POSTing to:', state.resumeUrls.image);  // ← Wait5のURLか確認
+
+    const res = await fetch(state.resumeUrls.image, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        selected_image_style: styleNames[state.selectedImage] || 'realistic',
+        selected_image_index: state.selectedImage,
+        session_id:           state.sessionId,
+        action:               'select_image_style',
+      }),
+    });
+
+    const text = await res.text();
+    console.log('selectImage raw response:', text);
+    console.log('selectImage status:', res.status);
+
+    if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
+    if (!text || text.trim() === '') throw new Error('レスポンスが空です');
+
+    const data = JSON.parse(text);
+    console.log('selectImage parsed:', data);
+
+    if (data.resume_url) state.resumeUrls.scene = data.resume_url;
+
+    const scenes = state.selectedScript?.scenes || [];
+    state.sceneImageUrls = data.scene_image_urls
+      || scenes.map((_, i) => `${IMG_BASE}/tmp${i + 1}.png`);
+
+    hideLoading();
+    renderSceneImages(scenes, state.sceneImageUrls);
+    setStep(4);
+
+  } catch (err) {
+    hideLoading();
+    console.error('selectImage error:', err);
+    showError('画像スタイル確定エラー: ' + err.message);
+    setStep(3);
   }
 }
 
@@ -797,46 +881,46 @@ function selectImageOption(index) {
   document.getElementById('btn-select-image').disabled = false;
 }
 
-async function selectImage() {
-  if (state.selectedImage === null || !state.resumeUrls.image) return;
+// async function selectImage() {
+//   if (state.selectedImage === null || !state.resumeUrls.image) return;
 
-  showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
-    { icon: '🎨', text: 'スタイルを確定中' },
-    { icon: '🖼', text: 'シーン画像を生成中' },
-    { icon: '✅', text: '完了' },
-  ], 3000);
+//   showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
+//     { icon: '🎨', text: 'スタイルを確定中' },
+//     { icon: '🖼', text: 'シーン画像を生成中' },
+//     { icon: '✅', text: '完了' },
+//   ], 3000);
 
-  try {
-    const styleNames = ['realistic', 'cinematic', 'anime'];
-    const res = await fetch(state.resumeUrls.image, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        selected_image_style: styleNames[state.selectedImage] || 'realistic',
-        selected_image_index: state.selectedImage,
-        session_id:           state.sessionId,
-        action:               'select_image_style',
-      }),
-    });
-    const text = await res.text();
-    if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-    const data = JSON.parse(text);
+//   try {
+//     const styleNames = ['realistic', 'cinematic', 'anime'];
+//     const res = await fetch(state.resumeUrls.image, {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({
+//         selected_image_style: styleNames[state.selectedImage] || 'realistic',
+//         selected_image_index: state.selectedImage,
+//         session_id:           state.sessionId,
+//         action:               'select_image_style',
+//       }),
+//     });
+//     const text = await res.text();
+//     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
+//     const data = JSON.parse(text);
 
-    // シーン確認ステップのresume_urlを保存
-    if (data.resume_url) state.resumeUrls.scene = data.resume_url;
+//     // シーン確認ステップのresume_urlを保存
+//     if (data.resume_url) state.resumeUrls.scene = data.resume_url;
 
-    // シーン画像URLを保存（n8nから返ってきた場合）またはデフォルト
-    const scenes = state.selectedScript?.scenes || [];
-    state.sceneImageUrls = data.scene_image_urls
-      || scenes.map((_, i) => `${IMG_BASE}/tmp${i + 1}.png`);
+//     // シーン画像URLを保存（n8nから返ってきた場合）またはデフォルト
+//     const scenes = state.selectedScript?.scenes || [];
+//     state.sceneImageUrls = data.scene_image_urls
+//       || scenes.map((_, i) => `${IMG_BASE}/tmp${i + 1}.png`);
 
-    hideLoading();
-    renderSceneImages(scenes, state.sceneImageUrls);
-    setStep(4);
-  } catch (err) {
-    hideLoading(); showError('画像スタイル確定エラー: ' + err.message); setStep(3);
-  }
-}
+//     hideLoading();
+//     renderSceneImages(scenes, state.sceneImageUrls);
+//     setStep(4);
+//   } catch (err) {
+//     hideLoading(); showError('画像スタイル確定エラー: ' + err.message); setStep(3);
+//   }
+// }
 
 async function regenerateImages() {
   renderImages({ images: [
