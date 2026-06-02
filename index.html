@@ -756,10 +756,10 @@ async function selectImage() {
     showError('画像スタイルを選択してください');
     return;
   }
-  if (!state.resumeUrls.image) {
-    showError('resume_urlがありません。台本選択からやり直してください。');
-    return;
-  }
+  // if (!state.resumeUrls.image) {
+  //   showError('resume_urlがありません。台本選択からやり直してください。');
+  //   return;
+  // }
 
   showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
     { icon: '🎨', text: 'スタイルを確定中' },
