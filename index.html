@@ -701,8 +701,7 @@ async function selectScript() {
   ], 1000);
 
   try {
-    const res = await fetch(SELECT_SCRIPT_URL, {
-    // const res = await fetch(state.resumeUrls.script, {
+    const res = await fetch(state.resumeUrls.script, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
