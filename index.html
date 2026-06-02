@@ -356,6 +356,9 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 // ============================================================
 const WEBHOOK_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';
 const BACK_STEP_URL   = 'https://weby.app.n8n.cloud/webhook-test/back-step';
+const SELECT_SCRIPT_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';
+const SELECT_IMAGE_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-image';
+const GENERATE_VIDEO_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-video';
 const CHECK_VIDEO_URL = 'https://weby.app.n8n.cloud/webhook-test/check-video-status';
 const IMG_BASE        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
 const BASE_IMG_URL    = 'https://chirichiri3720.github.io/Content-Recycle/Images';
@@ -593,7 +596,7 @@ async function startGeneration() {
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('n8n からのレスポンスが空です');
     const data = JSON.parse(text);
-    if (!data.resume_url) throw new Error('resume_url が返されていません');
+    // if (!data.resume_url) throw new Error('resume_url が返されていません');
 
     // 台本ステップのresume_urlを保存
     state.resumeUrls.script = data.resume_url;
@@ -686,10 +689,10 @@ function selectScriptOption(index) {
 }
 
 async function selectScript() {
-  if (!state.selectedScript || !state.resumeUrls.script) {
-    showError('台本またはresume_urlがありません');
-    return;
-  }
+  // if (!state.selectedScript || !state.resumeUrls.script) {
+  //   showError('台本またはresume_urlがありません');
+  //   return;
+  // }
 
   showLoading('台本を確定中...', 'しばらくお待ちください', [
     { icon: '📝', text: '台本を確定中' },
@@ -698,7 +701,8 @@ async function selectScript() {
   ], 1000);
 
   try {
-    const res = await fetch(state.resumeUrls.script, {
+    const res = await fetch(SELECT_SCRIPT_URL, {
+    // const res = await fetch(state.resumeUrls.script, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -768,7 +772,8 @@ async function selectImage() {
 
     console.log('POSTing to:', state.resumeUrls.image);  // ← Wait5のURLか確認
 
-    const res = await fetch(state.resumeUrls.image, {
+    const res = await fetch(SELECT_IMAGE_URL, {
+    // const res = await fetch(state.resumeUrls.image, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1193,7 +1198,8 @@ async function proceedToVideo() {
     // 5分30秒でfetch自体をタイムアウト
     const fetchTimeout = setTimeout(() => controller.abort(), 330000);
 
-    const res = await fetch(resumeUrl, {
+    const res = await fetch(GENERATE_VIDEO_URL, {
+    // const res = await fetch(resumeUrl, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       signal:  controller.signal,
