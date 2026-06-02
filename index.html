@@ -691,10 +691,10 @@ function selectScriptOption(index) {
 }
 
 async function selectScript() {
-  // if (!state.selectedScript || !state.resumeUrls.script) {
-  //   showError('台本またはresume_urlがありません');
-  //   return;
-  // }
+  if (!state.selectedScript) {
+    showError('台本を選択してください');
+    return;
+  }
 
   showLoading('台本を確定中...', 'しばらくお待ちください', [
     { icon: '📝', text: '台本を確定中' },
@@ -703,7 +703,7 @@ async function selectScript() {
   ], 1000);
 
   try {
-      const res = await fetch(SELECT_SCRIPT_URL, {
+    const res = await fetch(SELECT_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -713,21 +713,7 @@ async function selectScript() {
       }),
     });
 
-    const text = await res.text();
-    console.log('selectScript raw response:', text);  // ← デバッグ用
-    console.log('selectScript status:', res.status);
-
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
-    if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-
-    const data = JSON.parse(text);
-    console.log('selectScript parsed:', data);  // ← resume_urlが入っているか確認
-
-    // ★ resume_urlの保存（Wait5のURL）
-    if (data.resume_url) {
-      state.resumeUrls.image = data.resume_url;
-      console.log('resume_url for image step:', state.resumeUrls.image);
-    }
 
     hideLoading();
     renderImages({ images: [
@@ -746,19 +732,10 @@ async function selectScript() {
 }
 
 async function selectImage() {
-  // ★ デバッグ用ログを追加
-  console.log('selectImage called');
-  console.log('state.selectedImage:', state.selectedImage);
-  console.log('state.resumeUrls.image:', state.resumeUrls.image);
-
   if (state.selectedImage === null) {
     showError('画像スタイルを選択してください');
     return;
   }
-  // if (!state.resumeUrls.image) {
-  //   showError('resume_urlがありません。台本選択からやり直してください。');
-  //   return;
-  // }
 
   showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
     { icon: '🎨', text: 'スタイルを確定中' },
@@ -768,11 +745,9 @@ async function selectImage() {
 
   try {
     const styleNames = ['realistic', 'cinematic', 'anime'];
-
-    console.log('POSTing to:', state.resumeUrls.image);  // ← Wait5のURLか確認
+    const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
 
     const res = await fetch(SELECT_IMAGE_URL, {
-    // const res = await fetch(state.resumeUrls.image, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -780,27 +755,18 @@ async function selectImage() {
         selected_image_index: state.selectedImage,
         session_id:           state.sessionId,
         action:               'select_image_style',
+        scenes:               scenes,
       }),
     });
 
-    const text = await res.text();
-    console.log('selectImage raw response:', text);
-    console.log('selectImage status:', res.status);
-
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
-    if (!text || text.trim() === '') throw new Error('レスポンスが空です');
 
-    const data = JSON.parse(text);
-      if (data.resume_url) state.resumeUrl = data.resume_url;
+    hideLoading();
 
-      hideLoading();
-
-      const TMP_BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
-      const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_BASE}/tmp${n}.png`);
-      const scenes = state.selectedScript?.scenes || [];
-
-      renderSceneImages(scenes, imageUrls);
-      setStep(4);
+    const TMP_BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
+    const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_BASE}/tmp${n}.png`);
+    renderSceneImages(scenes, imageUrls);
+    setStep(4);
 
   } catch (err) {
     hideLoading();
@@ -883,47 +849,6 @@ function selectImageOption(index) {
   state.selectedImage = index;
   document.getElementById('btn-select-image').disabled = false;
 }
-
-// async function selectImage() {
-//   if (state.selectedImage === null || !state.resumeUrls.image) return;
-
-//   showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
-//     { icon: '🎨', text: 'スタイルを確定中' },
-//     { icon: '🖼', text: 'シーン画像を生成中' },
-//     { icon: '✅', text: '完了' },
-//   ], 3000);
-
-//   try {
-//     const styleNames = ['realistic', 'cinematic', 'anime'];
-//     const res = await fetch(state.resumeUrls.image, {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({
-//         selected_image_style: styleNames[state.selectedImage] || 'realistic',
-//         selected_image_index: state.selectedImage,
-//         session_id:           state.sessionId,
-//         action:               'select_image_style',
-//       }),
-//     });
-//     const text = await res.text();
-//     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-//     const data = JSON.parse(text);
-
-//     // シーン確認ステップのresume_urlを保存
-//     if (data.resume_url) state.resumeUrls.scene = data.resume_url;
-
-//     // シーン画像URLを保存（n8nから返ってきた場合）またはデフォルト
-//     const scenes = state.selectedScript?.scenes || [];
-//     state.sceneImageUrls = data.scene_image_urls
-//       || scenes.map((_, i) => `${IMG_BASE}/tmp${i + 1}.png`);
-
-//     hideLoading();
-//     renderSceneImages(scenes, state.sceneImageUrls);
-//     setStep(4);
-//   } catch (err) {
-//     hideLoading(); showError('画像スタイル確定エラー: ' + err.message); setStep(3);
-//   }
-// }
 
 async function regenerateImages() {
   renderImages({ images: [
@@ -1156,8 +1081,99 @@ function closeLightbox(event) {
 // n8n側でTTS生成 → Shotstack合成 → 完了後にrespondする（同期）
 // フロントはfetchを待つだけ（最大5分）
 // ============================================================
+// async function proceedToVideo() {
+//   const scenes = state.selectedScript?.scenes || [];
+
+//   const finalNarrations = scenes.map((sc, i) => ({
+//     scene:        sc.scene,
+//     role:         sc.role,
+//     narration:    state.narrationEdits[i]?.current ?? sc.narration,
+//     duration_sec: sc.duration_sec,
+//     edited:       state.narrationEdits[i]?.edited ?? false,
+//   }));
+
+//   const resumeUrl = state.resumeUrls.scene || state.resumeUrls.image;
+//   if (!resumeUrl) { showError('resume_url がありません'); return; }
+
+//   showLoading(
+//     '動画を生成中...',
+//     'TTS音声とShotstackで動画を合成しています',
+//     [
+//       { icon: '🎙', text: 'Google TTSで音声を生成中' },
+//       { icon: '🖼', text: '画像を準備中' },
+//       { icon: '🎞', text: 'Shotstackで動画を合成中' },
+//       { icon: '✅', text: '完成' },
+//     ],
+//     20000, // 各ステップ20秒間隔（合計約1分でアニメーション完了）
+//     true   // wait-banner表示
+//   );
+
+//   // フォールバックポーリングを同時起動（fetchがタイムアウトした場合の保険）
+//   let pollStarted = false;
+//   const pollFallbackTimer = setTimeout(() => {
+//     if (!pollStarted) {
+//       pollStarted = true;
+//       startVideoPolling();
+//     }
+//   }, 290000); // 4分50秒後にポーリング開始
+
+//   try {
+//     const controller = new AbortController();
+//     // 5分30秒でfetch自体をタイムアウト
+//     const fetchTimeout = setTimeout(() => controller.abort(), 330000);
+
+//     const res = await fetch(GENERATE_VIDEO_URL, {
+//     // const res = await fetch(resumeUrl, {
+//       method:  'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       signal:  controller.signal,
+//       body: JSON.stringify({
+//         action:             'approve_scenes',
+//         session_id:         state.sessionId,
+//         final_narrations:   finalNarrations,
+//         edited_scene_count: finalNarrations.filter(s => s.edited).length,
+//         scene_image_urls:   state.sceneImageUrls,
+//       }),
+//     });
+
+//     clearTimeout(fetchTimeout);
+//     clearTimeout(pollFallbackTimer);
+
+//     const text = await res.text();
+//     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
+//     const data = JSON.parse(text);
+
+//     if (data.status === 'failed' || data.error) {
+//       throw new Error(data.error || '動画生成に失敗しました');
+//     }
+
+//     const videoUrl = validateVideoUrl(data.video_url);
+//     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
+
+//     state.videoUrl = videoUrl;
+//     if (data.resume_url) state.resumeUrls.scene = data.resume_url;
+
+//     hideLoading();
+//     renderVideo({ video_url: videoUrl });
+//     setStep(5);
+
+//   } catch (err) {
+//     clearTimeout(pollFallbackTimer);
+//     if (err.name === 'AbortError' || err.message.includes('空')) {
+//       // タイムアウト → ポーリングにフォールバック
+//       if (!pollStarted) {
+//         pollStarted = true;
+//         startVideoPolling();
+//       }
+//     } else {
+//       hideLoading();
+//       setStep(4);
+//       showError('生成エラー: ' + err.message);
+//     }
+//   }
+// }
 async function proceedToVideo() {
-  const scenes = state.selectedScript?.scenes || [];
+  const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
 
   const finalNarrations = scenes.map((sc, i) => ({
     scene:        sc.scene,
@@ -1166,9 +1182,6 @@ async function proceedToVideo() {
     duration_sec: sc.duration_sec,
     edited:       state.narrationEdits[i]?.edited ?? false,
   }));
-
-  const resumeUrl = state.resumeUrls.scene || state.resumeUrls.image;
-  if (!resumeUrl) { showError('resume_url がありません'); return; }
 
   showLoading(
     '動画を生成中...',
@@ -1179,29 +1192,14 @@ async function proceedToVideo() {
       { icon: '🎞', text: 'Shotstackで動画を合成中' },
       { icon: '✅', text: '完成' },
     ],
-    20000, // 各ステップ20秒間隔（合計約1分でアニメーション完了）
-    true   // wait-banner表示
+    20000,
+    true
   );
 
-  // フォールバックポーリングを同時起動（fetchがタイムアウトした場合の保険）
-  let pollStarted = false;
-  const pollFallbackTimer = setTimeout(() => {
-    if (!pollStarted) {
-      pollStarted = true;
-      startVideoPolling();
-    }
-  }, 290000); // 4分50秒後にポーリング開始
-
   try {
-    const controller = new AbortController();
-    // 5分30秒でfetch自体をタイムアウト
-    const fetchTimeout = setTimeout(() => controller.abort(), 330000);
-
     const res = await fetch(GENERATE_VIDEO_URL, {
-    // const res = await fetch(resumeUrl, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      signal:  controller.signal,
       body: JSON.stringify({
         action:             'approve_scenes',
         session_id:         state.sessionId,
@@ -1211,9 +1209,7 @@ async function proceedToVideo() {
       }),
     });
 
-    clearTimeout(fetchTimeout);
-    clearTimeout(pollFallbackTimer);
-
+    if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
@@ -1226,25 +1222,14 @@ async function proceedToVideo() {
     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
 
     state.videoUrl = videoUrl;
-    if (data.resume_url) state.resumeUrls.scene = data.resume_url;
-
     hideLoading();
     renderVideo({ video_url: videoUrl });
     setStep(5);
 
   } catch (err) {
-    clearTimeout(pollFallbackTimer);
-    if (err.name === 'AbortError' || err.message.includes('空')) {
-      // タイムアウト → ポーリングにフォールバック
-      if (!pollStarted) {
-        pollStarted = true;
-        startVideoPolling();
-      }
-    } else {
-      hideLoading();
-      setStep(4);
-      showError('生成エラー: ' + err.message);
-    }
+    hideLoading();
+    setStep(4);
+    showError('生成エラー: ' + err.message);
   }
 }
 
