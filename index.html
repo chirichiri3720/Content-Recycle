@@ -1164,6 +1164,15 @@ async function proceedToVideo() {
         final_narrations:   finalNarrations,
         edited_scene_count: finalNarrations.filter(s => s.edited).length,
         scene_image_urls:   state.sceneImageUrls,
+        voice_id:           state.selectedVoice?.id,
+        voice_name:         state.selectedVoice?.voice_name,
+        ssml_gender:        state.selectedVoice?.ssml_gender,
+        speaking_rate:      state.selectedVoice?.speaking_rate,
+        pitch:              state.selectedVoice?.pitch,
+        bgm_id:             state.selectedBgm?.id,
+        bgm_storage_url:    state.selectedBgm?.storage_url,
+        bgm_volume:         state.bgmVolume,
+        subtitle_position:  state.subtitlePosition,
       }),
     });
 
@@ -1259,46 +1268,152 @@ function startVideoPolling() {
 // ============================================================
 
 // モックデータ（n8n get_av_options が出来たら本物に差し替え）
-const USE_MOCK_AV = true;
+const USE_MOCK_AV = false;
 
 const MOCK_AV_OPTIONS = {
   mood_profile: { primary_mood: 'reassuring', secondary_mood: 'trustworthy', energy: 2, tone_keywords: ['calm'], genre: 'casestudy' },
   voices: [
-    { id: 'v1', label: '落ち着いた女性の声', voice_name: 'ja-JP-Neural2-B', ssml_gender: 'FEMALE', speaking_rate: 1.0, pitch: 0,
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/voice1.mp3',
-      reason: ['reassuring','calm'] },
-    { id: 'v2', label: '信頼感のある男性の声', voice_name: 'ja-JP-Neural2-C', ssml_gender: 'MALE', speaking_rate: 1.0, pitch: -1,
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/voice2.mp3',
-      reason: ['trustworthy'] },
-    { id: 'v3', label: '明るい女性の声', voice_name: 'ja-JP-Neural2-D', ssml_gender: 'FEMALE', speaking_rate: 1.05, pitch: 1,
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/voice3.mp3',
-      reason: [] },
-    { id: 'v4', label: 'ナチュラルな男性の声', voice_name: 'ja-JP-Neural2-A', ssml_gender: 'MALE', speaking_rate: 1.0, pitch: 0,
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/voice4.mp3',
-      reason: [] },
-  ],
+  {
+    id: 'v1',
+    label: '自然な女性の声',
+    voice_name: 'ja-JP-Neural2-B',
+    ssml_gender: 'FEMALE',
+    speaking_rate: 0.98,
+    pitch: 0,
+    sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.wav',
+    reason: ['reassuring', 'calm', 'warm'],
+    energy: 2,
+    genre_affinity: ['faq', 'howto', 'casestudy'],
+    recommended_for: '安心感を重視した債務整理・信用情報の解説'
+  },
+  {
+    id: 'v2',
+    label: '落ち着いた男性の声',
+    voice_name: 'ja-JP-Neural2-C',
+    ssml_gender: 'MALE',
+    speaking_rate: 0.95,
+    pitch: -1,
+    sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.wav',
+    reason: ['trustworthy', 'serious', 'informative'],
+    energy: 2,
+    genre_affinity: ['faq', 'casestudy', 'compare', 'opinion'],
+    recommended_for: '信頼感・真剣さを出したい金融系解説'
+  },
+  {
+    id: 'v3',
+    label: '信頼感のある男性の声',
+    voice_name: 'ja-JP-Neural2-D',
+    ssml_gender: 'MALE',
+    speaking_rate: 1.02,
+    pitch: 0,
+    sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.wav',
+    reason: ['calm', 'trustworthy', 'neutral'],
+    energy: 3,
+    genre_affinity: ['faq', 'howto', 'compare'],
+    recommended_for: 'テンポよく制度や確認方法を説明する動画'
+  },
+  {
+    id: 'v4',
+    label: 'ナチュラルな女性の声',
+    voice_name: 'ja-JP-Chirp3-HD-Zephyr',
+    ssml_gender: 'FEMALE',
+    speaking_rate: 1.0,
+    pitch: 0,
+    sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts4.wav',
+    reason: ['natural', 'friendly', 'reassuring', 'positive'],
+    energy: 3,
+    genre_affinity: ['faq', 'howto', 'opinion'],
+    recommended_for: '自然さを重視した本番用ナレーション'
+  }
+],
+
   bgms: [
-    { id: 'b1', name: 'Calm Piano', storage_url: 'https://example.supabase.co/storage/v1/object/public/bgm/calm_piano.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/bgm1.mp3',
-      reason: ['calm','reassuring'] },
-    { id: 'b2', name: 'Soft Strings', storage_url: 'https://example.supabase.co/storage/v1/object/public/bgm/soft_strings.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/bgm2.mp3',
-      reason: ['trustworthy'] },
-    { id: 'b3', name: 'Light Ambient', storage_url: 'https://example.supabase.co/storage/v1/object/public/bgm/light_ambient.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/bgm3.mp3',
-      reason: ['calm'] },
-    { id: 'b4', name: 'Uplifting Acoustic', storage_url: 'https://example.supabase.co/storage/v1/object/public/bgm/uplifting.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/bgm4.mp3',
-      reason: [] },
+    {
+      id: 'b1',
+      name: 'BGM1',
+      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm1.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm//bgm1.mp3',
+      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm1.mp3',
+      reason: ['neutral', 'calm', 'informative'],
+      energy: 2,
+      genre_affinity: ['casestudy', 'faq', 'howto', 'compare'],
+      label: '落ち着いた解説系'
+    },
+    {
+      id: 'b2',
+      name: 'BGM2',
+      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm2.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm//bgm2.mp3',
+      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm2.mp3',
+      reason: ['hopeful', 'reassuring', 'positive'],
+      energy: 3,
+      genre_affinity: ['casestudy', 'howto', 'opinion'],
+      label: '安心・前向き系'
+    },
+    {
+      id: 'b3',
+      name: 'BGM3',
+      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm3.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm//bgm3.mp3',
+ 
+      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm3.mp3',
+      reason: ['warm', 'friendly', 'reassuring'],
+      energy: 2,
+      genre_affinity: ['faq', 'howto'],
+      label: '温かい安心系'
+    },
+    {
+      id: 'b4',
+      name: 'BGM4',
+      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm4.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm//bgm4.mp3',
+      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm4.mp3',
+      reason: ['friendly', 'bright', 'reassuring'],
+      energy: 3,
+      genre_affinity: ['faq', 'ranking'],
+      label: '明るい親しみ系'
+    },
+    {
+      id: 'b5',
+      name: 'BGM5',
+      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm5.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/bgm5.mp3',    
+      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm5.mp3',
+      reason: ['calm', 'serious', 'empathetic'],
+      energy: 2,
+      genre_affinity: ['casestudy', 'opinion'],
+      label: '落ち着いた共感系'
+    },
+    {
+      id: 'b6',
+      name: 'BGM6',
+      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm6.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm//bgm6.mp3',
+      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm6.mp3',
+      reason: ['calm', 'serious', 'informative'],
+      energy: 2,
+      genre_affinity: ['casestudy', 'faq'],
+      label: '真剣な情報解説系'
+    },
+    {
+      id: 'b7',
+      name: 'BGM7',
+      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm7.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm//bgm7.mp3',
+      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm7.mp3',
+      reason: ['curious', 'hook', 'neutral'],
+      energy: 3,
+      genre_affinity: ['ranking', 'compare', 'faq'],
+      label: 'フック・興味喚起系'
+    }
   ],
+
   subtitle_presets: ['top','center','bottom'],
 };
-
-const REASON_LABELS = {
-  calm: '落ち着き', reassuring: '安心感', serious: '真剣',
-  trustworthy: '信頼感', uplifting: '前向き', warm: '温かみ',
-  urgent: '緊迫', neutral: '無難',
-};
+const GENRE_LABELS = { faq: 'FAQ・解説', drama: 'ドラマ', howto: 'ハウツー', ranking: 'ランキング', casestudy: '事例', compare: '比較', opinion: '意見・考察' };
+const REASON_LABELS = { hopeful: '希望', positive: '前向き', friendly: '親しみやすさ', bright: '明るさ', 
+　calm: '落ち着き', reassuring: '安心感', informative: '情報性', empathetic: '共感', curious: '興味喚起', hook: 'フック感', 
+　serious: '真剣', trustworthy: '信頼感', uplifting: '前向きな高揚感', warm: '温かみ', urgent: '緊迫感', neutral: '無難' };
 
 async function proceedToAvSelection() {
   showLoading('音声・BGMを準備中...', 'おすすめを計算しています', [
@@ -1562,6 +1677,11 @@ function resetAll() {
     loadingInterval:  null,
     pollTimer:        null,
     narrationEdits:   {},
+    avOptions:        { voices: [], bgms: [], moodProfile: null },
+    selectedVoice:    null,
+    selectedBgm:      null,
+    bgmVolume:        0.2,
+    subtitlePosition: 'bottom',
   };
 
   document.getElementById('input-url').value           = '';
