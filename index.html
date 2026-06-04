@@ -1411,9 +1411,13 @@ const MOCK_AV_OPTIONS = {
   subtitle_presets: ['top','center','bottom'],
 };
 const GENRE_LABELS = { faq: 'FAQ・解説', drama: 'ドラマ', howto: 'ハウツー', ranking: 'ランキング', casestudy: '事例', compare: '比較', opinion: '意見・考察' };
-const REASON_LABELS = { hopeful: '希望', positive: '前向き', friendly: '親しみやすさ', bright: '明るさ', 
-　calm: '落ち着き', reassuring: '安心感', informative: '情報性', empathetic: '共感', curious: '興味喚起', hook: 'フック感', 
-　serious: '真剣', trustworthy: '信頼感', uplifting: '前向きな高揚感', warm: '温かみ', urgent: '緊迫感', neutral: '無難' };
+const REASON_LABELS = {
+  hopeful: '希望', positive: '前向き', friendly: '親しみやすさ', bright: '明るさ',
+  calm: '落ち着き', reassuring: '安心感', informative: '情報性', empathetic: '共感',
+  curious: '興味喚起', hook: 'フック感', serious: '真剣', trustworthy: '信頼感',
+  uplifting: '前向きな高揚感', warm: '温かみ', urgent: '緊迫感', neutral: '無難',
+  natural: '自然'
+};
 
 async function proceedToAvSelection() {
   showLoading('音声・BGMを準備中...', 'おすすめを計算しています', [
@@ -1436,6 +1440,7 @@ async function proceedToAvSelection() {
       });
       if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
       data = await res.json();
+      if (Array.isArray(data)) data = data[0];
     }
 
     state.avOptions = { voices: data.voices || [], bgms: data.bgms || [], moodProfile: data.mood_profile };
