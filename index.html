@@ -1350,9 +1350,23 @@ async function approveVideo() {
     fc.appendChild(videoWrap);
 
     const dlBtn = document.getElementById('btn-download');
-    dlBtn.href     = state.videoUrl;
-    dlBtn.download = `video-${state.sessionId || Date.now()}.mp4`;
+    dlBtn.href = state.videoUrl;
     dlBtn.style.display = 'flex';
+    dlBtn.onclick = async (e) => {
+      e.preventDefault();
+      try {
+        const response = await fetch(state.videoUrl);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = `video-${state.sessionId || Date.now()}.mp4`;
+        a.click();
+        URL.revokeObjectURL(blobUrl);
+      } catch (err) {
+        window.open(state.videoUrl, '_blank');
+      }
+    };
   }
 
   setStep(6);
