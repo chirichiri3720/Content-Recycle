@@ -512,20 +512,28 @@ function showError(msg) {
 // ============================================================
 // 戻るボタン処理（Supabaseステータスをn8n経由で更新）
 // ============================================================
+// async function notifyBackStep(targetStep) {
+//   if (!state.sessionId) return;
+//   try {
+//     await fetch(BACK_STEP_URL, {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({
+//         session_id:  state.sessionId,
+//         target_step: targetStep,
+//       }),
+//     });
+//   } catch (e) {
+//     console.warn('notifyBackStep failed (non-critical):', e);
+//   }
+// }
+
+// ============================================================
+// 戻るボタン処理
+// ============================================================
 async function notifyBackStep(targetStep) {
-  if (!state.sessionId) return;
-  try {
-    await fetch(BACK_STEP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id:  state.sessionId,
-        target_step: targetStep,
-      }),
-    });
-  } catch (e) {
-    console.warn('notifyBackStep failed (non-critical):', e);
-  }
+  // back-step webhookは未実装のため無効化
+  return;
 }
 
 function goBackToStep1() {
@@ -1185,7 +1193,7 @@ async function proceedToVideo() {
     [
       { icon: '🎙', text: 'Google TTSで音声を生成中' },
       { icon: '🖼', text: '画像を準備中' },
-      { icon: '🔤', text: '字幕を生成中'}
+      { icon: '🔤', text: '字幕を生成中'},
       { icon: '🎞', text: 'Shotstackで動画を合成中' },
       { icon: '✅', text: '完成' },
     ],
@@ -1404,7 +1412,6 @@ function resetAll() {
   document.getElementById('input-content-type').value  = '';
   document.getElementById('input-platform').value      = 'YouTube Shorts';
   document.getElementById('btn-download').href         = '#';
-  document.getElementById('video-expiry-note').style.display = 'none';
 
   setStep(1);
 }
