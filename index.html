@@ -1268,7 +1268,7 @@ function startVideoPolling() {
 // ============================================================
 
 // モックデータ（n8n get_av_options が出来たら本物に差し替え）
-const USE_MOCK_AV = false;
+const USE_MOCK_AV = true;
 
 const MOCK_AV_OPTIONS = {
   mood_profile: { primary_mood: 'reassuring', secondary_mood: 'trustworthy', energy: 2, tone_keywords: ['calm'], genre: 'casestudy' },
@@ -1419,6 +1419,25 @@ const REASON_LABELS = {
   natural: '自然'
 };
 
+function scoreAndSort(items, mood) {
+  const want = new Set([
+    mood.primary_mood,
+    mood.secondary_mood,
+    ...(mood.tone_keywords || [])
+  ].filter(Boolean));
+
+  return items
+    .map(item => {
+      const matched     = (item.reason || []).filter(m => want.has(m));
+      const moodScore   = matched.length / Math.max((item.reason || []).length, 1);
+      const energyScore = 1 - Math.abs((item.energy ?? 3) - (mood.energy ?? 3)) / 4;
+      const genreScore  = (item.genre_affinity || []).includes(mood.genre) ? 1 : 0;
+      const total       = 0.5 * moodScore + 0.3 * energyScore + 0.2 * genreScore;
+      return { ...item, total, reason: matched.length > 0 ? matched : item.reason };
+    })
+    .sort((a, b) => b.total - a.total);
+}
+
 async function proceedToAvSelection() {
   showLoading('音声・BGMを準備中...', 'おすすめを計算しています', [
     { icon: '✨', text: '動画の雰囲気を分析中' },
@@ -1431,8 +1450,15 @@ async function proceedToAvSelection() {
     let data;
     if (USE_MOCK_AV) {
       await new Promise(r => setTimeout(r, 1500));
-      data = MOCK_AV_OPTIONS;
-    } else {
+      // 選択した台本のmood_profileを使ってモックデータをスコアリング
+      const mood = state.selectedScript?.mood_profile || MOCK_AV_OPTIONS.mood_profile;
+      data = {
+        mood_profile: mood,
+        voices: scoreAndSort(MOCK_AV_OPTIONS.voices, mood),
+        bgms:   scoreAndSort(MOCK_AV_OPTIONS.bgms, mood),
+        subtitle_presets: MOCK_AV_OPTIONS.subtitle_presets,
+      };
+    }else {
       const res = await fetch(GET_AV_OPTIONS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
