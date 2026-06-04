@@ -363,6 +363,7 @@ const TMP_IMG_URL        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp
 const VIDEO_URL_WHITELIST = [
   'cdn.shotstack.io',
   'shotstack-assets.s3.ap-southeast-2.amazonaws.com',
+  'shotstack-api-stage-output.s3-ap-southeast-2.amazonaws.com',  
   'storage.googleapis.com',
 ];
 
@@ -1193,7 +1194,7 @@ async function proceedToVideo() {
     [
       { icon: '🎙', text: 'Google TTSで音声を生成中' },
       { icon: '🖼', text: '画像を準備中' },
-      { icon: '🔤', text: '字幕を生成中　'},
+      { icon: '🅰️', text: '字幕を生成中　'},
       { icon: '🎞', text: 'Shotstackで動画を合成中' },
       { icon: '✅', text: '完成' },
     ],
@@ -1201,12 +1202,16 @@ async function proceedToVideo() {
     true
   );
   // showLoading後に進捗バーを表示
+  setTimeout(() => {
   document.getElementById('polling-progress').style.display = 'block';
   const bar = document.getElementById('polling-bar');
-  bar.style.transition = 'width 90s linear';  // 90秒かけて100%に
-  bar.style.width = '100%';
-  document.getElementById('polling-status').textContent = 'Shotstackでレンダリング中...';
-
+  bar.style.width = '0%';  // まずリセット
+  requestAnimationFrame(() => {
+    bar.style.transition = 'width 90s linear';
+    bar.style.width = '100%';
+  });
+  document.getElementById('polling-status').textContent = '動画を生成中...';
+}, 100);
   // 5分でAbort → ポーリングにフォールバック
   const controller = new AbortController();
   const fetchTimeout = setTimeout(() => controller.abort(), 300000);
