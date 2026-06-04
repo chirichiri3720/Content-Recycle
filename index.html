@@ -224,7 +224,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
           <select class="form-select" id="input-content-type">
             <option value="">選択してください</option>
             <option value="解説系">解説系</option>
-            <option value="FAQ">FAQ</option>
+            <!-- <option value="FAQ">FAQ</option> -->
           </select>
         </div>
         <div class="form-group">
@@ -238,7 +238,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
       </div>
       <div class="info-row">
         <span class="icon">ℹ</span>
-        処理には約1〜2分かかります。完了まで画面を開いたままにしてください。
+        処理には全体で約5分かかります。完了まで画面を開いたままにしてください。
       </div>
       <button class="btn btn-primary" onclick="startGeneration()">▶ 台本生成を開始する</button>
     </div>
@@ -336,7 +336,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
         <a id="btn-download" href="#" class="btn-download-main" download="video.mp4">⬇ 動画をダウンロード</a>
         <button class="btn btn-outline" onclick="resetAll()">＋ 新しい動画を生成する</button>
       </div>
-      <div id="video-expiry-note" style="font-size:11px;color:var(--text3);margin-top:12px;display:none"></div>
     </div>
   </div>
 </div>
@@ -354,16 +353,13 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 // ============================================================
 // 定数
 // ============================================================
-const WEBHOOK_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';
-const BACK_STEP_URL   = 'https://weby.app.n8n.cloud/webhook-test/back-step';
-const SELECT_SCRIPT_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';
-const SELECT_IMAGE_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-image';
+const WEBHOOK_URL        = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';
+const SELECT_SCRIPT_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';
+const SELECT_IMAGE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-image';
 const GENERATE_VIDEO_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-video';
-const CHECK_VIDEO_URL = 'https://weby.app.n8n.cloud/webhook-test/check-video-status';
-const IMG_BASE        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
-const BASE_IMG_URL    = 'https://chirichiri3720.github.io/Content-Recycle/Images';
+const BASE_IMG_URL       = 'https://chirichiri3720.github.io/Content-Recycle/Images';
+const TMP_IMG_URL        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
 
-// Shotstack動画URLホワイトリスト
 const VIDEO_URL_WHITELIST = [
   'cdn.shotstack.io',
   'shotstack-assets.s3.ap-southeast-2.amazonaws.com',
@@ -1189,17 +1185,29 @@ async function proceedToVideo() {
     [
       { icon: '🎙', text: 'Google TTSで音声を生成中' },
       { icon: '🖼', text: '画像を準備中' },
+      { icon: '🔤', text: '字幕を生成中'}
       { icon: '🎞', text: 'Shotstackで動画を合成中' },
       { icon: '✅', text: '完成' },
     ],
     20000,
     true
   );
+  // showLoading後に進捗バーを表示
+  document.getElementById('polling-progress').style.display = 'block';
+  const bar = document.getElementById('polling-bar');
+  bar.style.transition = 'width 90s linear';  // 90秒かけて100%に
+  bar.style.width = '100%';
+  document.getElementById('polling-status').textContent = 'Shotstackでレンダリング中...';
+
+  // 5分でAbort → ポーリングにフォールバック
+  const controller = new AbortController();
+  const fetchTimeout = setTimeout(() => controller.abort(), 300000);
 
   try {
     const res = await fetch(GENERATE_VIDEO_URL, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal:  controller.signal,
       body: JSON.stringify({
         action:             'approve_scenes',
         session_id:         state.sessionId,
@@ -1208,6 +1216,8 @@ async function proceedToVideo() {
         scene_image_urls:   state.sceneImageUrls,
       }),
     });
+
+    clearTimeout(fetchTimeout);
 
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
     const text = await res.text();
@@ -1227,9 +1237,15 @@ async function proceedToVideo() {
     setStep(5);
 
   } catch (err) {
-    hideLoading();
-    setStep(4);
-    showError('生成エラー: ' + err.message);
+    clearTimeout(fetchTimeout);
+    if (err.name === 'AbortError' || err.message.includes('空')) {
+      // タイムアウト → ポーリングにフォールバック
+      startVideoPolling();
+    } else {
+      hideLoading();
+      setStep(4);
+      showError('生成エラー: ' + err.message);
+    }
   }
 }
 
@@ -1314,17 +1330,6 @@ function renderVideo(data) {
 }
 
 async function approveVideo() {
-  // n8nに承認通知（失敗しても続行）
-  if (state.resumeUrls.scene) {
-    try {
-      await fetch(state.resumeUrls.scene, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'approve_video', session_id: state.sessionId }),
-      });
-    } catch (err) { console.warn('承認送信エラー（無視）:', err); }
-  }
-
   const fc = document.getElementById('final-video-container');
   fc.innerHTML = '';
 
@@ -1334,7 +1339,7 @@ async function approveVideo() {
     videoWrap.style.marginBottom = '0';
 
     const video = document.createElement('video');
-    video.controls   = true;
+    video.controls    = true;
     video.playsInline = true;
     video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
     const src = document.createElement('source');
@@ -1344,50 +1349,18 @@ async function approveVideo() {
     videoWrap.appendChild(video);
     fc.appendChild(videoWrap);
 
-    // ダウンロードボタン設定
     const dlBtn = document.getElementById('btn-download');
     dlBtn.href     = state.videoUrl;
     dlBtn.download = `video-${state.sessionId || Date.now()}.mp4`;
     dlBtn.style.display = 'flex';
-
-    // URL有効期限の案内（Shotstackの一時URLは24〜48時間で失効する場合がある）
-    const expiryNote = document.getElementById('video-expiry-note');
-    expiryNote.textContent = '※ 動画URLは生成後24〜48時間で失効する場合があります。早めにダウンロードしてください。';
-    expiryNote.style.display = 'block';
   }
 
   setStep(6);
 }
 
 async function rejectVideo() {
-  if (!state.resumeUrls.scene) { setStep(4); return; }
-
-  showLoading('動画を再生成中...', 'しばらくお待ちください', [
-    { icon: '🎙', text: '音声を再生成中' },
-    { icon: '🎞', text: '映像を合成中' },
-    { icon: '✂️', text: '編集中' },
-    { icon: '✅', text: '完成' },
-  ], 20000, true);
-
-  try {
-    const res = await fetch(state.resumeUrls.scene, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'reject_video', session_id: state.sessionId }),
-    });
-    const data = await res.json();
-    if (data.resume_url) state.resumeUrls.scene = data.resume_url;
-
-    const videoUrl = validateVideoUrl(data.video_url);
-    if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
-
-    state.videoUrl = videoUrl;
-    hideLoading();
-    renderVideo({ video_url: videoUrl });
-    setStep(5);
-  } catch (err) {
-    hideLoading(); setStep(4); showError('再生成エラー: ' + err.message);
-  }
+  // 再生成 = 同じパラメータでもう一度動画生成
+  proceedToVideo();
 }
 
 // ============================================================
