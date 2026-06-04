@@ -199,9 +199,10 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
   <div class="progress-bar" id="progressBar">
     <div class="progress-step active" id="prog-1"><span class="dot"></span>入力</div>
     <div class="progress-step" id="prog-2"><span class="dot"></span>台本</div>
-    <div class="progress-step" id="prog-3"><span class="dot"></span>画像スタイル</div>
-    <div class="progress-step" id="prog-4"><span class="dot"></span>シーン確認</div>
-    <div class="progress-step" id="prog-5"><span class="dot"></span>完成</div>
+    <div class="progress-step" id="prog-3"><span class="dot"></span>画像</div>
+    <div class="progress-step" id="prog-4"><span class="dot"></span>シーン</div>
+    <div class="progress-step" id="prog-5"><span class="dot"></span>音声/BGM</div>
+    <div class="progress-step" id="prog-6"><span class="dot"></span>完成</div>
   </div>
 
   <div class="error-toast" id="errorToast"></div>
@@ -224,7 +225,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
           <select class="form-select" id="input-content-type">
             <option value="">選択してください</option>
             <option value="解説系">解説系</option>
-            <!-- <option value="FAQ">FAQ</option> -->
           </select>
         </div>
         <div class="form-group">
@@ -252,12 +252,10 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
         <div class="loading-title" id="loading-title">AIが処理中...</div>
         <div class="loading-sub" id="loading-sub">しばらくお待ちください</div>
         <div class="loading-steps" id="loading-steps-container"></div>
-        <!-- 動画生成中の長時間案内（動画生成ステップのみ表示） -->
         <div class="wait-banner" id="wait-banner" style="display:none">
           <span class="icon">⏱</span>
           <span>動画の合成には最大5分かかる場合があります。<br>完了まで<strong>ページを閉じないでください。</strong></span>
         </div>
-        <!-- ポーリングフォールバック用進捗表示 -->
         <div class="polling-progress" id="polling-progress" style="display:none">
           <div class="polling-bar-wrap"><div class="polling-bar-fill" id="polling-bar"></div></div>
           <div class="polling-status" id="polling-status">Shotstackでレンダリング中...</div>
@@ -303,13 +301,48 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
       <div id="scene-image-list"></div>
       <div class="btn-row">
         <button class="btn btn-outline" onclick="goBackToStep3()">← 戻る</button>
+        <button class="btn btn-primary" onclick="proceedToAvSelection()" style="flex:2">音声・BGMを選ぶ →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5: 音声・BGM・字幕位置 -->
+  <div class="step" id="step5">
+    <div class="card">
+      <div class="card-title"><div class="icon">🎙</div>音声・BGM・字幕位置を選択</div>
+      <div class="info-row" id="mood-info">
+        <span class="icon">✨</span>
+        <span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--text)">ナレーション音声</div>
+        <div id="voice-list"></div>
+      </div>
+
+      <div style="margin-bottom:24px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--text);display:flex;justify-content:space-between;align-items:center">
+          <span>BGM</span>
+          <span style="font-size:11px;color:var(--text3);font-family:'Space Mono',monospace">音量 <span id="bgm-volume-label">30</span>%</span>
+        </div>
+        <input type="range" id="bgm-volume" min="0" max="100" value="30" style="width:100%;margin-bottom:12px;accent-color:var(--accent)">
+        <div id="bgm-list"></div>
+      </div>
+
+      <div style="margin-bottom:8px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--text)">字幕位置</div>
+        <div id="subtitle-position-list" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="goBackToStep4()">← 戻る</button>
         <button class="btn btn-primary" onclick="proceedToVideo()" style="flex:2">動画を生成する →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 5: 動画確認 -->
-  <div class="step" id="step5">
+  <!-- STEP 6: 動画確認 -->
+  <div class="step" id="step6">
     <div class="card">
       <div class="card-title"><div class="icon">🎬</div>動画を確認してください</div>
       <div class="video-container" id="video-container">
@@ -325,8 +358,8 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
     </div>
   </div>
 
-  <!-- STEP 6: 完成 -->
-  <div class="step" id="step6">
+  <!-- STEP 7: 完成 -->
+  <div class="step" id="step7">
     <div class="card" style="text-align:center">
       <div class="success-icon">✓</div>
       <div style="font-size:20px;font-weight:700;margin-bottom:8px">動画が完成しました！</div>
@@ -340,15 +373,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
   </div>
 </div>
 
-<!-- ライトボックス -->
-<div class="lightbox-overlay" id="lightbox" style="display:none" onclick="closeLightbox(event)">
-  <div class="lightbox-inner">
-    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-    <img id="lightbox-img" src="" alt="">
-    <div class="lightbox-caption" id="lightbox-caption"></div>
-  </div>
-</div>
-
 <script>
 // ============================================================
 // 定数
@@ -356,6 +380,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 const WEBHOOK_URL        = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';
 const SELECT_SCRIPT_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';
 const SELECT_IMAGE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-image';
+const GET_AV_OPTIONS_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-av-options';
 const GENERATE_VIDEO_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-video';
 const BASE_IMG_URL       = 'https://chirichiri3720.github.io/Content-Recycle/Images';
 const TMP_IMG_URL        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
@@ -403,9 +428,14 @@ let state = {
 
   // ナレーション編集: { index: { original, current, edited } }
   narrationEdits: {},
+  avOptions:        { voices: [], bgms: [], moodProfile: null },
+  selectedVoice:    null,
+  selectedBgm:      null,
+  bgmVolume:        0.3,
+  subtitlePosition: 'bottom',
 };
 
-const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:4, 6:5 };
+const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:6 };
 
 // ============================================================
 // URL検証（XSS防止）
@@ -441,7 +471,7 @@ function setStep(n) {
   if (el) el.classList.add('active');
   if (n !== 'loading') {
     const progN = progressMap[n] || 1;
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 6; i++) {
       const p = document.getElementById('prog-' + i);
       if (!p) continue;
       p.classList.remove('active', 'done');
@@ -509,25 +539,6 @@ function showError(msg) {
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 6000);
 }
-
-// ============================================================
-// 戻るボタン処理（Supabaseステータスをn8n経由で更新）
-// ============================================================
-// async function notifyBackStep(targetStep) {
-//   if (!state.sessionId) return;
-//   try {
-//     await fetch(BACK_STEP_URL, {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({
-//         session_id:  state.sessionId,
-//         target_step: targetStep,
-//       }),
-//     });
-//   } catch (e) {
-//     console.warn('notifyBackStep failed (non-critical):', e);
-//   }
-// }
 
 // ============================================================
 // 戻るボタン処理
@@ -1081,102 +1092,6 @@ function closeLightbox(event) {
   document.body.style.overflow = '';
 }
 
-// ============================================================
-// STEP 4 → 動画生成
-// n8n側でTTS生成 → Shotstack合成 → 完了後にrespondする（同期）
-// フロントはfetchを待つだけ（最大5分）
-// ============================================================
-// async function proceedToVideo() {
-//   const scenes = state.selectedScript?.scenes || [];
-
-//   const finalNarrations = scenes.map((sc, i) => ({
-//     scene:        sc.scene,
-//     role:         sc.role,
-//     narration:    state.narrationEdits[i]?.current ?? sc.narration,
-//     duration_sec: sc.duration_sec,
-//     edited:       state.narrationEdits[i]?.edited ?? false,
-//   }));
-
-//   const resumeUrl = state.resumeUrls.scene || state.resumeUrls.image;
-//   if (!resumeUrl) { showError('resume_url がありません'); return; }
-
-//   showLoading(
-//     '動画を生成中...',
-//     'TTS音声とShotstackで動画を合成しています',
-//     [
-//       { icon: '🎙', text: 'Google TTSで音声を生成中' },
-//       { icon: '🖼', text: '画像を準備中' },
-//       { icon: '🎞', text: 'Shotstackで動画を合成中' },
-//       { icon: '✅', text: '完成' },
-//     ],
-//     20000, // 各ステップ20秒間隔（合計約1分でアニメーション完了）
-//     true   // wait-banner表示
-//   );
-
-//   // フォールバックポーリングを同時起動（fetchがタイムアウトした場合の保険）
-//   let pollStarted = false;
-//   const pollFallbackTimer = setTimeout(() => {
-//     if (!pollStarted) {
-//       pollStarted = true;
-//       startVideoPolling();
-//     }
-//   }, 290000); // 4分50秒後にポーリング開始
-
-//   try {
-//     const controller = new AbortController();
-//     // 5分30秒でfetch自体をタイムアウト
-//     const fetchTimeout = setTimeout(() => controller.abort(), 330000);
-
-//     const res = await fetch(GENERATE_VIDEO_URL, {
-//     // const res = await fetch(resumeUrl, {
-//       method:  'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       signal:  controller.signal,
-//       body: JSON.stringify({
-//         action:             'approve_scenes',
-//         session_id:         state.sessionId,
-//         final_narrations:   finalNarrations,
-//         edited_scene_count: finalNarrations.filter(s => s.edited).length,
-//         scene_image_urls:   state.sceneImageUrls,
-//       }),
-//     });
-
-//     clearTimeout(fetchTimeout);
-//     clearTimeout(pollFallbackTimer);
-
-//     const text = await res.text();
-//     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
-//     const data = JSON.parse(text);
-
-//     if (data.status === 'failed' || data.error) {
-//       throw new Error(data.error || '動画生成に失敗しました');
-//     }
-
-//     const videoUrl = validateVideoUrl(data.video_url);
-//     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
-
-//     state.videoUrl = videoUrl;
-//     if (data.resume_url) state.resumeUrls.scene = data.resume_url;
-
-//     hideLoading();
-//     renderVideo({ video_url: videoUrl });
-//     setStep(5);
-
-//   } catch (err) {
-//     clearTimeout(pollFallbackTimer);
-//     if (err.name === 'AbortError' || err.message.includes('空')) {
-//       // タイムアウト → ポーリングにフォールバック
-//       if (!pollStarted) {
-//         pollStarted = true;
-//         startVideoPolling();
-//       }
-//     } else {
-//       hideLoading();
-//       setStep(4);
-//       showError('生成エラー: ' + err.message);
-//     }
-//   }
-// }
 async function proceedToVideo() {
   const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
 
@@ -1194,7 +1109,7 @@ async function proceedToVideo() {
     [
       { icon: '🎙', text: 'Google TTSで音声を生成中' },
       { icon: '🖼', text: '画像を準備中' },
-      { icon: '🅰️', text: '字幕を生成中　'},
+      { icon: '💬', text: '字幕を生成中　'},
       { icon: '🎞', text: 'Shotstackで動画を合成中' },
       { icon: '✅', text: '完成' },
     ],
@@ -1247,7 +1162,7 @@ async function proceedToVideo() {
     state.videoUrl = videoUrl;
     hideLoading();
     renderVideo({ video_url: videoUrl });
-    setStep(5);
+    setStep(6);
 
   } catch (err) {
     clearTimeout(fetchTimeout);
@@ -1256,7 +1171,7 @@ async function proceedToVideo() {
       startVideoPolling();
     } else {
       hideLoading();
-      setStep(4);
+      setStep(5);
       showError('生成エラー: ' + err.message);
     }
   }
@@ -1291,7 +1206,7 @@ function startVideoPolling() {
           state.videoUrl = videoUrl;
           hideLoading();
           renderVideo({ video_url: videoUrl });
-          setStep(5);
+          setStep(6);
         } else if (data.video_status === 'failed') {
           hideLoading();
           setStep(4);
@@ -1316,6 +1231,219 @@ function startVideoPolling() {
   }
 
   runPoll();
+}
+// ============================================================
+// STEP 4.5: 音声/BGM/字幕位置 選択
+// ============================================================
+
+// モックデータ（n8n get_av_options が出来たら本物に差し替え）
+const USE_MOCK_AV = true;
+
+const MOCK_AV_OPTIONS = {
+  mood_profile: { primary_mood: 'reassuring', secondary_mood: 'trustworthy', energy: 2, tone_keywords: ['calm'], genre: 'casestudy' },
+  voices: [
+    { id: 'v1', label: '落ち着いた女性の声', voice_name: 'ja-JP-Neural2-B', ssml_gender: 'FEMALE', speaking_rate: 1.0, pitch: 0,
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/voice1.mp3',
+      reason: ['reassuring','calm'] },
+    { id: 'v2', label: '信頼感のある男性の声', voice_name: 'ja-JP-Neural2-C', ssml_gender: 'MALE', speaking_rate: 1.0, pitch: -1,
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/voice2.mp3',
+      reason: ['trustworthy'] },
+    { id: 'v3', label: '明るい女性の声', voice_name: 'ja-JP-Neural2-D', ssml_gender: 'FEMALE', speaking_rate: 1.05, pitch: 1,
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/voice3.mp3',
+      reason: [] },
+    { id: 'v4', label: 'ナチュラルな男性の声', voice_name: 'ja-JP-Neural2-A', ssml_gender: 'MALE', speaking_rate: 1.0, pitch: 0,
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/voice4.mp3',
+      reason: [] },
+  ],
+  bgms: [
+    { id: 'b1', name: 'Calm Piano', storage_url: 'https://example.supabase.co/storage/v1/object/public/bgm/calm_piano.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/bgm1.mp3',
+      reason: ['calm','reassuring'] },
+    { id: 'b2', name: 'Soft Strings', storage_url: 'https://example.supabase.co/storage/v1/object/public/bgm/soft_strings.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/bgm2.mp3',
+      reason: ['trustworthy'] },
+    { id: 'b3', name: 'Light Ambient', storage_url: 'https://example.supabase.co/storage/v1/object/public/bgm/light_ambient.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/bgm3.mp3',
+      reason: ['calm'] },
+    { id: 'b4', name: 'Uplifting Acoustic', storage_url: 'https://example.supabase.co/storage/v1/object/public/bgm/uplifting.mp3',
+      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Samples/bgm4.mp3',
+      reason: [] },
+  ],
+  subtitle_presets: ['top','center','bottom'],
+};
+
+const REASON_LABELS = {
+  calm: '落ち着き', reassuring: '安心感', serious: '真剣',
+  trustworthy: '信頼感', uplifting: '前向き', warm: '温かみ',
+  urgent: '緊迫', neutral: '無難',
+};
+
+async function proceedToAvSelection() {
+  showLoading('音声・BGMを準備中...', 'おすすめを計算しています', [
+    { icon: '✨', text: '動画の雰囲気を分析中' },
+    { icon: '🎙', text: '音声候補を選定中' },
+    { icon: '🎵', text: 'BGM候補を選定中' },
+    { icon: '✅', text: '完了' },
+  ], 800);
+
+  try {
+    let data;
+    if (USE_MOCK_AV) {
+      await new Promise(r => setTimeout(r, 1500));
+      data = MOCK_AV_OPTIONS;
+    } else {
+      const res = await fetch(GET_AV_OPTIONS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get_av_options', session_id: state.sessionId }),
+      });
+      if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
+      data = await res.json();
+    }
+
+    state.avOptions = { voices: data.voices || [], bgms: data.bgms || [], moodProfile: data.mood_profile };
+    renderAvOptions();
+    hideLoading();
+    setStep(5);
+  } catch (err) {
+    hideLoading();
+    setStep(4);
+    showError('音声・BGM取得エラー: ' + err.message);
+  }
+}
+
+function renderAvOptions() {
+  // 雰囲気の表示
+  const mp = state.avOptions.moodProfile;
+  if (mp) {
+    const tags = [mp.primary_mood, mp.secondary_mood].filter(Boolean)
+      .map(m => REASON_LABELS[m] || m).join(' × ');
+    document.getElementById('mood-info-text').textContent = `この動画の雰囲気: ${tags}  → おすすめ順に並べています`;
+  }
+
+  // 音声
+  renderAvList('voice-list', state.avOptions.voices, 'voice');
+  // BGM
+  renderAvList('bgm-list', state.avOptions.bgms, 'bgm');
+
+  // 先頭を初期選択
+  if (state.avOptions.voices[0]) selectAv('voice', 0);
+  if (state.avOptions.bgms[0])   selectAv('bgm', 0);
+
+  // BGM音量
+  const volRange = document.getElementById('bgm-volume');
+  volRange.value = Math.round(state.bgmVolume * 100);
+  document.getElementById('bgm-volume-label').textContent = volRange.value;
+  volRange.oninput = () => {
+    state.bgmVolume = Number(volRange.value) / 100;
+    document.getElementById('bgm-volume-label').textContent = volRange.value;
+  };
+
+  // 字幕位置
+  renderSubtitlePresets();
+}
+
+function renderAvList(containerId, items, kind) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  items.forEach((it, i) => {
+    const row = document.createElement('div');
+    row.className = 'av-option';
+    row.dataset.index = i;
+    row.dataset.kind  = kind;
+    row.addEventListener('click', (e) => {
+      if (e.target.tagName === 'AUDIO' || e.target.closest('audio')) return;
+      selectAv(kind, i);
+    });
+
+    const info = document.createElement('div');
+    info.className = 'av-info';
+
+    const label = document.createElement('div');
+    label.className = 'av-label';
+    const name = document.createElement('span');
+    name.textContent = it.label || it.name;
+    label.appendChild(name);
+    if (i === 0) {
+      const badge = document.createElement('span');
+      badge.className = 'recommend-badge';
+      badge.textContent = '★ おすすめ';
+      label.appendChild(badge);
+    }
+
+    const reasonRow = document.createElement('div');
+    reasonRow.className = 'av-reason';
+    if (it.reason && it.reason.length) {
+      it.reason.forEach(r => {
+        const tag = document.createElement('span');
+        tag.className = 'reason-tag';
+        tag.textContent = REASON_LABELS[r] || r;
+        reasonRow.appendChild(tag);
+      });
+    } else {
+      reasonRow.textContent = '—';
+    }
+
+    info.appendChild(label);
+    info.appendChild(reasonRow);
+
+    const audio = document.createElement('audio');
+    audio.controls = true;
+    audio.preload  = 'none';
+    audio.src      = it.sample_url || '';
+    audio.addEventListener('play', () => stopOtherAudios(audio));
+
+    row.appendChild(info);
+    row.appendChild(audio);
+    container.appendChild(row);
+  });
+}
+
+function stopOtherAudios(current) {
+  document.querySelectorAll('#step5 audio').forEach(a => {
+    if (a !== current) a.pause();
+  });
+}
+
+function selectAv(kind, index) {
+  const listId = kind === 'voice' ? 'voice-list' : 'bgm-list';
+  document.querySelectorAll(`#${listId} .av-option`).forEach(el => el.classList.remove('selected'));
+  const target = document.querySelector(`#${listId} .av-option[data-index="${index}"]`);
+  if (target) target.classList.add('selected');
+  if (kind === 'voice') state.selectedVoice = state.avOptions.voices[index];
+  else                  state.selectedBgm   = state.avOptions.bgms[index];
+}
+
+function renderSubtitlePresets() {
+  const positions = [
+    { key: 'top',    label: '上' },
+    { key: 'center', label: '中央' },
+    { key: 'bottom', label: '下' },
+  ];
+  const container = document.getElementById('subtitle-position-list');
+  container.innerHTML = '';
+  positions.forEach(p => {
+    const div = document.createElement('div');
+    div.className = `subtitle-preset pos-${p.key}`;
+    if (state.subtitlePosition === p.key) div.classList.add('selected');
+    div.addEventListener('click', () => {
+      state.subtitlePosition = p.key;
+      document.querySelectorAll('.subtitle-preset').forEach(el => el.classList.remove('selected'));
+      div.classList.add('selected');
+    });
+    const bar = document.createElement('div');
+    bar.className = 'sub-bar';
+    const lbl = document.createElement('div');
+    lbl.className = 'sub-label';
+    lbl.textContent = p.label;
+    div.appendChild(bar);
+    div.appendChild(lbl);
+    container.appendChild(div);
+  });
+}
+
+function goBackToStep4() {
+  setStep(4);
 }
 
 // ============================================================
@@ -1382,12 +1510,14 @@ async function approveVideo() {
     };
   }
 
-  setStep(6);
+  setStep(7);
 }
 
 async function rejectVideo() {
   // 再生成 = 同じパラメータでもう一度動画生成
-  proceedToVideo();
+  // proceedToVideo();
+  setStep(5);
+
 }
 
 // ============================================================
