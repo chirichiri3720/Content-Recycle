@@ -241,7 +241,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 <script>
 const SUPABASE_URL     = 'https://eitwhzteuhouxfmogvnf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdHdoenRldWhvdXhmbW9ndm5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MjU1MDUsImV4cCI6MjA5NDQwMTUwNX0.5g2DLTtjCykdp3KGz9r5kcG64ueHyVUbbGKsfZW2434';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
 
 // ============================================================
 // Supabase REST
@@ -262,27 +262,23 @@ async function sbFetch(path, qs) {
 async function fetchGallery() {
   const videos = await sbFetch(
     'videos',
-    'select=session_id,video_url,video_status,created_at&video_url=not.is.null&order=created_at.desc&limit=200'
+    'select=session_id,video_url,video_status,script_title,platform_posts,created_at&video_url=not.is.null&order=created_at.desc&limit=200'
   );
   if (!videos.length) return [];
 
   const sessionIds = [...new Set(videos.map(v => v.session_id))];
-  const idList  = sessionIds.join(',');
-
-  const [sessions, scripts] = await Promise.all([
-    sbFetch('sessions', `select=id,user_name,platform,content_url,created_at&id=in.(${idList})`),
-    sbFetch('scripts',  `select=session_id,script_title,concept,platform_posts&session_id=in.(${idList})&is_selected=eq.true`),
-  ]);
+  const sessions = await sbFetch(
+    'sessions',
+    `select=id,user_name,platform,content_url,created_at&id=in.(${sessionIds.join(',')})`
+  );
 
   const sessionMap = Object.fromEntries(sessions.map(s => [s.id, s]));
-  const scriptMap  = Object.fromEntries(scripts.map(s => [s.session_id, s]));
 
   return videos
     .filter(v => sessionMap[v.session_id])
     .map(v => ({
       ...sessionMap[v.session_id],
-      video:  v,
-      script: scriptMap[v.session_id] || null,
+      video: v,
     }));
 }
 
@@ -348,16 +344,16 @@ function pfKey(platform) {
 // ============================================================
 // メタ情報パネル HTML 生成
 // ============================================================
-function buildMetaHtml(script, platform) {
-  if (!script) return '<div class="no-meta">台本メタ情報がありません（is_selected=trueのレコードなし）</div>';
+function buildMetaHtml(video, platform) {
+  if (!video) return '<div class="no-meta">動画データがありません</div>';
 
-  const pp = script.platform_posts;
-  if (!pp) return '<div class="no-meta">platform_posts が未生成です</div>';
+  // platform_posts は文字列で入っている場合があるのでパース
+  let pp = video.platform_posts;
+  if (typeof pp === 'string') { try { pp = JSON.parse(pp); } catch { pp = null; } }
+  if (!pp) return '<div class="no-meta">platform_posts が未設定です（この動画は新しい形式で生成してください）</div>';
 
-  // コンセプト
-  const conceptHtml = script.concept
-    ? `<div class="meta-concept">${escHtml(script.concept)}</div>`
-    : '';
+  // コンセプトは videos には持たせていないので省略
+  const conceptHtml = '';
 
   // プラットフォームタブ
   const tabs = [
@@ -425,7 +421,7 @@ function renderList(items) {
 
   items.forEach((item, idx) => {
     const status   = resolveStatus(item);
-    const title    = item.script?.script_title || item.content_url || `Session ${(item.id||'').slice(0,8)}`;
+    const title    = item.video?.script_title || item.content_url || `Session ${(item.id||'').slice(0,8)}`;
     const videoUrl = item.video?.video_url;
     const date     = item.video?.created_at || item.created_at;
     const filename = `video-${(item.id||'unknown').slice(0,8)}.mp4`;
@@ -461,7 +457,7 @@ function renderList(items) {
             <div class="mini-play-overlay"><span class="mini-play-icon">▶</span></div>
           </div>
           <div class="meta-section">
-            ${buildMetaHtml(item.script, item.platform)}
+            ${buildMetaHtml(item.video, item.platform)}
           </div>
         </div>
       </div>
