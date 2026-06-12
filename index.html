@@ -17,7 +17,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
-.app { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
+.app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 40px 32px 80px; }
 .header { text-align: center; margin-bottom: 48px; }
 .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(108,99,255,0.12); border: 1px solid rgba(108,99,255,0.3); border-radius: 100px; padding: 4px 14px; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); margin-bottom: 16px; letter-spacing: 0.05em; }
 .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
@@ -140,8 +140,8 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .meta-saved-badge { display: none; align-items: center; gap: 4px; font-size: 11px; color: var(--accent3); font-family: 'Space Mono', monospace; }
 .meta-saved-badge.show { display: flex; }
 /* STEP5 */
-.step5-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
-@media (max-width: 600px) { .step5-layout { grid-template-columns: 1fr; } }
+.step5-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+@media (max-width: 700px) { .step5-layout { grid-template-columns: 1fr; } }
 .step5-scenes { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
 .step5-scenes-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 12px; }
 .step5-scene-list { display: flex; flex-direction: column; gap: 8px; max-height: 560px; overflow-y: auto; padding-right: 2px; }
@@ -181,16 +181,16 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .mood-info-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(108,99,255,0.06); border: 1px solid rgba(108,99,255,0.15); border-radius: var(--radius2); font-size: 11px; color: var(--text2); margin-bottom: 14px; }
 .mood-info-bar .icon { color: var(--accent); font-size: 13px; flex-shrink: 0; }
 /* STEP4 左右レイアウト */
-.step4-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
-@media (max-width: 600px) { .step4-layout { grid-template-columns: 1fr; } }
+.step4-layout { display: grid; grid-template-columns: 5fr 6fr; gap: 20px; align-items: start; }
+@media (max-width: 700px) { .step4-layout { grid-template-columns: 1fr; } }
 .step4-scenes { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
 .step4-scenes-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 12px; }
-.step4-scene-scroll { max-height: 560px; overflow-y: auto; padding-right: 2px; }
+.step4-scene-scroll { max-height: 600px; overflow-y: auto; padding-right: 2px; }
 .step4-meta { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
 .step4-meta-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 /* STEP6/7 */
-.step67-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
-@media (max-width: 600px) { .step67-layout { grid-template-columns: 1fr; } }
+.step67-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+@media (max-width: 700px) { .step67-layout { grid-template-columns: 1fr; } }
 .meta-view-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
 .meta-view-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 .meta-view-label { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
