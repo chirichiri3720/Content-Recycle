@@ -1098,16 +1098,47 @@ async function proceedToVideo() {
   const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
   const finalNarrations = scenes.map((sc, i) => ({ scene: sc.scene, role: sc.role, narration: state.narrationEdits[i]?.current ?? sc.narration, duration_sec: sc.duration_sec, edited: state.narrationEdits[i]?.edited ?? false }));
   showLoading('動画を生成中...', 'TTS音声とShotstackで動画を合成しています', [{ icon:'🎙', text:'Google TTSで音声を生成中' }, { icon:'🖼', text:'画像を準備中' }, { icon:'💬', text:'字幕を生成中' }, { icon:'🎞', text:'Shotstackで動画を合成中' }, { icon:'✅', text:'完成' }], 20000, true);
+
+  // 進捗バー表示（5分 = 300秒）
   setTimeout(() => {
     document.getElementById('polling-progress').style.display = 'block';
     const bar = document.getElementById('polling-bar'); bar.style.width = '0%';
-    requestAnimationFrame(() => { bar.style.transition = 'width 90s linear'; bar.style.width = '100%'; });
+    requestAnimationFrame(() => { bar.style.transition = 'width 300s linear'; bar.style.width = '100%'; });
     document.getElementById('polling-status').textContent = '動画を生成中...';
   }, 100);
-  const controller = new AbortController(); const fetchTimeout = setTimeout(() => controller.abort(), 300000);
+
+  // 5分でAbort
+  const controller = new AbortController();
+  const fetchTimeout = setTimeout(() => controller.abort(), 300000);
+
+  // 5分後にローディングが残っていたら強制エラー表示するフェイルセーフ
+  const failsafeTimer = setTimeout(() => {
+    hideLoading();
+    setStep(5);
+    showError('タイムアウト: 動画生成に5分以上かかっています。しばらく後に再度お試しください。');
+  }, 305000); // Abortより5秒遅らせて確実にcatchを踏む
+
   try {
-    const res = await fetch(GENERATE_VIDEO_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal, body: JSON.stringify({ action: 'approve_scenes', session_id: state.sessionId, final_narrations: finalNarrations, edited_scene_count: finalNarrations.filter(s => s.edited).length, scene_image_urls: state.sceneImageUrls, voice_id: state.selectedVoice?.id, voice_name: state.selectedVoice?.voice_name, ssml_gender: state.selectedVoice?.ssml_gender, speaking_rate: state.selectedVoice?.speaking_rate, pitch: state.selectedVoice?.pitch, bgm_id: state.selectedBgm?.id, bgm_storage_url: state.selectedBgm?.storage_url, bgm_volume: state.bgmVolume, subtitle_position: state.subtitlePosition, meta_info: state.metaInfo }) });
+    const res = await fetch(GENERATE_VIDEO_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        action: 'approve_scenes', session_id: state.sessionId,
+        final_narrations: finalNarrations,
+        edited_scene_count: finalNarrations.filter(s => s.edited).length,
+        scene_image_urls: state.sceneImageUrls,
+        voice_id: state.selectedVoice?.id, voice_name: state.selectedVoice?.voice_name,
+        ssml_gender: state.selectedVoice?.ssml_gender, speaking_rate: state.selectedVoice?.speaking_rate,
+        pitch: state.selectedVoice?.pitch,
+        bgm_id: state.selectedBgm?.id, bgm_storage_url: state.selectedBgm?.storage_url,
+        bgm_volume: state.bgmVolume, subtitle_position: state.subtitlePosition,
+        meta_info: state.metaInfo
+      })
+    });
     clearTimeout(fetchTimeout);
+    clearTimeout(failsafeTimer);
+
     if (res.status === 429) { hideLoading(); setStep(5); showError('動画生成の実行回数が上限に達しました。'); return; }
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
     const text = await res.text();
@@ -1117,10 +1148,21 @@ async function proceedToVideo() {
     const videoUrl = validateVideoUrl(data.video_url);
     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
     state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
+
   } catch (err) {
     clearTimeout(fetchTimeout);
-    if (err.name === 'AbortError' || err.message.includes('空')) startVideoPolling();
-    else { hideLoading(); setStep(5); showError('生成エラー: ' + err.message); }
+    clearTimeout(failsafeTimer);
+
+    if (err.name === 'AbortError') {
+      // 5分タイムアウト → 即エラー表示してSTEP5に戻す
+      hideLoading();
+      setStep(5);
+      showError('タイムアウト: 動画生成に5分以上かかっています。しばらく後に再度お試しください。');
+    } else {
+      hideLoading();
+      setStep(5);
+      showError('生成エラー: ' + err.message);
+    }
   }
 }
 
