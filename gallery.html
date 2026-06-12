@@ -85,16 +85,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .card-body{display:none;border-top:1px solid var(--border);padding:18px 18px 20px;}
 .video-card.expanded .card-body{display:block;}
 
-.card-body-grid{display:grid;grid-template-columns:auto 1fr;gap:20px;}
-@media(max-width:600px){.card-body-grid{grid-template-columns:1fr;}}
-
-/* ミニ動画プレビュー */
-.mini-video-wrap{width:100px;flex-shrink:0;background:#000;border-radius:var(--radius2);overflow:hidden;aspect-ratio:9/16;cursor:pointer;position:relative;}
-.mini-video-wrap video{width:100%;height:100%;object-fit:cover;display:block;}
-.mini-play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);transition:background .15s;}
-.mini-video-wrap:hover .mini-play-overlay{background:rgba(108,99,255,0.4);}
-.mini-play-icon{font-size:28px;color:#fff;}
-
 /* メタ情報 */
 .meta-section{flex:1;min-width:0;}
 .meta-concept{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:14px;padding:10px 12px;background:var(--surface2);border-radius:var(--radius2);border-left:3px solid rgba(108,99,255,0.4);}
@@ -121,6 +111,30 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .hashtag:hover{background:rgba(108,99,255,0.25);}
 
 .no-meta{font-size:12px;color:var(--text3);font-style:italic;}
+
+/* 展開パネル内レイアウト */
+.card-body-grid{display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:start;}
+@media(max-width:580px){.card-body-grid{grid-template-columns:1fr;}}
+
+/* 動画サイドバー */
+.video-side{display:flex;flex-direction:column;gap:8px;}
+.mini-video-wrap{width:100%;flex-shrink:0;background:#000;border-radius:var(--radius2);overflow:hidden;aspect-ratio:9/16;cursor:pointer;position:relative;}
+.mini-video-wrap video{width:100%;height:100%;object-fit:cover;display:block;}
+.mini-play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);transition:background .15s;}
+.mini-video-wrap:hover .mini-play-overlay{background:rgba(108,99,255,0.4);}
+.mini-play-icon{font-size:28px;color:#fff;}
+.video-side-btns{display:flex;flex-direction:column;gap:6px;}
+
+/* ヘッダー情報行 */
+.info-rows{display:flex;flex-direction:column;gap:3px;margin-top:5px;}
+.info-row-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3);font-family:'Space Mono',monospace;}
+.info-row-item a{color:var(--text3);text-decoration:none;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:bottom;}
+.info-row-item a:hover{color:var(--accent);}
+
+/* ボタン追加 */
+.btn-link{background:transparent;color:var(--text3);border:1px solid var(--border);padding:6px 10px;font-size:11px;}
+.btn-link:hover{border-color:var(--border2);color:var(--text2);}
+.btn-full{width:100%;justify-content:center;font-size:12px;}
 
 /* ローディング・空・エラー */
 .loading-box{text-align:center;padding:60px 20px;}
@@ -421,7 +435,11 @@ function renderList(items) {
 
   items.forEach((item, idx) => {
     const status   = resolveStatus(item);
-    const title    = item.video?.script_title || item.content_url || `Session ${(item.id||'').slice(0,8)}`;
+    // platform_posts から対象プラットフォームのタイトルを取得
+    let pp = item.video?.platform_posts;
+    if (typeof pp === 'string') { try { pp = JSON.parse(pp); } catch { pp = null; } }
+    const ppTitle = pp?.[pfKey(item.platform)]?.video_title || pp?.youtube_shorts?.video_title || '';
+    const title = ppTitle || item.video?.script_title || item.content_url || `Session ${(item.id||'').slice(0,8)}`;
     const videoUrl = item.video?.video_url;
     const date     = item.video?.created_at || item.created_at;
     const filename = `video-${(item.id||'unknown').slice(0,8)}.mp4`;
@@ -436,25 +454,35 @@ function renderList(items) {
         <div class="status-dot ${status}"></div>
         <div class="video-info">
           <div class="video-title">${escHtml(title)}</div>
-          <div class="video-meta">
-            <span class="badge badge-platform">${escHtml(item.platform || '不明')}</span>
-            <span class="video-meta-item">🕐 ${formatDate(date)}</span>
-            ${item.user_name ? `<span class="video-meta-item">👤 ${escHtml(item.user_name)}</span>` : ''}
+          <div class="info-rows">
+            <div class="info-row-item">
+              <span class="badge badge-platform">${escHtml(item.platform || '不明')}</span>
+            </div>
+            ${item.content_url ? `
+            <div class="info-row-item">🔗 <a href="${escHtml(item.content_url)}" target="_blank" rel="noopener" title="${escHtml(item.content_url)}">${escHtml(item.content_url)}</a></div>` : ''}
+            <div class="info-row-item">
+              ${item.user_name ? `👤 ${escHtml(item.user_name)}　` : ''}🕐 ${formatDate(date)}
+            </div>
           </div>
         </div>
         <div class="card-actions">
-          <button class="btn-action btn-play" title="フルスクリーン再生">▶</button>
-          <button class="btn-action btn-dl" title="ダウンロード">↓ DL</button>
           <button class="btn-action btn-chevron" title="詳細を開く"><span class="chev">▾</span></button>
         </div>
       </div>
       <div class="card-body">
         <div class="card-body-grid">
-          <div class="mini-video-wrap">
-            <video playsinline muted loop>
-              <source src="${escHtml(videoUrl)}" type="video/mp4">
-            </video>
-            <div class="mini-play-overlay"><span class="mini-play-icon">▶</span></div>
+          <div class="video-side">
+            <div class="mini-video-wrap">
+              <video playsinline muted loop>
+                <source src="${escHtml(videoUrl)}" type="video/mp4">
+              </video>
+              <div class="mini-play-overlay"><span class="mini-play-icon">▶</span></div>
+            </div>
+            <div class="video-side-btns">
+              <button class="btn-action btn-play btn-full">▶ 動画を見る</button>
+              <button class="btn-action btn-dl btn-full">↓ ダウンロード</button>
+              ${item.content_url ? `<a class="btn-action btn-link btn-full" href="${escHtml(item.content_url)}" target="_blank" rel="noopener">🔗 元記事</a>` : ''}
+            </div>
           </div>
           <div class="meta-section">
             ${buildMetaHtml(item.video, item.platform)}
@@ -465,12 +493,12 @@ function renderList(items) {
 
     // --- イベント ---
     const header   = card.querySelector('.card-header');
-    const body     = card.querySelector('.card-body');
-    const playBtn  = card.querySelector('.btn-play');
-    const dlBtn    = card.querySelector('.btn-dl');
     const chevBtn  = card.querySelector('.btn-chevron');
     const miniWrap = card.querySelector('.mini-video-wrap');
     const miniVid  = card.querySelector('.mini-video-wrap video');
+    // btn-play / btn-dl は展開パネル内にあるため querySelectorAll で取得
+    const playBtns = card.querySelectorAll('.btn-play');
+    const dlBtns   = card.querySelectorAll('.btn-dl');
 
     // 展開トグル（ヘッダークリック / chevronクリック）
     function toggleExpand(e) {
@@ -482,10 +510,9 @@ function renderList(items) {
     header.addEventListener('click', toggleExpand);
     chevBtn.addEventListener('click', toggleExpand);
 
-    // フルスクリーン再生
-    playBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      openPreview(videoUrl, title, filename);
+    // フルスクリーン再生（ミニ動画 / ▶ボタン）
+    playBtns.forEach(btn => {
+      btn.addEventListener('click', e => { e.stopPropagation(); openPreview(videoUrl, title, filename); });
     });
     miniWrap.addEventListener('click', e => {
       e.stopPropagation();
@@ -493,13 +520,13 @@ function renderList(items) {
     });
 
     // ダウンロード
-    dlBtn.addEventListener('click', async e => {
-      e.stopPropagation();
-      dlBtn.classList.add('loading');
-      dlBtn.textContent = '...';
-      await blobDownload(videoUrl, filename);
-      dlBtn.classList.remove('loading');
-      dlBtn.textContent = '↓ DL';
+    dlBtns.forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        dlBtns.forEach(b => { b.classList.add('loading'); b.textContent = '...'; });
+        await blobDownload(videoUrl, filename);
+        dlBtns.forEach(b => { b.classList.remove('loading'); b.textContent = '↓ ダウンロード'; });
+      });
     });
 
     // プラットフォームタブ切り替え
