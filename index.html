@@ -44,9 +44,10 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 
 .form-group { margin-bottom: 16px; }
 .form-label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 500; letter-spacing: 0.03em; }
-.form-input, .form-select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; padding: 10px 14px; outline: none; transition: border-color 0.2s; appearance: none; }
-.form-input:focus, .form-select:focus { border-color: var(--accent); }
-.form-input::placeholder { color: var(--text3); }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; padding: 10px 14px; outline: none; transition: border-color 0.2s; appearance: none; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text3); }
+.form-textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; border-radius: var(--radius2); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
@@ -102,7 +103,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .image-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text3); font-size: 12px; }
 .image-placeholder .img-icon { font-size: 32px; }
 
-/* STEP 4: シーン確認 */
+/* ===== STEP 4: シーン確認 + メタ情報 ===== */
 .scene-image-item { display: flex; flex-direction: column; gap: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s; }
 .scene-image-item.editing { border-color: var(--accent); }
 .scene-main-row { display: flex; gap: 12px; padding: 12px; align-items: flex-start; }
@@ -135,26 +136,70 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .edit-summary-banner.visible { display: flex; }
 .edit-summary-banner .icon { color: var(--accent); font-size: 14px; }
 
-/* AV選択ステップ */
-.av-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+/* メタ情報セクション */
+.meta-section { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px; }
+.meta-section-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.meta-section-title .meta-icon { font-size: 15px; }
+.meta-platform-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.meta-tab { padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); color: var(--text3); background: transparent; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
+.meta-tab:hover { border-color: var(--accent); color: var(--accent); }
+.meta-tab.active { background: rgba(108,99,255,0.15); border-color: var(--accent); color: var(--accent); }
+.meta-platform-panel { display: none; }
+.meta-platform-panel.active { display: block; }
+.hashtag-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.hashtag-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.25); border-radius: 100px; font-size: 11px; color: var(--accent); padding: 3px 10px; font-family: 'Space Mono', monospace; }
+.hashtag-input-row { display: flex; gap: 8px; margin-top: 8px; }
+.hashtag-input-row .form-input { font-size: 12px; padding: 7px 10px; }
+.btn-add-tag { background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3); border-radius: var(--radius2); color: var(--accent); font-size: 12px; padding: 7px 14px; cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
+.btn-add-tag:hover { background: rgba(108,99,255,0.25); }
+.meta-save-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+.btn-meta-save { background: var(--accent); color: #fff; border: none; border-radius: var(--radius2); font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 20px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 6px; }
+.btn-meta-save:hover { background: #5a52e0; }
+.meta-saved-badge { display: none; align-items: center; gap: 4px; font-size: 11px; color: var(--accent3); font-family: 'Space Mono', monospace; }
+.meta-saved-badge.show { display: flex; }
+
+/* ===== STEP 5: 左右レイアウト ===== */
+.step5-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 600px) { .step5-layout { grid-template-columns: 1fr; } }
+
+/* 左カラム：シーン確認（読み取り専用） */
+.step5-scenes { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.step5-scenes-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.step5-scene-list { display: flex; flex-direction: column; gap: 8px; max-height: 560px; overflow-y: auto; padding-right: 2px; }
+.step5-scene-row { display: flex; gap: 8px; align-items: flex-start; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 8px; }
+.step5-scene-thumb { width: 36px; height: 64px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); }
+.step5-scene-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.step5-scene-info { flex: 1; min-width: 0; }
+.step5-scene-num { font-size: 9px; color: var(--accent); font-family: 'Space Mono', monospace; margin-bottom: 3px; }
+.step5-scene-text { font-size: 11px; color: var(--text2); line-height: 1.5; word-break: break-all; }
+
+/* 右カラム：設定パネル */
+.step5-settings { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.step5-settings-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+.settings-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.settings-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.settings-section-label { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+
+/* AV選択 */
+.av-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 10px 12px; margin-bottom: 6px; cursor: pointer; transition: all 0.2s; }
 .av-option:hover { border-color: var(--accent); }
 .av-option.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
-.av-option .av-info { flex: 1; min-width: 0; }
-.av-option .av-label { font-size: 13px; font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.av-option .av-reason { font-size: 11px; color: var(--text3); }
-.av-option audio { height: 32px; flex-shrink: 0; }
+.av-option .av-label { font-size: 12px; font-weight: 500; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.av-option .av-reason { font-size: 10px; color: var(--text3); margin-bottom: 6px; }
+.av-option audio { width: 100%; height: 28px; display: block; }
 .recommend-badge { display: inline-flex; align-items: center; gap: 3px; background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.3); border-radius: 100px; font-size: 9px; color: var(--accent3); padding: 1px 6px; font-family: 'Space Mono', monospace; }
 .reason-tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 100px; background: rgba(108,99,255,0.12); color: var(--accent); margin-right: 3px; }
 
-/* 字幕位置プリセット */
-.subtitle-preset { height: 120px; border: 2px solid var(--border); border-radius: var(--radius2); cursor: pointer; position: relative; background: var(--surface2); transition: all 0.2s; overflow: hidden; }
+/* 字幕位置 */
+.subtitle-preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.subtitle-preset { height: 80px; border: 2px solid var(--border); border-radius: var(--radius2); cursor: pointer; position: relative; background: var(--surface2); transition: all 0.2s; overflow: hidden; }
 .subtitle-preset:hover { border-color: var(--accent); }
 .subtitle-preset.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
-.subtitle-preset .sub-bar { position: absolute; left: 10%; right: 10%; height: 10px; background: rgba(255,255,255,0.85); border-radius: 2px; }
-.subtitle-preset.pos-top    .sub-bar { top: 16px; }
+.subtitle-preset .sub-bar { position: absolute; left: 10%; right: 10%; height: 8px; background: rgba(255,255,255,0.85); border-radius: 2px; }
+.subtitle-preset.pos-top    .sub-bar { top: 12px; }
 .subtitle-preset.pos-center .sub-bar { top: 50%; transform: translateY(-50%); }
-.subtitle-preset.pos-bottom .sub-bar { bottom: 28px; }
-.subtitle-preset .sub-label { position: absolute; bottom: 6px; left: 0; right: 0; text-align: center; font-size: 10px; color: var(--text2); font-family: 'Space Mono', monospace; }
+.subtitle-preset.pos-bottom .sub-bar { bottom: 20px; }
+.subtitle-preset .sub-label { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 9px; color: var(--text2); font-family: 'Space Mono', monospace; }
 .subtitle-preset.selected .sub-label { color: var(--accent); }
 
 /* 動画生成中の長時間待機バナー */
@@ -197,7 +242,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 .pulse { animation: pulse 1.5s ease infinite; }
 
-/* ダウンロードボタン */
 .btn-download-main {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   width: 100%; padding: 14px; border-radius: var(--radius2);
@@ -208,6 +252,35 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 }
 .btn-download-main:hover { background: rgba(67,233,123,0.28); transform: translateY(-1px); }
 .btn-download-main:active { transform: translateY(0); }
+
+/* mood info bar (step5) */
+.mood-info-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(108,99,255,0.06); border: 1px solid rgba(108,99,255,0.15); border-radius: var(--radius2); font-size: 11px; color: var(--text2); margin-bottom: 14px; }
+.mood-info-bar .icon { color: var(--accent); font-size: 13px; flex-shrink: 0; }
+
+/* STEP 6/7 左右レイアウト */
+.step67-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 600px) { .step67-layout { grid-template-columns: 1fr; } }
+
+/* メタ情報表示パネル（STEP6/7用） */
+.meta-view-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.meta-view-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.meta-view-label { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.meta-view-value { font-size: 12px; color: var(--text); line-height: 1.6; }
+.meta-view-value.muted { color: var(--text2); }
+.meta-view-platform-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+.meta-view-tab { padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); color: var(--text3); background: transparent; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
+.meta-view-tab:hover { border-color: var(--accent); color: var(--accent); }
+.meta-view-tab.active { background: rgba(108,99,255,0.15); border-color: var(--accent); color: var(--accent); }
+.meta-view-platform-panel { display: none; }
+.meta-view-platform-panel.active { display: block; }
+.meta-view-hashtags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.meta-view-hashtag { display: inline-block; background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.25); border-radius: 100px; font-size: 10px; color: var(--accent); padding: 2px 8px; font-family: 'Space Mono', monospace; }
+
+/* トグルボタン */
+.av-toggle-btn { display: flex; align-items: center; gap: 6px; width: 100%; background: transparent; border: 1px dashed var(--border2); border-radius: var(--radius2); color: var(--text3); font-size: 11px; font-family: 'Noto Sans JP', sans-serif; padding: 7px 12px; cursor: pointer; transition: all 0.15s; margin-top: 4px; }
+.av-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+.av-toggle-extra { display: none; }
+.av-toggle-extra.open { display: block; }
 </style>
 </head>
 <body>
@@ -312,7 +385,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
     </div>
   </div>
 
-  <!-- STEP 4: シーン確認 + ナレーション編集 -->
+  <!-- STEP 4: シーン確認 + ナレーション編集 + メタ情報 -->
   <div class="step" id="step4">
     <div class="card">
       <div class="card-title"><div class="icon">🖼</div>シーンごとの画像・ナレーションを確認</div>
@@ -321,75 +394,197 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
         <span id="edit-summary-text"></span>
       </div>
       <div id="scene-image-list"></div>
-      <div class="btn-row">
+
+      <!-- メタ情報セクション -->
+      <div class="meta-section" id="meta-section">
+        <div class="meta-section-title"><span class="meta-icon">📋</span>動画メタ情報を確認・編集</div>
+
+        <!-- 共通フィールド -->
+        <div class="form-group">
+          <label class="form-label">スクリプトタイトル</label>
+          <input class="form-input" id="meta-script-title" type="text" placeholder="台本の管理タイトル">
+        </div>
+        <div class="form-group">
+          <label class="form-label">コンセプト</label>
+          <input class="form-input" id="meta-concept" type="text" placeholder="この動画で伝えたいこと">
+        </div>
+        <div class="form-group">
+          <label class="form-label">記事要約</label>
+          <textarea class="form-textarea" id="meta-summary" placeholder="記事の概要（1〜2行）"></textarea>
+        </div>
+
+        <!-- プラットフォームタブ -->
+        <div style="margin-top:18px">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500">プラットフォーム別設定</div>
+          <div class="meta-platform-tabs">
+            <button class="meta-tab active" data-tab="youtube" onclick="switchMetaTab('youtube')">YouTube Shorts</button>
+            <button class="meta-tab" data-tab="tiktok" onclick="switchMetaTab('tiktok')">TikTok</button>
+            <button class="meta-tab" data-tab="reels" onclick="switchMetaTab('reels')">Reels</button>
+          </div>
+
+          <!-- YouTube -->
+          <div class="meta-platform-panel active" id="meta-panel-youtube">
+            <div class="form-group">
+              <label class="form-label">動画タイトル <span style="color:var(--text3);font-weight:400">（100文字以内）</span></label>
+              <input class="form-input" id="meta-yt-title" type="text" placeholder="YouTube Shorts用タイトル" maxlength="100">
+            </div>
+            <div class="form-group">
+              <label class="form-label">概要欄 <span style="color:var(--text3);font-weight:400">（200文字以内）</span></label>
+              <textarea class="form-textarea" id="meta-yt-desc" placeholder="概要欄テキスト" maxlength="200"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ハッシュタグ</label>
+              <div class="hashtag-wrap" id="tags-youtube"></div>
+              <div class="hashtag-input-row">
+                <input class="form-input" id="tag-input-youtube" type="text" placeholder="#タグを追加">
+                <button class="btn-add-tag" onclick="addHashtag('youtube')">追加</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TikTok -->
+          <div class="meta-platform-panel" id="meta-panel-tiktok">
+            <div class="form-group">
+              <label class="form-label">動画タイトル <span style="color:var(--text3);font-weight:400">（60文字以内）</span></label>
+              <input class="form-input" id="meta-tt-title" type="text" placeholder="TikTok用タイトル" maxlength="60">
+            </div>
+            <div class="form-group">
+              <label class="form-label">キャプション <span style="color:var(--text3);font-weight:400">（100文字以内）</span></label>
+              <textarea class="form-textarea" id="meta-tt-caption" placeholder="キャプションテキスト" maxlength="100"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ハッシュタグ</label>
+              <div class="hashtag-wrap" id="tags-tiktok"></div>
+              <div class="hashtag-input-row">
+                <input class="form-input" id="tag-input-tiktok" type="text" placeholder="#タグを追加">
+                <button class="btn-add-tag" onclick="addHashtag('tiktok')">追加</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reels -->
+          <div class="meta-platform-panel" id="meta-panel-reels">
+            <div class="form-group">
+              <label class="form-label">動画タイトル <span style="color:var(--text3);font-weight:400">（60文字以内）</span></label>
+              <input class="form-input" id="meta-re-title" type="text" placeholder="Reels用タイトル" maxlength="60">
+            </div>
+            <div class="form-group">
+              <label class="form-label">キャプション <span style="color:var(--text3);font-weight:400">（100文字以内）</span></label>
+              <textarea class="form-textarea" id="meta-re-caption" placeholder="キャプションテキスト" maxlength="100"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ハッシュタグ</label>
+              <div class="hashtag-wrap" id="tags-reels"></div>
+              <div class="hashtag-input-row">
+                <input class="form-input" id="tag-input-reels" type="text" placeholder="#タグを追加">
+                <button class="btn-add-tag" onclick="addHashtag('reels')">追加</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="meta-save-row">
+          <span class="meta-saved-badge" id="meta-saved-badge">✓ 保存しました</span>
+          <button class="btn-meta-save" onclick="saveMetaInfo()">💾 メタ情報を保存</button>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:20px">
         <button class="btn btn-outline" onclick="goBackToStep3()">← 戻る</button>
         <button class="btn btn-primary" onclick="proceedToAvSelection()" style="flex:2">音声・BGMを選ぶ →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 5: 音声・BGM・字幕位置 -->
+  <!-- STEP 5: 左右レイアウト（シーン確認 + 音声/BGM/字幕設定） -->
   <div class="step" id="step5">
-    <div class="card">
-      <div class="card-title"><div class="icon">🎙</div>音声・BGM・字幕位置を選択</div>
-      <div class="info-row" id="mood-info">
-        <span class="icon">✨</span>
-        <span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span>
+    <div class="step5-layout">
+
+      <!-- 左：確定シーン確認（読み取り専用） -->
+      <div class="step5-scenes">
+        <div class="step5-scenes-title">🖼 確定シーン</div>
+        <div class="step5-scene-list" id="step5-scene-list"></div>
       </div>
 
-      <div style="margin-bottom:24px">
-        <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--text)">ナレーション音声</div>
-        <div id="voice-list"></div>
-      </div>
+      <!-- 右：設定パネル -->
+      <div class="step5-settings">
+        <div class="step5-settings-title">⚙️ 動画設定</div>
 
-      <div style="margin-bottom:24px">
-        <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--text);display:flex;justify-content:space-between;align-items:center">
-          <span>BGM</span>
-          <span style="font-size:11px;color:var(--text3);font-family:'Space Mono',monospace">音量 <span id="bgm-volume-label">30</span>%</span>
+        <div class="mood-info-bar" id="mood-info">
+          <span class="icon">✨</span>
+          <span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span>
         </div>
-        <input type="range" id="bgm-volume" min="0" max="100" value="30" style="width:100%;margin-bottom:12px;accent-color:var(--accent)">
-        <div id="bgm-list"></div>
-      </div>
 
-      <div style="margin-bottom:8px">
-        <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--text)">字幕位置</div>
-        <div id="subtitle-position-list" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"></div>
-      </div>
+        <!-- 音声選択 -->
+        <div class="settings-section">
+          <div class="settings-section-label">🎙 ナレーション音声</div>
+          <div id="voice-list"></div>
+        </div>
 
-      <div class="btn-row">
-        <button class="btn btn-outline" onclick="goBackToStep4()">← 戻る</button>
-        <button class="btn btn-primary" onclick="proceedToVideo()" style="flex:2">動画を生成する →</button>
+        <!-- BGM選択 -->
+        <div class="settings-section">
+          <div class="settings-section-label">🎵 BGM</div>
+          <div id="bgm-list"></div>
+        </div>
+
+        <!-- 字幕位置 -->
+        <div class="settings-section">
+          <div class="settings-section-label">💬 字幕位置</div>
+          <div class="subtitle-preset-grid" id="subtitle-position-list"></div>
+        </div>
       </div>
+    </div>
+
+    <!-- ボタン行（全幅） -->
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-outline" onclick="goBackToStep4()">← 戻る</button>
+      <button class="btn btn-primary" onclick="proceedToVideo()" style="flex:2">動画を生成する →</button>
     </div>
   </div>
 
   <!-- STEP 6: 動画確認 -->
   <div class="step" id="step6">
-    <div class="card">
-      <div class="card-title"><div class="icon">🎬</div>動画を確認してください</div>
-      <div class="video-container" id="video-container">
-        <div class="video-placeholder">
-          <div class="play-icon">▶</div>
-          <div>動画を読み込み中...</div>
+    <div class="step67-layout">
+      <!-- 左：動画プレビュー -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title"><div class="icon">🎬</div>動画を確認してください</div>
+        <div class="video-container" id="video-container">
+          <div class="video-placeholder">
+            <div class="play-icon">▶</div>
+            <div>動画を読み込み中...</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-danger" onclick="rejectVideo()">✕ やり直す</button>
+          <button class="btn btn-success" onclick="approveVideo()">✓ この動画で確定</button>
         </div>
       </div>
-      <div class="btn-row">
-        <button class="btn btn-danger" onclick="rejectVideo()">✕ やり直す</button>
-        <button class="btn btn-success" onclick="approveVideo()">✓ この動画で確定</button>
+      <!-- 右：メタ情報確認 -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title"><div class="icon">📋</div>投稿メタ情報</div>
+        <div id="step6-meta-panel"></div>
       </div>
     </div>
   </div>
 
   <!-- STEP 7: 完成 -->
   <div class="step" id="step7">
-    <div class="card" style="text-align:center">
-      <div class="success-icon">✓</div>
-      <div style="font-size:20px;font-weight:700;margin-bottom:8px">動画が完成しました！</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:24px">動画のダウンロードまたは共有ができます</div>
-      <div id="final-video-container" style="margin-bottom:20px"></div>
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <a id="btn-download" href="#" class="btn-download-main" download="video.mp4">⬇ 動画をダウンロード</a>
-        <button class="btn btn-outline" onclick="resetAll()">＋ 新しい動画を生成する</button>
+    <div class="step67-layout">
+      <!-- 左：動画ダウンロード -->
+      <div class="card" style="text-align:center;margin-bottom:0">
+        <div class="success-icon">✓</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px">動画が完成しました！</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:24px">動画のダウンロードまたは共有ができます</div>
+        <div id="final-video-container" style="margin-bottom:20px"></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <a id="btn-download" href="#" class="btn-download-main" download="video.mp4">⬇ 動画をダウンロード</a>
+          <button class="btn btn-outline" onclick="resetAll()">＋ 新しい動画を生成する</button>
+        </div>
+      </div>
+      <!-- 右：メタ情報確認 -->
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title"><div class="icon">📋</div>投稿メタ情報</div>
+        <div id="step7-meta-panel"></div>
       </div>
     </div>
   </div>
@@ -415,50 +610,43 @@ const TMP_IMG_URL        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp
 // const BASE_IMG_URL       = 'https://chirichiri3720.github.io/Content-Recycle/Images';
 // const TMP_IMG_URL        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
 
-
 const VIDEO_URL_WHITELIST = [
   'cdn.shotstack.io',
   'shotstack-assets.s3.ap-southeast-2.amazonaws.com',
-  'shotstack-api-stage-output.s3-ap-southeast-2.amazonaws.com',  
+  'shotstack-api-stage-output.s3-ap-southeast-2.amazonaws.com',
   'storage.googleapis.com',
 ];
 
-// ポーリング設定（フォールバック用）
-const POLL_INTERVAL_MS = 15000; // 15秒
-const POLL_MAX_TRIES   = 20;    // 最大20回 = 5分
+const POLL_INTERVAL_MS = 15000;
+const POLL_MAX_TRIES   = 20;
 
 // ============================================================
-// state（全ステップのデータを保持）
+// state
 // ============================================================
 let state = {
   currentStep: 1,
-
-  // --- step1 入力値（戻った時に復元） ---
-  input: {
-    userName: '',
-    url: '',
-    contentType: '',
-    platform: 'YouTube Shorts',
-  },
-
-  // --- ステップごとの resume_url（戻り対応） ---
-  resumeUrls: {
-    script: null,   // step2で取得（台本選択待ち）
-    image:  null,   // step3で取得（画像スタイル選択待ち）
-    scene:  null,   // step4で取得（シーン確認待ち）
-  },
-
+  input: { userName: '', url: '', contentType: '', platform: 'YouTube Shorts' },
+  resumeUrls: { script: null, image: null, scene: null },
   sessionId:        null,
   selectedScript:   null,
   selectedImage:    null,
   videoUrl:         null,
   scriptCandidates: [],
-  sceneImageUrls:   [],   // step4で使う画像URL配列
+  sceneImageUrls:   [],
   loadingInterval:  null,
   pollTimer:        null,
-
-  // ナレーション編集: { index: { original, current, edited } }
-  narrationEdits: {},
+  narrationEdits:   {},
+  // メタ情報
+  metaInfo: {
+    scriptTitle: '',
+    concept: '',
+    summaryShort: '',
+    platformPosts: {
+      youtube_shorts: { video_title: '', description: '', hashtags: [] },
+      tiktok:         { video_title: '', caption: '',      hashtags: [] },
+      reels:          { video_title: '', caption: '',      hashtags: [] },
+    }
+  },
   avOptions:        { voices: [], bgms: [], moodProfile: null },
   selectedVoice:    null,
   selectedBgm:      null,
@@ -469,28 +657,23 @@ let state = {
 const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:6 };
 
 // ============================================================
-// URL検証（XSS防止）
+// URL検証
 // ============================================================
 function validateVideoUrl(url) {
   if (!url || typeof url !== 'string') return null;
   try {
     const u = new URL(url);
     if (u.protocol !== 'https:') return null;
-    if (VIDEO_URL_WHITELIST.some(d => u.hostname === d || u.hostname.endsWith('.' + d))) {
-      return url;
-    }
-  } catch (e) { /* invalid URL */ }
+    if (VIDEO_URL_WHITELIST.some(d => u.hostname === d || u.hostname.endsWith('.' + d))) return url;
+  } catch (e) {}
   console.error('validateVideoUrl: rejected', url);
   return null;
 }
 
 function escapeHtml(str) {
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
 // ============================================================
@@ -506,7 +689,7 @@ function setStep(n) {
       const p = document.getElementById('prog-' + i);
       if (!p) continue;
       p.classList.remove('active', 'done');
-      if (i < progN)      p.classList.add('done');
+      if (i < progN)       p.classList.add('done');
       else if (i === progN) p.classList.add('active');
     }
   }
@@ -525,15 +708,14 @@ function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false)
     { icon: '📝', text: '台本を作成中' },
   ];
   const useSteps = steps || defaultSteps;
-
   document.getElementById('loading-title').textContent = title || 'AIが処理中...';
-  document.getElementById('loading-sub').textContent = sub || 'しばらくお待ちください';
+  document.getElementById('loading-sub').textContent   = sub   || 'しばらくお待ちください';
   document.getElementById('wait-banner').style.display = showWaitBanner ? 'flex' : 'none';
   document.getElementById('polling-progress').style.display = 'none';
 
   const container = document.getElementById('loading-steps-container');
   container.innerHTML = useSteps.map((s, i) =>
-    `<div class="loading-step-item ${i === 0 ? 'active' : ''}" id="ls-${i+1}">
+    `<div class="loading-step-item ${i===0?'active':''}" id="ls-${i+1}">
        <span class="step-icon">${escapeHtml(s.icon)}</span>${escapeHtml(s.text)}
      </div>`
   ).join('');
@@ -541,17 +723,9 @@ function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false)
   if (state.loadingInterval) clearInterval(state.loadingInterval);
   let idx = 0;
   state.loadingInterval = setInterval(() => {
-    if (idx > 0) {
-      const p = document.getElementById(`ls-${idx}`);
-      if (p) p.classList.replace('active', 'done');
-    }
-    if (idx < useSteps.length) {
-      const c = document.getElementById(`ls-${idx + 1}`);
-      if (c) c.classList.add('active');
-      idx++;
-    } else {
-      clearInterval(state.loadingInterval);
-    }
+    if (idx > 0) { const p = document.getElementById(`ls-${idx}`); if (p) p.classList.replace('active','done'); }
+    if (idx < useSteps.length) { const c = document.getElementById(`ls-${idx+1}`); if (c) c.classList.add('active'); idx++; }
+    else clearInterval(state.loadingInterval);
   }, interval);
 
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -574,47 +748,37 @@ function showError(msg) {
 // ============================================================
 // 戻るボタン処理
 // ============================================================
-async function notifyBackStep(targetStep) {
-  // back-step webhookは未実装のため無効化
-  return;
-}
+async function notifyBackStep(targetStep) { return; }
 
 function goBackToStep1() {
-  // step1の入力値を復元
   const { userName, url, contentType, platform } = state.input;
   document.getElementById('input-username').value     = userName;
   document.getElementById('input-url').value          = url;
   document.getElementById('input-content-type').value = contentType;
   document.getElementById('input-platform').value     = platform;
-  notifyBackStep('input');
   setStep(1);
 }
 
 function goBackToStep2() {
-  // 台本リストは state.scriptCandidates が残っているので再描画
   renderScripts({ script_candidates: state.scriptCandidates });
-  // 選択済み台本を復元
   if (state.selectedScript !== null) {
-    const idx = state.scriptCandidates.findIndex(
-      s => s.script_id === state.selectedScript?.script_id
-    );
+    const idx = state.scriptCandidates.findIndex(s => s.script_id === state.selectedScript?.script_id);
     if (idx >= 0) selectScriptOption(idx);
   }
-  notifyBackStep('script_pending');
   setStep(2);
 }
 
 function goBackToStep3() {
-  // 画像スタイルは固定3種なのでそのまま再描画、選択状態を復元
   renderImages({ images: [
     { index: 0, url: `${BASE_IMG_URL}/realistic.png`,  style: '実写風' },
     { index: 1, url: `${BASE_IMG_URL}/cinematic.png`,  style: 'シネマティック風' },
     { index: 2, url: `${BASE_IMG_URL}/anime.png`,      style: 'アニメーション風' },
   ]});
   if (state.selectedImage !== null) selectImageOption(state.selectedImage);
-  notifyBackStep('image_pending');
   setStep(3);
 }
+
+function goBackToStep4() { setStep(4); }
 
 // ============================================================
 // STEP 1: 開始
@@ -624,12 +788,9 @@ async function startGeneration() {
   const contentType = document.getElementById('input-content-type').value;
   const platform    = document.getElementById('input-platform').value;
   const userName    = document.getElementById('input-username').value.trim();
-
   if (!url)         { showError('コンテンツ URL を入力してください'); return; }
   if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
-
-  // 入力値を保存（戻るボタン用）
   state.input = { userName, url, contentType, platform };
 
   showLoading('AIが処理中...', 'しばらくお待ちください');
@@ -640,17 +801,18 @@ async function startGeneration() {
       body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform }),
     });
     hideLoading();
+    if (res.status === 429) { showError('台本生成の実行回数が上限に達しました。'); return; }
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('n8n からのレスポンスが空です');
     const data = JSON.parse(text);
-    console.log('startGeneration data:', data);
+    if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); return; }
 
-    // if (!data.resume_url) throw new Error('resume_url が返されていません');
-
-    // 台本ステップのresume_urlを保存
     state.resumeUrls.script = data.resume_url;
     state.sessionId         = data.session_id;
     state.scriptCandidates  = data.script_candidates || [];
+
+    // article_summary_short を state に保存
+    state.metaInfo.summaryShort = data.article_summary_short || '';
 
     renderScripts(data);
     setStep(2);
@@ -690,7 +852,7 @@ function renderScripts(data) {
             <div class="scene-item">
               <div class="scene-num">${si+1}</div>
               <div class="scene-content">
-                <div class="scene-role">${escapeHtml(sc.role || 'narration')}</div>
+                <div class="scene-role">${escapeHtml(sc.role||'narration')}</div>
                 <div class="scene-text">${escapeHtml((sc.narration||'').slice(0,80))}${(sc.narration||'').length>80?'...':''}</div>
                 <div class="scene-duration">${escapeHtml(String(sc.duration_sec||5))}秒</div>
               </div>
@@ -699,9 +861,8 @@ function renderScripts(data) {
         </div>
       </div>` : '';
 
-    // DOM APIでメインコンテンツを構築（スコアバーのwidthはstyle属性として安全に設定）
     const badge = document.createElement('span');
-    badge.className = `script-badge ${badges[i]?.cls || 'badge-blue'}`;
+    badge.className = `script-badge ${badges[i]?.cls||'badge-blue'}`;
     badge.textContent = badges[i]?.label || 'オプション';
 
     const title = document.createElement('div');
@@ -724,7 +885,6 @@ function renderScripts(data) {
     div.appendChild(body);
     div.appendChild(scoreWrap);
     if (scenesHtml) div.insertAdjacentHTML('beforeend', scenesHtml);
-
     list.appendChild(div);
   });
 }
@@ -738,10 +898,7 @@ function selectScriptOption(index) {
 }
 
 async function selectScript() {
-  if (!state.selectedScript) {
-    showError('台本を選択してください');
-    return;
-  }
+  if (!state.selectedScript) { showError('台本を選択してください'); return; }
 
   showLoading('台本を確定中...', 'しばらくお待ちください', [
     { icon: '📝', text: '台本を確定中' },
@@ -759,9 +916,7 @@ async function selectScript() {
         action:             'select_script',
       }),
     });
-
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
-
     hideLoading();
     renderImages({ images: [
       { index: 0, url: `${BASE_IMG_URL}/realistic.png`,  style: '実写風' },
@@ -769,57 +924,8 @@ async function selectScript() {
       { index: 2, url: `${BASE_IMG_URL}/anime.png`,      style: 'アニメーション風' },
     ]});
     setStep(3);
-
   } catch (err) {
-    hideLoading();
-    console.error('selectScript error:', err);
-    showError('台本確定エラー: ' + err.message);
-    setStep(2);
-  }
-}
-
-async function selectImage() {
-  if (state.selectedImage === null) {
-    showError('画像スタイルを選択してください');
-    return;
-  }
-
-  showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
-    { icon: '🎨', text: 'スタイルを確定中' },
-    { icon: '🖼', text: 'シーン画像を準備中' },
-    { icon: '✅', text: '完了' },
-  ], 3000);
-
-  try {
-    const styleNames = ['realistic', 'cinematic', 'anime'];
-    const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
-
-    const res = await fetch(SELECT_IMAGE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        selected_image_style: styleNames[state.selectedImage] || 'realistic',
-        selected_image_index: state.selectedImage,
-        session_id:           state.sessionId,
-        action:               'select_image_style',
-        scenes:               scenes,
-      }),
-    });
-
-    if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
-
-    hideLoading();
-
-    const TMP_BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
-    const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_BASE}/tmp${n}.png`);
-    renderSceneImages(scenes, imageUrls);
-    setStep(4);
-
-  } catch (err) {
-    hideLoading();
-    console.error('selectImage error:', err);
-    showError('画像スタイル確定エラー: ' + err.message);
-    setStep(3);
+    hideLoading(); showError('台本確定エラー: ' + err.message); setStep(2);
   }
 }
 
@@ -837,13 +943,15 @@ async function regenerateScript() {
       body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform }),
     });
     hideLoading();
+    if (res.status === 429) { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
-
+    if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
     state.resumeUrls.script = data.resume_url;
     state.sessionId         = data.session_id;
     state.scriptCandidates  = data.script_candidates || [];
+    state.metaInfo.summaryShort = data.article_summary_short || '';
     renderScripts(data);
     setStep(2);
   } catch (err) {
@@ -865,16 +973,12 @@ function renderImages(data) {
     div.className = 'image-option';
     div.dataset.index = i;
     div.addEventListener('click', () => selectImageOption(i));
-
     if (images[i]?.url) {
       const img = document.createElement('img');
-      img.src     = images[i].url;
-      img.alt     = images[i].style || '';
-      img.loading = 'lazy';
+      img.src = images[i].url; img.alt = images[i].style || ''; img.loading = 'lazy';
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
       img.onerror = () => { img.style.display = 'none'; };
       div.appendChild(img);
-
       const caption = document.createElement('div');
       caption.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:white;font-size:12px;font-weight:500;padding:20px 8px 8px;text-align:center;letter-spacing:0.05em;';
       caption.textContent = images[i].style || '';
@@ -901,10 +1005,169 @@ async function regenerateImages() {
   renderImages({ images: [
     { index: 0, url: `${BASE_IMG_URL}/realistic.png`,  style: '実写風' },
     { index: 1, url: `${BASE_IMG_URL}/cinematic.png`,  style: 'シネマティック風' },
-    { index: 2, url: `${BASE_IMG_URL}/anime.png`,       style: 'アニメーション風' },
+    { index: 2, url: `${BASE_IMG_URL}/anime.png`,      style: 'アニメーション風' },
   ]});
   setStep(3);
 }
+
+async function selectImage() {
+  if (state.selectedImage === null) { showError('画像スタイルを選択してください'); return; }
+
+  showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
+    { icon: '🎨', text: 'スタイルを確定中' },
+    { icon: '🖼', text: 'シーン画像を準備中' },
+    { icon: '✅', text: '完了' },
+  ], 3000);
+
+  try {
+    const styleNames = ['realistic', 'cinematic', 'anime'];
+    const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
+    const res = await fetch(SELECT_IMAGE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        selected_image_style: styleNames[state.selectedImage] || 'realistic',
+        selected_image_index: state.selectedImage,
+        session_id:           state.sessionId,
+        action:               'select_image_style',
+        scenes:               scenes,
+      }),
+    });
+    if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
+    hideLoading();
+
+    const TMP_BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
+    const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_BASE}/tmp${n}.png`);
+    state.sceneImageUrls = imageUrls;
+
+    // メタ情報をフォームにセット
+    populateMetaForm();
+    renderSceneImages(scenes, imageUrls);
+    setStep(4);
+  } catch (err) {
+    hideLoading(); showError('画像スタイル確定エラー: ' + err.message); setStep(3);
+  }
+}
+
+// ============================================================
+// STEP 4: メタ情報フォーム
+// ============================================================
+function populateMetaForm() {
+  const sc = state.selectedScript;
+  if (!sc) return;
+
+  // 共通フィールド
+  document.getElementById('meta-script-title').value = sc.script_title || '';
+  document.getElementById('meta-concept').value       = sc.concept      || '';
+  document.getElementById('meta-summary').value       = state.metaInfo.summaryShort || '';
+
+  // platform_posts
+  const pp = sc.platform_posts || {};
+
+  // YouTube
+  const yt = pp.youtube_shorts || {};
+  document.getElementById('meta-yt-title').value = yt.video_title  || '';
+  document.getElementById('meta-yt-desc').value  = yt.description  || '';
+  renderHashtags('youtube', yt.hashtags || []);
+
+  // TikTok
+  const tt = pp.tiktok || {};
+  document.getElementById('meta-tt-title').value   = tt.video_title || '';
+  document.getElementById('meta-tt-caption').value = tt.caption     || '';
+  renderHashtags('tiktok', tt.hashtags || []);
+
+  // Reels
+  const re = pp.reels || {};
+  document.getElementById('meta-re-title').value   = re.video_title || '';
+  document.getElementById('meta-re-caption').value = re.caption     || '';
+  renderHashtags('reels', re.hashtags || []);
+
+  // stateにも保存
+  state.metaInfo.scriptTitle    = sc.script_title || '';
+  state.metaInfo.concept        = sc.concept      || '';
+  state.metaInfo.platformPosts  = JSON.parse(JSON.stringify(pp));
+}
+
+function switchMetaTab(platform) {
+  document.querySelectorAll('.meta-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.meta-platform-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.meta-tab[data-tab="${platform}"]`).classList.add('active');
+  document.getElementById(`meta-panel-${platform}`).classList.add('active');
+}
+
+function renderHashtags(platform, tags) {
+  const wrap = document.getElementById(`tags-${platform}`);
+  wrap.innerHTML = '';
+  tags.forEach(tag => {
+    const chip = document.createElement('span');
+    chip.className = 'hashtag-chip';
+    const text = document.createTextNode(tag);
+    const del  = document.createElement('span');
+    del.textContent = '×';
+    del.style.cssText = 'cursor:pointer;opacity:0.6;margin-left:2px;';
+    del.addEventListener('click', () => removeHashtag(platform, tag));
+    chip.appendChild(text);
+    chip.appendChild(del);
+    wrap.appendChild(chip);
+  });
+}
+
+function addHashtag(platform) {
+  const input = document.getElementById(`tag-input-${platform}`);
+  let tag = input.value.trim();
+  if (!tag) return;
+  if (!tag.startsWith('#')) tag = '#' + tag;
+
+  const pp = state.metaInfo.platformPosts;
+  const key = platform === 'youtube' ? 'youtube_shorts' : platform;
+  if (!pp[key]) pp[key] = { hashtags: [] };
+  if (!pp[key].hashtags.includes(tag)) {
+    pp[key].hashtags.push(tag);
+    renderHashtags(platform, pp[key].hashtags);
+  }
+  input.value = '';
+}
+
+function removeHashtag(platform, tag) {
+  const pp  = state.metaInfo.platformPosts;
+  const key = platform === 'youtube' ? 'youtube_shorts' : platform;
+  if (!pp[key]) return;
+  pp[key].hashtags = pp[key].hashtags.filter(t => t !== tag);
+  renderHashtags(platform, pp[key].hashtags);
+}
+
+function saveMetaInfo() {
+  // フォームの値をstateに反映
+  state.metaInfo.scriptTitle  = document.getElementById('meta-script-title').value.trim();
+  state.metaInfo.concept      = document.getElementById('meta-concept').value.trim();
+  state.metaInfo.summaryShort = document.getElementById('meta-summary').value.trim();
+
+  const pp = state.metaInfo.platformPosts;
+  if (!pp.youtube_shorts) pp.youtube_shorts = { hashtags: [] };
+  if (!pp.tiktok)         pp.tiktok         = { hashtags: [] };
+  if (!pp.reels)          pp.reels          = { hashtags: [] };
+
+  pp.youtube_shorts.video_title = document.getElementById('meta-yt-title').value.trim();
+  pp.youtube_shorts.description = document.getElementById('meta-yt-desc').value.trim();
+  pp.tiktok.video_title         = document.getElementById('meta-tt-title').value.trim();
+  pp.tiktok.caption             = document.getElementById('meta-tt-caption').value.trim();
+  pp.reels.video_title          = document.getElementById('meta-re-title').value.trim();
+  pp.reels.caption              = document.getElementById('meta-re-caption').value.trim();
+
+  // 保存済みバッジを一瞬表示
+  const badge = document.getElementById('meta-saved-badge');
+  badge.classList.add('show');
+  setTimeout(() => badge.classList.remove('show'), 2000);
+}
+
+// Enterキーでタグ追加
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const id = e.target.id;
+  if (id === 'tag-input-youtube') { e.preventDefault(); addHashtag('youtube'); }
+  else if (id === 'tag-input-tiktok') { e.preventDefault(); addHashtag('tiktok'); }
+  else if (id === 'tag-input-reels')  { e.preventDefault(); addHashtag('reels'); }
+});
 
 // ============================================================
 // STEP 4: シーン確認 + ナレーション編集
@@ -926,14 +1189,12 @@ function renderSceneImages(scenes, imageUrls) {
 
     const imgUrl = imageUrls[i] || '';
 
-    // サムネイル
     const thumb = document.createElement('div');
     thumb.className = 'scene-image-thumb';
     thumb.addEventListener('click', () => openLightbox(imgUrl, `Scene ${scene.scene} · ${scene.role || 'narration'}`));
     if (imgUrl) {
       const img = document.createElement('img');
-      img.src = imgUrl;
-      img.alt = `シーン ${scene.scene}`;
+      img.src = imgUrl; img.alt = `シーン ${scene.scene}`;
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
       img.onerror = () => { thumb.innerHTML = '<div class="scene-loading">🖼</div>'; };
       thumb.appendChild(img);
@@ -945,7 +1206,6 @@ function renderSceneImages(scenes, imageUrls) {
     overlay.textContent = '🔍';
     thumb.appendChild(overlay);
 
-    // 情報エリア
     const info = document.createElement('div');
     info.className = 'scene-image-info';
 
@@ -980,7 +1240,6 @@ function renderSceneImages(scenes, imageUrls) {
     mainRow.appendChild(thumb);
     mainRow.appendChild(info);
 
-    // 編集エリア
     const editArea = document.createElement('div');
     editArea.className = 'scene-edit-area';
     editArea.id = `edit-area-${i}`;
@@ -1020,7 +1279,6 @@ function renderSceneImages(scenes, imageUrls) {
     item.appendChild(editArea);
     list.appendChild(item);
 
-    // 既に編集済みのバッジを復元
     if (state.narrationEdits[i].edited) {
       const badge = document.createElement('span');
       badge.className = 'edited-badge';
@@ -1042,16 +1300,12 @@ function toggleEditArea(index) {
   const btn  = document.getElementById(`edit-btn-${index}`);
   const isOpen = area.classList.contains('open');
   if (isOpen) {
-    area.classList.remove('open');
-    item.classList.remove('editing');
-    btn.textContent = '✏️ 編集';
+    area.classList.remove('open'); item.classList.remove('editing'); btn.textContent = '✏️ 編集';
   } else {
     const ta = document.getElementById(`textarea-${index}`);
     ta.value = state.narrationEdits[index]?.current || '';
     onNarrationInput(index);
-    area.classList.add('open');
-    item.classList.add('editing');
-    btn.textContent = '▲ 閉じる';
+    area.classList.add('open'); item.classList.add('editing'); btn.textContent = '▲ 閉じる';
     ta.focus();
   }
 }
@@ -1073,10 +1327,8 @@ function saveNarration(index) {
   const displayEl = document.getElementById(`narration-display-${index}`);
   displayEl.textContent = newText;
   displayEl.classList.toggle('edited', isChanged);
-
   state.narrationEdits[index] = { original: prev.original, current: newText, edited: isChanged };
 
-  // 編集バッジの更新
   const roleEl = document.querySelector(`#scene-item-${index} .scene-image-role`);
   if (roleEl) {
     const existingBadge = roleEl.querySelector('.edited-badge');
@@ -1089,7 +1341,6 @@ function saveNarration(index) {
       existingBadge.remove();
     }
   }
-
   updateEditSummaryBanner();
   toggleEditArea(index);
 }
@@ -1098,34 +1349,317 @@ function updateEditSummaryBanner() {
   const count  = Object.values(state.narrationEdits).filter(e => e.edited).length;
   const banner = document.getElementById('edit-summary-banner');
   const text   = document.getElementById('edit-summary-text');
-  if (count > 0) {
-    text.textContent = `${count}件のシーンのナレーションを編集済み`;
-    banner.classList.add('visible');
-  } else {
-    banner.classList.remove('visible');
-  }
+  if (count > 0) { text.textContent = `${count}件のシーンのナレーションを編集済み`; banner.classList.add('visible'); }
+  else { banner.classList.remove('visible'); }
 }
 
 // ライトボックス
 function openLightbox(imgUrl, caption) {
   if (!imgUrl) return;
-  const img = document.getElementById('lightbox-img');
-  const cap = document.getElementById('lightbox-caption');
-  img.src = imgUrl;
-  img.alt = caption || '';
+  const existing = document.getElementById('lightbox');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'lightbox-overlay';
+  overlay.id = 'lightbox';
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeLightbox(); });
+
+  const inner = document.createElement('div');
+  inner.className = 'lightbox-inner';
+
+  const img = document.createElement('img');
+  img.src = imgUrl; img.alt = caption || '';
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'lightbox-close';
+  closeBtn.textContent = '✕';
+  closeBtn.addEventListener('click', closeLightbox);
+
+  const cap = document.createElement('div');
+  cap.className = 'lightbox-caption';
   cap.textContent = caption || '';
-  document.getElementById('lightbox').style.display = 'flex';
+
+  inner.appendChild(img);
+  inner.appendChild(closeBtn);
+  inner.appendChild(cap);
+  overlay.appendChild(inner);
+  document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 }
-function closeLightbox(event) {
-  if (event && event.target !== document.getElementById('lightbox')) return;
-  document.getElementById('lightbox').style.display = 'none';
+
+function closeLightbox() {
+  const lb = document.getElementById('lightbox');
+  if (lb) lb.remove();
   document.body.style.overflow = '';
 }
 
+// ============================================================
+// STEP 4 → STEP 5 遷移（AV選択 + Step5シーンリスト描画）
+// ============================================================
+const USE_MOCK_AV = false;
+
+const MOCK_AV_OPTIONS = {
+  mood_profile: { primary_mood: 'reassuring', secondary_mood: 'trustworthy', energy: 2, tone_keywords: ['calm'], genre: 'casestudy' },
+  voices: [
+    { id: 'v1', label: '自然な女性の声',    voice_name: 'ja-JP-Neural2-B',        ssml_gender: 'FEMALE', speaking_rate: 0.98, pitch: 0,  sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.wav', reason: ['reassuring','calm','warm'],         energy: 2, genre_affinity: ['faq','howto','casestudy'] },
+    { id: 'v2', label: '落ち着いた男性の声', voice_name: 'ja-JP-Neural2-C',        ssml_gender: 'MALE',   speaking_rate: 0.95, pitch: -1, sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.wav', reason: ['trustworthy','serious','informative'], energy: 2, genre_affinity: ['faq','casestudy','compare','opinion'] },
+    { id: 'v3', label: '信頼感のある男性の声', voice_name: 'ja-JP-Neural2-D',      ssml_gender: 'MALE',   speaking_rate: 1.02, pitch: 0,  sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.wav', reason: ['calm','trustworthy','neutral'],     energy: 3, genre_affinity: ['faq','howto','compare'] },
+    { id: 'v4', label: 'ナチュラルな女性の声', voice_name: 'ja-JP-Chirp3-HD-Zephyr', ssml_gender: 'FEMALE', speaking_rate: 1.0,  pitch: 0,  sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts4.wav', reason: ['natural','friendly','reassuring','positive'], energy: 3, genre_affinity: ['faq','howto','opinion'] },
+  ],
+  bgms: [
+    { id:'b1', name:'BGM1', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm1.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm1.mp3', reason:['neutral','calm','informative'],   energy:2, genre_affinity:['casestudy','faq','howto','compare'], label:'落ち着いた解説系' },
+    { id:'b2', name:'BGM2', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm2.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm2.mp3', reason:['hopeful','reassuring','positive'], energy:3, genre_affinity:['casestudy','howto','opinion'],        label:'安心・前向き系' },
+    { id:'b3', name:'BGM3', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm3.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm3.mp3', reason:['warm','friendly','reassuring'],   energy:2, genre_affinity:['faq','howto'],                         label:'温かい安心系' },
+    { id:'b4', name:'BGM4', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm4.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm4.mp3', reason:['friendly','bright','reassuring'],  energy:3, genre_affinity:['faq','ranking'],                       label:'明るい親しみ系' },
+    { id:'b5', name:'BGM5', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm5.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm5.mp3', reason:['calm','serious','empathetic'],    energy:2, genre_affinity:['casestudy','opinion'],                 label:'落ち着いた共感系' },
+    { id:'b6', name:'BGM6', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm6.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm6.mp3', reason:['calm','serious','informative'],   energy:2, genre_affinity:['casestudy','faq'],                      label:'真剣な情報解説系' },
+    { id:'b7', name:'BGM7', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm7.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm7.mp3', reason:['curious','hook','neutral'],       energy:3, genre_affinity:['ranking','compare','faq'],              label:'フック・興味喚起系' },
+  ],
+  subtitle_presets: ['top','center','bottom'],
+};
+
+const REASON_LABELS = {
+  hopeful:'希望', positive:'前向き', friendly:'親しみやすさ', bright:'明るさ',
+  calm:'落ち着き', reassuring:'安心感', informative:'情報性', empathetic:'共感',
+  curious:'興味喚起', hook:'フック感', serious:'真剣', trustworthy:'信頼感',
+  uplifting:'前向きな高揚感', warm:'温かみ', urgent:'緊迫感', neutral:'無難', natural:'自然',
+};
+
+function scoreAndSort(items, mood) {
+  const want = new Set([mood.primary_mood, mood.secondary_mood, ...(mood.tone_keywords||[])].filter(Boolean));
+  return items.map(item => {
+    const matched   = (item.reason||[]).filter(m => want.has(m));
+    const moodScore = matched.length / Math.max((item.reason||[]).length, 1);
+    const energyScore = 1 - Math.abs((item.energy??3) - (mood.energy??3)) / 4;
+    const genreScore  = (item.genre_affinity||[]).includes(mood.genre) ? 1 : 0;
+    const total = 0.5*moodScore + 0.3*energyScore + 0.2*genreScore;
+    return { ...item, total, reason: matched.length > 0 ? matched : item.reason };
+  }).sort((a,b) => b.total - a.total);
+}
+
+async function proceedToAvSelection() {
+  showLoading('音声・BGMを準備中...', 'おすすめを計算しています', [
+    { icon: '✨', text: '動画の雰囲気を分析中' },
+    { icon: '🎙', text: '音声候補を選定中' },
+    { icon: '🎵', text: 'BGM候補を選定中' },
+    { icon: '✅', text: '完了' },
+  ], 800);
+
+  try {
+    let data;
+    if (USE_MOCK_AV) {
+      await new Promise(r => setTimeout(r, 1500));
+      const mood = state.selectedScript?.mood_profile || MOCK_AV_OPTIONS.mood_profile;
+      data = {
+        mood_profile: mood,
+        voices: scoreAndSort(MOCK_AV_OPTIONS.voices, mood),
+        bgms:   scoreAndSort(MOCK_AV_OPTIONS.bgms, mood),
+        subtitle_presets: MOCK_AV_OPTIONS.subtitle_presets,
+      };
+    } else {
+      const res = await fetch(GET_AV_OPTIONS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get_av_options', session_id: state.sessionId }),
+      });
+      if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
+      data = await res.json();
+      if (Array.isArray(data)) data = data[0];
+    }
+
+    state.avOptions = { voices: data.voices||[], bgms: data.bgms||[], moodProfile: data.mood_profile };
+    renderStep5();
+    hideLoading();
+    setStep(5);
+  } catch (err) {
+    hideLoading(); setStep(4); showError('音声・BGM取得エラー: ' + err.message);
+  }
+}
+
+// ============================================================
+// STEP 5: 描画（左：シーン読み取り専用 / 右：設定）
+// ============================================================
+function renderStep5() {
+  renderStep5SceneList();
+  renderAvOptions();
+}
+
+function renderStep5SceneList() {
+  const container = document.getElementById('step5-scene-list');
+  container.innerHTML = '';
+  const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
+  scenes.forEach((scene, i) => {
+    const row = document.createElement('div');
+    row.className = 'step5-scene-row';
+
+    const thumb = document.createElement('div');
+    thumb.className = 'step5-scene-thumb';
+    const imgUrl = state.sceneImageUrls[i] || '';
+    if (imgUrl) {
+      const img = document.createElement('img');
+      img.src = imgUrl; img.alt = `Scene ${scene.scene}`;
+      img.onerror = () => { thumb.textContent = '🖼'; thumb.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:14px;'; };
+      thumb.appendChild(img);
+    } else {
+      thumb.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:14px;';
+      thumb.textContent = '🖼';
+    }
+
+    const info = document.createElement('div');
+    info.className = 'step5-scene-info';
+
+    const num = document.createElement('div');
+    num.className = 'step5-scene-num';
+    num.textContent = `SCENE ${scene.scene} · ${scene.role || 'narration'}`;
+
+    const text = document.createElement('div');
+    text.className = 'step5-scene-text';
+    // 編集済みナレーションを優先表示
+    text.textContent = state.narrationEdits[i]?.current || scene.narration || '';
+
+    info.appendChild(num);
+    info.appendChild(text);
+    row.appendChild(thumb);
+    row.appendChild(info);
+    container.appendChild(row);
+  });
+}
+
+function renderAvOptions() {
+  const mp = state.avOptions.moodProfile;
+  if (mp) {
+    const tags = [mp.primary_mood, mp.secondary_mood].filter(Boolean)
+      .map(m => REASON_LABELS[m]||m).join(' × ');
+    document.getElementById('mood-info-text').textContent = `この動画の雰囲気: ${tags} → おすすめ順`;
+  }
+  renderAvList('voice-list', state.avOptions.voices, 'voice');
+  renderAvList('bgm-list',   state.avOptions.bgms,   'bgm');
+  if (state.avOptions.voices[0]) selectAv('voice', 0);
+  if (state.avOptions.bgms[0])   selectAv('bgm', 0);
+  renderSubtitlePresets();
+}
+
+function renderAvList(containerId, items, kind) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const TOP = 2; // 上位2件を常時表示
+
+  // 上位2件
+  items.slice(0, TOP).forEach((it, i) => {
+    container.appendChild(buildAvRow(it, i, kind));
+  });
+
+  // 残りがあればトグル
+  if (items.length > TOP) {
+    const extra = document.createElement('div');
+    extra.className = 'av-toggle-extra';
+    extra.id = `${containerId}-extra`;
+    items.slice(TOP).forEach((it, i) => {
+      extra.appendChild(buildAvRow(it, TOP + i, kind));
+    });
+
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'av-toggle-btn';
+    toggleBtn.id = `${containerId}-toggle`;
+    toggleBtn.innerHTML = `<span>▾</span> 他 ${items.length - TOP} 件を表示`;
+    toggleBtn.addEventListener('click', () => {
+      const isOpen = extra.classList.toggle('open');
+      toggleBtn.innerHTML = isOpen
+        ? `<span>▴</span> 閉じる`
+        : `<span>▾</span> 他 ${items.length - TOP} 件を表示`;
+    });
+
+    container.appendChild(toggleBtn);
+    container.appendChild(extra);
+  }
+}
+
+function buildAvRow(it, i, kind) {
+  const row = document.createElement('div');
+  row.className = 'av-option';
+  row.dataset.index = i; row.dataset.kind = kind;
+  row.addEventListener('click', e => {
+    if (e.target.tagName === 'AUDIO' || e.target.closest('audio')) return;
+    selectAv(kind, i);
+  });
+
+  const info = document.createElement('div');
+  info.className = 'av-info';
+
+  const label = document.createElement('div');
+  label.className = 'av-label';
+  const name = document.createElement('span');
+  name.textContent = it.label || it.name;
+  label.appendChild(name);
+  if (i === 0) {
+    const badge = document.createElement('span');
+    badge.className = 'recommend-badge';
+    badge.textContent = '★ おすすめ';
+    label.appendChild(badge);
+  }
+
+  const reasonRow = document.createElement('div');
+  reasonRow.className = 'av-reason';
+  if (it.reason && it.reason.length) {
+    it.reason.forEach(r => {
+      const tag = document.createElement('span');
+      tag.className = 'reason-tag';
+      tag.textContent = REASON_LABELS[r] || r;
+      reasonRow.appendChild(tag);
+    });
+  } else { reasonRow.textContent = '—'; }
+
+  info.appendChild(label);
+  info.appendChild(reasonRow);
+
+  const audio = document.createElement('audio');
+  audio.controls = true; audio.preload = 'none';
+  audio.src = it.sample_url || '';
+  audio.addEventListener('play', () => stopOtherAudios(audio));
+
+  row.appendChild(info);
+  row.appendChild(audio);
+  return row;
+}
+
+
+  document.querySelectorAll('#step5 audio').forEach(a => { if (a !== current) a.pause(); });
+}
+
+function selectAv(kind, index) {
+  const listId = kind === 'voice' ? 'voice-list' : 'bgm-list';
+  document.querySelectorAll(`#${listId} .av-option`).forEach(el => el.classList.remove('selected'));
+  const target = document.querySelector(`#${listId} .av-option[data-index="${index}"]`);
+  if (target) target.classList.add('selected');
+  if (kind === 'voice') state.selectedVoice = state.avOptions.voices[index];
+  else                  state.selectedBgm   = state.avOptions.bgms[index];
+}
+
+function renderSubtitlePresets() {
+  const positions = [{ key:'top', label:'上' }, { key:'center', label:'中央' }, { key:'bottom', label:'下' }];
+  const container = document.getElementById('subtitle-position-list');
+  container.innerHTML = '';
+  positions.forEach(p => {
+    const div = document.createElement('div');
+    div.className = `subtitle-preset pos-${p.key}`;
+    if (state.subtitlePosition === p.key) div.classList.add('selected');
+    div.addEventListener('click', () => {
+      state.subtitlePosition = p.key;
+      document.querySelectorAll('.subtitle-preset').forEach(el => el.classList.remove('selected'));
+      div.classList.add('selected');
+    });
+    const bar = document.createElement('div'); bar.className = 'sub-bar';
+    const lbl = document.createElement('div'); lbl.className = 'sub-label'; lbl.textContent = p.label;
+    div.appendChild(bar); div.appendChild(lbl);
+    container.appendChild(div);
+  });
+}
+
+// ============================================================
+// STEP 5 → 動画生成
+// ============================================================
 async function proceedToVideo() {
   const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
-
   const finalNarrations = scenes.map((sc, i) => ({
     scene:        sc.scene,
     role:         sc.role,
@@ -1134,39 +1668,30 @@ async function proceedToVideo() {
     edited:       state.narrationEdits[i]?.edited ?? false,
   }));
 
-  showLoading(
-    '動画を生成中...',
-    'TTS音声とShotstackで動画を合成しています',
-    [
-      { icon: '🎙', text: 'Google TTSで音声を生成中' },
-      { icon: '🖼', text: '画像を準備中' },
-      { icon: '💬', text: '字幕を生成中　'},
-      { icon: '🎞', text: 'Shotstackで動画を合成中' },
-      { icon: '✅', text: '完成' },
-    ],
-    20000,
-    true
-  );
-  // showLoading後に進捗バーを表示
+  showLoading('動画を生成中...', 'TTS音声とShotstackで動画を合成しています', [
+    { icon: '🎙', text: 'Google TTSで音声を生成中' },
+    { icon: '🖼', text: '画像を準備中' },
+    { icon: '💬', text: '字幕を生成中' },
+    { icon: '🎞', text: 'Shotstackで動画を合成中' },
+    { icon: '✅', text: '完成' },
+  ], 20000, true);
+
   setTimeout(() => {
-  document.getElementById('polling-progress').style.display = 'block';
-  const bar = document.getElementById('polling-bar');
-  bar.style.width = '0%';  // まずリセット
-  requestAnimationFrame(() => {
-    bar.style.transition = 'width 90s linear';
-    bar.style.width = '100%';
-  });
-  document.getElementById('polling-status').textContent = '動画を生成中...';
-}, 100);
-  // 5分でAbort → ポーリングにフォールバック
-  const controller = new AbortController();
+    document.getElementById('polling-progress').style.display = 'block';
+    const bar = document.getElementById('polling-bar');
+    bar.style.width = '0%';
+    requestAnimationFrame(() => { bar.style.transition = 'width 90s linear'; bar.style.width = '100%'; });
+    document.getElementById('polling-status').textContent = '動画を生成中...';
+  }, 100);
+
+  const controller  = new AbortController();
   const fetchTimeout = setTimeout(() => controller.abort(), 300000);
 
   try {
     const res = await fetch(GENERATE_VIDEO_URL, {
-      method:  'POST',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      signal:  controller.signal,
+      signal: controller.signal,
       body: JSON.stringify({
         action:             'approve_scenes',
         session_id:         state.sessionId,
@@ -1182,61 +1707,46 @@ async function proceedToVideo() {
         bgm_storage_url:    state.selectedBgm?.storage_url,
         bgm_volume:         state.bgmVolume,
         subtitle_position:  state.subtitlePosition,
+        // メタ情報も一緒に送信
+        meta_info:          state.metaInfo,
       }),
     });
-
     clearTimeout(fetchTimeout);
-
+    if (res.status === 429) { hideLoading(); setStep(5); showError('動画生成の実行回数が上限に達しました。'); return; }
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
-
-    if (data.status === 'failed' || data.error) {
-      throw new Error(data.error || '動画生成に失敗しました');
-    }
-
+    if (data.status === 'failed' || data.error) throw new Error(data.error || '動画生成に失敗しました');
     const videoUrl = validateVideoUrl(data.video_url);
     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
-
     state.videoUrl = videoUrl;
     hideLoading();
     renderVideo({ video_url: videoUrl });
     setStep(6);
-
   } catch (err) {
     clearTimeout(fetchTimeout);
     if (err.name === 'AbortError' || err.message.includes('空')) {
-      // タイムアウト → ポーリングにフォールバック
       startVideoPolling();
     } else {
-      hideLoading();
-      setStep(5);
-      showError('生成エラー: ' + err.message);
+      hideLoading(); setStep(5); showError('生成エラー: ' + err.message);
     }
   }
 }
 
 // ============================================================
-// フォールバック: Supabaseポーリング（fetchタイムアウト時）
+// フォールバック: ポーリング
 // ============================================================
 function startVideoPolling() {
   document.getElementById('wait-banner').style.display = 'flex';
   document.getElementById('polling-progress').style.display = 'block';
-
   let tries = 0;
-
   function runPoll() {
     tries++;
     const bar = document.getElementById('polling-bar');
     const statusEl = document.getElementById('polling-status');
-
-    if (bar) {
-      bar.style.width = '0';
-      requestAnimationFrame(() => { bar.style.width = '100%'; });
-    }
+    if (bar) { bar.style.width = '0'; requestAnimationFrame(() => { bar.style.width = '100%'; }); }
     if (statusEl) statusEl.textContent = `確認中... (${tries}/${POLL_MAX_TRIES})`;
-
     fetch(`${CHECK_VIDEO_URL}?session_id=${encodeURIComponent(state.sessionId)}`)
       .then(r => r.json())
       .then(data => {
@@ -1244,425 +1754,202 @@ function startVideoPolling() {
           const videoUrl = validateVideoUrl(data.video_url);
           if (!videoUrl) throw new Error('Invalid video URL from polling');
           state.videoUrl = videoUrl;
-          hideLoading();
-          renderVideo({ video_url: videoUrl });
-          setStep(6);
+          hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
         } else if (data.video_status === 'failed') {
-          hideLoading();
-          setStep(4);
-          showError('動画生成に失敗しました。シーン確認から再試行してください。');
+          hideLoading(); setStep(4); showError('動画生成に失敗しました。');
         } else if (tries >= POLL_MAX_TRIES) {
-          hideLoading();
-          setStep(4);
-          showError('タイムアウト: 動画生成に時間がかかっています。しばらく後に再度お試しください。');
+          hideLoading(); setStep(4); showError('タイムアウト: しばらく後に再度お試しください。');
         } else {
           state.pollTimer = setTimeout(runPoll, POLL_INTERVAL_MS);
         }
       })
       .catch(e => {
-        if (tries >= POLL_MAX_TRIES) {
-          hideLoading();
-          setStep(4);
-          showError('通信エラー: ' + e.message);
-        } else {
-          state.pollTimer = setTimeout(runPoll, POLL_INTERVAL_MS);
-        }
+        if (tries >= POLL_MAX_TRIES) { hideLoading(); setStep(4); showError('通信エラー: ' + e.message); }
+        else state.pollTimer = setTimeout(runPoll, POLL_INTERVAL_MS);
       });
   }
-
   runPoll();
 }
+
 // ============================================================
-// STEP 4.5: 音声/BGM/字幕位置 選択
+// メタ情報表示パネル（STEP6/7共通）
 // ============================================================
-
-// モックデータ（n8n get_av_options が出来たら本物に差し替え）
-const USE_MOCK_AV = false;
-
-const MOCK_AV_OPTIONS = {
-  mood_profile: { primary_mood: 'reassuring', secondary_mood: 'trustworthy', energy: 2, tone_keywords: ['calm'], genre: 'casestudy' },
-  voices: [
-  {
-    id: 'v1',
-    label: '自然な女性の声',
-    voice_name: 'ja-JP-Neural2-B',
-    ssml_gender: 'FEMALE',
-    speaking_rate: 0.98,
-    pitch: 0,
-    sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.wav',
-    reason: ['reassuring', 'calm', 'warm'],
-    energy: 2,
-    genre_affinity: ['faq', 'howto', 'casestudy'],
-    recommended_for: '安心感を重視した債務整理・信用情報の解説'
-  },
-  {
-    id: 'v2',
-    label: '落ち着いた男性の声',
-    voice_name: 'ja-JP-Neural2-C',
-    ssml_gender: 'MALE',
-    speaking_rate: 0.95,
-    pitch: -1,
-    sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.wav',
-    reason: ['trustworthy', 'serious', 'informative'],
-    energy: 2,
-    genre_affinity: ['faq', 'casestudy', 'compare', 'opinion'],
-    recommended_for: '信頼感・真剣さを出したい金融系解説'
-  },
-  {
-    id: 'v3',
-    label: '信頼感のある男性の声',
-    voice_name: 'ja-JP-Neural2-D',
-    ssml_gender: 'MALE',
-    speaking_rate: 1.02,
-    pitch: 0,
-    sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.wav',
-    reason: ['calm', 'trustworthy', 'neutral'],
-    energy: 3,
-    genre_affinity: ['faq', 'howto', 'compare'],
-    recommended_for: 'テンポよく制度や確認方法を説明する動画'
-  },
-  {
-    id: 'v4',
-    label: 'ナチュラルな女性の声',
-    voice_name: 'ja-JP-Chirp3-HD-Zephyr',
-    ssml_gender: 'FEMALE',
-    speaking_rate: 1.0,
-    pitch: 0,
-    sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts4.wav',
-    reason: ['natural', 'friendly', 'reassuring', 'positive'],
-    energy: 3,
-    genre_affinity: ['faq', 'howto', 'opinion'],
-    recommended_for: '自然さを重視した本番用ナレーション'
-  }
-],
-
-  bgms: [
-    {
-      id: 'b1',
-      name: 'BGM1',
-      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm1.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm1.mp3',
-      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm1.mp3',
-      reason: ['neutral', 'calm', 'informative'],
-      energy: 2,
-      genre_affinity: ['casestudy', 'faq', 'howto', 'compare'],
-      label: '落ち着いた解説系'
-    },
-    {
-      id: 'b2',
-      name: 'BGM2',
-      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm2.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm2.mp3',
-      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm2.mp3',
-      reason: ['hopeful', 'reassuring', 'positive'],
-      energy: 3,
-      genre_affinity: ['casestudy', 'howto', 'opinion'],
-      label: '安心・前向き系'
-    },
-    {
-      id: 'b3',
-      name: 'BGM3',
-      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm3.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm3.mp3',
- 
-      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm3.mp3',
-      reason: ['warm', 'friendly', 'reassuring'],
-      energy: 2,
-      genre_affinity: ['faq', 'howto'],
-      label: '温かい安心系'
-    },
-    {
-      id: 'b4',
-      name: 'BGM4',
-      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm4.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm4.mp3',
-      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm4.mp3',
-      reason: ['friendly', 'bright', 'reassuring'],
-      energy: 3,
-      genre_affinity: ['faq', 'ranking'],
-      label: '明るい親しみ系'
-    },
-    {
-      id: 'b5',
-      name: 'BGM5',
-      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm5.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm5.mp3',    
-      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm5.mp3',
-      reason: ['calm', 'serious', 'empathetic'],
-      energy: 2,
-      genre_affinity: ['casestudy', 'opinion'],
-      label: '落ち着いた共感系'
-    },
-    {
-      id: 'b6',
-      name: 'BGM6',
-      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm6.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm6.mp3',
-      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm6.mp3',
-      reason: ['calm', 'serious', 'informative'],
-      energy: 2,
-      genre_affinity: ['casestudy', 'faq'],
-      label: '真剣な情報解説系'
-    },
-    {
-      id: 'b7',
-      name: 'BGM7',
-      storage_url: 'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm7.mp3',
-      sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm7.mp3',
-      // sample_url: 'https://example.supabase.co/storage/v1/object/public/sample_bgm/sample_bgm7.mp3',
-      reason: ['curious', 'hook', 'neutral'],
-      energy: 3,
-      genre_affinity: ['ranking', 'compare', 'faq'],
-      label: 'フック・興味喚起系'
-    }
-  ],
-
-  subtitle_presets: ['top','center','bottom'],
-};
-const GENRE_LABELS = { faq: 'FAQ・解説', drama: 'ドラマ', howto: 'ハウツー', ranking: 'ランキング', casestudy: '事例', compare: '比較', opinion: '意見・考察' };
-const REASON_LABELS = {
-  hopeful: '希望', positive: '前向き', friendly: '親しみやすさ', bright: '明るさ',
-  calm: '落ち着き', reassuring: '安心感', informative: '情報性', empathetic: '共感',
-  curious: '興味喚起', hook: 'フック感', serious: '真剣', trustworthy: '信頼感',
-  uplifting: '前向きな高揚感', warm: '温かみ', urgent: '緊迫感', neutral: '無難',
-  natural: '自然'
-};
-
-function scoreAndSort(items, mood) {
-  const want = new Set([
-    mood.primary_mood,
-    mood.secondary_mood,
-    ...(mood.tone_keywords || [])
-  ].filter(Boolean));
-
-  return items
-    .map(item => {
-      const matched     = (item.reason || []).filter(m => want.has(m));
-      const moodScore   = matched.length / Math.max((item.reason || []).length, 1);
-      const energyScore = 1 - Math.abs((item.energy ?? 3) - (mood.energy ?? 3)) / 4;
-      const genreScore  = (item.genre_affinity || []).includes(mood.genre) ? 1 : 0;
-      const total       = 0.5 * moodScore + 0.3 * energyScore + 0.2 * genreScore;
-      return { ...item, total, reason: matched.length > 0 ? matched : item.reason };
-    })
-    .sort((a, b) => b.total - a.total);
-}
-
-async function proceedToAvSelection() {
-  showLoading('音声・BGMを準備中...', 'おすすめを計算しています', [
-    { icon: '✨', text: '動画の雰囲気を分析中' },
-    { icon: '🎙', text: '音声候補を選定中' },
-    { icon: '🎵', text: 'BGM候補を選定中' },
-    { icon: '✅', text: '完了' },
-  ], 800);
-
-  try {
-    let data;
-    if (USE_MOCK_AV) {
-      await new Promise(r => setTimeout(r, 1500));
-      // 選択した台本のmood_profileを使ってモックデータをスコアリング
-      const mood = state.selectedScript?.mood_profile || MOCK_AV_OPTIONS.mood_profile;
-      data = {
-        mood_profile: mood,
-        voices: scoreAndSort(MOCK_AV_OPTIONS.voices, mood),
-        bgms:   scoreAndSort(MOCK_AV_OPTIONS.bgms, mood),
-        subtitle_presets: MOCK_AV_OPTIONS.subtitle_presets,
-      };
-    }else {
-      const res = await fetch(GET_AV_OPTIONS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'get_av_options', session_id: state.sessionId }),
-      });
-      if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
-      data = await res.json();
-      if (Array.isArray(data)) data = data[0];
-    }
-
-    state.avOptions = { voices: data.voices || [], bgms: data.bgms || [], moodProfile: data.mood_profile };
-    renderAvOptions();
-    hideLoading();
-    setStep(5);
-  } catch (err) {
-    hideLoading();
-    setStep(4);
-    showError('音声・BGM取得エラー: ' + err.message);
-  }
-}
-
-function renderAvOptions() {
-  // 雰囲気の表示
-  const mp = state.avOptions.moodProfile;
-  if (mp) {
-    const tags = [mp.primary_mood, mp.secondary_mood].filter(Boolean)
-      .map(m => REASON_LABELS[m] || m).join(' × ');
-    document.getElementById('mood-info-text').textContent = `この動画の雰囲気: ${tags}  → おすすめ順に並べています`;
-  }
-
-  // 音声
-  renderAvList('voice-list', state.avOptions.voices, 'voice');
-  // BGM
-  renderAvList('bgm-list', state.avOptions.bgms, 'bgm');
-
-  // 先頭を初期選択
-  if (state.avOptions.voices[0]) selectAv('voice', 0);
-  if (state.avOptions.bgms[0])   selectAv('bgm', 0);
-
-  // BGM音量
-  const volRange = document.getElementById('bgm-volume');
-  volRange.value = Math.round(state.bgmVolume * 100);
-  document.getElementById('bgm-volume-label').textContent = volRange.value;
-  volRange.oninput = () => {
-    state.bgmVolume = Number(volRange.value) / 100;
-    document.getElementById('bgm-volume-label').textContent = volRange.value;
-  };
-
-  
-  renderSubtitlePresets();
-}
-
-function renderAvList(containerId, items, kind) {
+function buildMetaViewPanel(containerId) {
   const container = document.getElementById(containerId);
+  if (!container) return;
   container.innerHTML = '';
-  items.forEach((it, i) => {
-    const row = document.createElement('div');
-    row.className = 'av-option';
-    row.dataset.index = i;
-    row.dataset.kind  = kind;
-    row.addEventListener('click', (e) => {
-      if (e.target.tagName === 'AUDIO' || e.target.closest('audio')) return;
-      selectAv(kind, i);
+
+  const m = state.metaInfo;
+
+  // スクリプトタイトル
+  if (m.scriptTitle) {
+    const sec = document.createElement('div');
+    sec.className = 'meta-view-section';
+    sec.innerHTML = `<div class="meta-view-label">スクリプトタイトル</div>`;
+    const val = document.createElement('div');
+    val.className = 'meta-view-value';
+    val.textContent = m.scriptTitle;
+    sec.appendChild(val);
+    container.appendChild(sec);
+  }
+
+  // コンセプト
+  if (m.concept) {
+    const sec = document.createElement('div');
+    sec.className = 'meta-view-section';
+    sec.innerHTML = `<div class="meta-view-label">コンセプト</div>`;
+    const val = document.createElement('div');
+    val.className = 'meta-view-value muted';
+    val.textContent = m.concept;
+    sec.appendChild(val);
+    container.appendChild(sec);
+  }
+
+  // 記事要約
+  if (m.summaryShort) {
+    const sec = document.createElement('div');
+    sec.className = 'meta-view-section';
+    sec.innerHTML = `<div class="meta-view-label">記事要約</div>`;
+    const val = document.createElement('div');
+    val.className = 'meta-view-value muted';
+    val.textContent = m.summaryShort;
+    sec.appendChild(val);
+    container.appendChild(sec);
+  }
+
+  // プラットフォーム別
+  const pp = m.platformPosts || {};
+  const platforms = [
+    { key: 'youtube', storeKey: 'youtube_shorts', label: 'YouTube Shorts', titleField: 'video_title', bodyField: 'description', bodyLabel: '概要欄' },
+    { key: 'tiktok',  storeKey: 'tiktok',         label: 'TikTok',         titleField: 'video_title', bodyField: 'caption',     bodyLabel: 'キャプション' },
+    { key: 'reels',   storeKey: 'reels',           label: 'Reels',          titleField: 'video_title', bodyField: 'caption',     bodyLabel: 'キャプション' },
+  ];
+
+  const platSec = document.createElement('div');
+  platSec.className = 'meta-view-section';
+
+  const tabLabel = document.createElement('div');
+  tabLabel.className = 'meta-view-label';
+  tabLabel.textContent = 'プラットフォーム別投稿情報';
+  platSec.appendChild(tabLabel);
+
+  const tabRow = document.createElement('div');
+  tabRow.className = 'meta-view-platform-tabs';
+
+  const uid = containerId; // パネルごとにユニークなID用
+
+  platforms.forEach((p, idx) => {
+    const tab = document.createElement('button');
+    tab.className = 'meta-view-tab' + (idx === 0 ? ' active' : '');
+    tab.dataset.tab = p.key;
+    tab.textContent = p.label;
+    tab.addEventListener('click', () => {
+      platSec.querySelectorAll('.meta-view-tab').forEach(t => t.classList.remove('active'));
+      platSec.querySelectorAll('.meta-view-platform-panel').forEach(panel => panel.classList.remove('active'));
+      tab.classList.add('active');
+      platSec.querySelector(`#mvp-${uid}-${p.key}`).classList.add('active');
     });
+    tabRow.appendChild(tab);
+  });
+  platSec.appendChild(tabRow);
 
-    const info = document.createElement('div');
-    info.className = 'av-info';
+  platforms.forEach((p, idx) => {
+    const d = pp[p.storeKey] || {};
+    const panel = document.createElement('div');
+    panel.className = 'meta-view-platform-panel' + (idx === 0 ? ' active' : '');
+    panel.id = `mvp-${uid}-${p.key}`;
 
-    const label = document.createElement('div');
-    label.className = 'av-label';
-    const name = document.createElement('span');
-    name.textContent = it.label || it.name;
-    label.appendChild(name);
-    if (i === 0) {
-      const badge = document.createElement('span');
-      badge.className = 'recommend-badge';
-      badge.textContent = '★ おすすめ';
-      label.appendChild(badge);
-    }
+    // タイトル
+    const titleSec = document.createElement('div');
+    titleSec.style.marginBottom = '10px';
+    const titleLbl = document.createElement('div');
+    titleLbl.className = 'meta-view-label';
+    titleLbl.textContent = '動画タイトル';
+    const titleVal = document.createElement('div');
+    titleVal.className = 'meta-view-value';
+    titleVal.textContent = d[p.titleField] || '—';
+    titleSec.appendChild(titleLbl);
+    titleSec.appendChild(titleVal);
+    panel.appendChild(titleSec);
 
-    const reasonRow = document.createElement('div');
-    reasonRow.className = 'av-reason';
-    if (it.reason && it.reason.length) {
-      it.reason.forEach(r => {
-        const tag = document.createElement('span');
-        tag.className = 'reason-tag';
-        tag.textContent = REASON_LABELS[r] || r;
-        reasonRow.appendChild(tag);
+    // 概要/キャプション
+    const bodySec = document.createElement('div');
+    bodySec.style.marginBottom = '10px';
+    const bodyLbl = document.createElement('div');
+    bodyLbl.className = 'meta-view-label';
+    bodyLbl.textContent = p.bodyLabel;
+    const bodyVal = document.createElement('div');
+    bodyVal.className = 'meta-view-value muted';
+    bodyVal.textContent = d[p.bodyField] || '—';
+    bodySec.appendChild(bodyLbl);
+    bodySec.appendChild(bodyVal);
+    panel.appendChild(bodySec);
+
+    // ハッシュタグ
+    const tagSec = document.createElement('div');
+    const tagLbl = document.createElement('div');
+    tagLbl.className = 'meta-view-label';
+    tagLbl.textContent = 'ハッシュタグ';
+    const tagWrap = document.createElement('div');
+    tagWrap.className = 'meta-view-hashtags';
+    const tags = d.hashtags || [];
+    if (tags.length) {
+      tags.forEach(tag => {
+        const chip = document.createElement('span');
+        chip.className = 'meta-view-hashtag';
+        chip.textContent = tag;
+        tagWrap.appendChild(chip);
       });
     } else {
-      reasonRow.textContent = '—';
+      tagWrap.style.color = 'var(--text3)';
+      tagWrap.style.fontSize = '12px';
+      tagWrap.textContent = '—';
     }
+    tagSec.appendChild(tagLbl);
+    tagSec.appendChild(tagWrap);
+    panel.appendChild(tagSec);
 
-    info.appendChild(label);
-    info.appendChild(reasonRow);
-
-    const audio = document.createElement('audio');
-    audio.controls = true;
-    audio.preload  = 'none';
-    audio.src      = it.sample_url || '';
-    audio.addEventListener('play', () => stopOtherAudios(audio));
-
-    row.appendChild(info);
-    row.appendChild(audio);
-    container.appendChild(row);
+    platSec.appendChild(panel);
   });
-}
 
-function stopOtherAudios(current) {
-  document.querySelectorAll('#step5 audio').forEach(a => {
-    if (a !== current) a.pause();
-  });
-}
-
-function selectAv(kind, index) {
-  const listId = kind === 'voice' ? 'voice-list' : 'bgm-list';
-  document.querySelectorAll(`#${listId} .av-option`).forEach(el => el.classList.remove('selected'));
-  const target = document.querySelector(`#${listId} .av-option[data-index="${index}"]`);
-  if (target) target.classList.add('selected');
-  if (kind === 'voice') state.selectedVoice = state.avOptions.voices[index];
-  else                  state.selectedBgm   = state.avOptions.bgms[index];
-}
-
-function renderSubtitlePresets() {
-  const positions = [
-    { key: 'top',    label: '上' },
-    { key: 'center', label: '中央' },
-    { key: 'bottom', label: '下' },
-  ];
-  const container = document.getElementById('subtitle-position-list');
-  container.innerHTML = '';
-  positions.forEach(p => {
-    const div = document.createElement('div');
-    div.className = `subtitle-preset pos-${p.key}`;
-    if (state.subtitlePosition === p.key) div.classList.add('selected');
-    div.addEventListener('click', () => {
-      state.subtitlePosition = p.key;
-      document.querySelectorAll('.subtitle-preset').forEach(el => el.classList.remove('selected'));
-      div.classList.add('selected');
-    });
-    const bar = document.createElement('div');
-    bar.className = 'sub-bar';
-    const lbl = document.createElement('div');
-    lbl.className = 'sub-label';
-    lbl.textContent = p.label;
-    div.appendChild(bar);
-    div.appendChild(lbl);
-    container.appendChild(div);
-  });
-}
-
-function goBackToStep4() {
-  setStep(4);
+  container.appendChild(platSec);
 }
 
 // ============================================================
-// STEP 5: 動画確認
+// STEP 6: 動画確認
 // ============================================================
 function renderVideo(data) {
   const container = document.getElementById('video-container');
   const videoUrl  = validateVideoUrl(data.video_url);
   state.videoUrl  = videoUrl;
-
   container.innerHTML = '';
   if (videoUrl) {
     const video = document.createElement('video');
-    video.controls  = true;
-    video.playsInline = true;
+    video.controls = true; video.playsInline = true;
     video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
     const src = document.createElement('source');
-    src.src  = videoUrl;
-    src.type = 'video/mp4';
+    src.src = videoUrl; src.type = 'video/mp4';
     video.appendChild(src);
     container.appendChild(video);
   } else {
     container.innerHTML = `<div class="video-placeholder"><div class="play-icon">▶</div><div>動画の準備ができました</div></div>`;
   }
+  // STEP6のメタ情報パネルを描画
+  buildMetaViewPanel('step6-meta-panel');
 }
 
 async function approveVideo() {
   const fc = document.getElementById('final-video-container');
   fc.innerHTML = '';
-
   if (state.videoUrl) {
     const videoWrap = document.createElement('div');
     videoWrap.className = 'video-container';
     videoWrap.style.marginBottom = '0';
-
     const video = document.createElement('video');
-    video.controls    = true;
-    video.playsInline = true;
+    video.controls = true; video.playsInline = true;
     video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
     const src = document.createElement('source');
-    src.src  = state.videoUrl;
-    src.type = 'video/mp4';
+    src.src = state.videoUrl; src.type = 'video/mp4';
     video.appendChild(src);
     videoWrap.appendChild(video);
     fc.appendChild(videoWrap);
@@ -1670,66 +1957,54 @@ async function approveVideo() {
     const dlBtn = document.getElementById('btn-download');
     dlBtn.href = state.videoUrl;
     dlBtn.style.display = 'flex';
-    dlBtn.onclick = async (e) => {
+    dlBtn.onclick = async e => {
       e.preventDefault();
       try {
         const response = await fetch(state.videoUrl);
         const blob = await response.blob();
         const blobUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = `video-${state.sessionId || Date.now()}.mp4`;
-        a.click();
-        URL.revokeObjectURL(blobUrl);
-      } catch (err) {
-        window.open(state.videoUrl, '_blank');
-      }
+        a.href = blobUrl; a.download = `video-${state.sessionId||Date.now()}.mp4`;
+        a.click(); URL.revokeObjectURL(blobUrl);
+      } catch (err) { window.open(state.videoUrl, '_blank'); }
     };
   }
-
+  // STEP7のメタ情報パネルを描画
+  buildMetaViewPanel('step7-meta-panel');
   setStep(7);
 }
 
-async function rejectVideo() {
-  // 再生成 = 同じパラメータでもう一度動画生成
-  // proceedToVideo();
-  setStep(5);
-
-}
+async function rejectVideo() { setStep(5); }
 
 // ============================================================
 // リセット
 // ============================================================
 function resetAll() {
-  if (state.pollTimer) clearTimeout(state.pollTimer);
+  if (state.pollTimer)      clearTimeout(state.pollTimer);
   if (state.loadingInterval) clearInterval(state.loadingInterval);
-
   state = {
     currentStep: 1,
-    input:        { userName: '', url: '', contentType: '', platform: 'YouTube Shorts' },
-    resumeUrls:   { script: null, image: null, scene: null },
-    sessionId:    null,
-    selectedScript:   null,
-    selectedImage:    null,
-    videoUrl:         null,
-    scriptCandidates: [],
-    sceneImageUrls:   [],
-    loadingInterval:  null,
-    pollTimer:        null,
-    narrationEdits:   {},
-    avOptions:        { voices: [], bgms: [], moodProfile: null },
-    selectedVoice:    null,
-    selectedBgm:      null,
-    bgmVolume:        0.2,
-    subtitlePosition: 'bottom',
+    input: { userName:'', url:'', contentType:'', platform:'YouTube Shorts' },
+    resumeUrls: { script:null, image:null, scene:null },
+    sessionId: null, selectedScript: null, selectedImage: null, videoUrl: null,
+    scriptCandidates: [], sceneImageUrls: [], loadingInterval: null, pollTimer: null,
+    narrationEdits: {},
+    metaInfo: {
+      scriptTitle: '', concept: '', summaryShort: '',
+      platformPosts: {
+        youtube_shorts: { video_title:'', description:'', hashtags:[] },
+        tiktok:         { video_title:'', caption:'',     hashtags:[] },
+        reels:          { video_title:'', caption:'',     hashtags:[] },
+      }
+    },
+    avOptions: { voices:[], bgms:[], moodProfile:null },
+    selectedVoice: null, selectedBgm: null, bgmVolume: 0.3, subtitlePosition: 'bottom',
   };
-
   document.getElementById('input-url').value           = '';
   document.getElementById('input-username').value      = '';
   document.getElementById('input-content-type').value  = '';
   document.getElementById('input-platform').value      = 'YouTube Shorts';
   document.getElementById('btn-download').href         = '#';
-
   setStep(1);
 }
 </script>
