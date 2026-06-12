@@ -1622,8 +1622,10 @@ function buildAvRow(it, i, kind) {
   return row;
 }
 
-
-  document.querySelectorAll('#step5 audio').forEach(a => { if (a !== current) a.pause(); });
+function stopOtherAudios(current) {
+  document.querySelectorAll('#step5 audio').forEach(a => {
+    if (a !== current) a.pause();
+  });
 }
 
 function selectAv(kind, index) {
