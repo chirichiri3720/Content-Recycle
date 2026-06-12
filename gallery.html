@@ -253,41 +253,39 @@ async function sbFetch(path, queryString) {
 // データ取得
 // ============================================================
 async function fetchGallery() {
-  // sessions を取得（新しい順）
-  // 主キーは id (UUID)。session_id text列は削除済み。
-  const sessions = await sbFetch(
-    'sessions',
-    'select=id,user_name,platform,content_url,created_at&order=created_at.desc&limit=200'
+  // videos を起点に取得（video_url が入っているものだけ）
+  const videos = await sbFetch(
+    'videos',
+    'select=session_id,video_url,video_status,created_at&video_url=not.is.null&order=created_at.desc&limit=200'
   );
 
-  console.log('[fetchGallery] sessions count:', sessions.length);
-  if (!sessions.length) return [];
+  console.log('[fetchGallery] videos count:', videos.length);
+  if (!videos.length) return [];
 
-  // sessions.id の値を使って videos/scripts を絞り込む
-  // videos/scripts/scenes の session_id カラムは text 型で sessions.id(UUID文字列) を格納
-  const sessionIds = sessions.map(s => s.id);
-  const idFilter = `session_id=in.(${sessionIds.join(',')})`;
+  const sessionIds = [...new Set(videos.map(v => v.session_id))];
+  const idFilter   = `id=in.(${sessionIds.join(',')})`;
+  const sidFilter  = `session_id=in.(${sessionIds.join(',')})`;
 
-  // videos と scripts を並列取得
-  const [videos, scripts] = await Promise.all([
-    sbFetch('videos',  `select=session_id,video_url,video_status,created_at&${idFilter}`),
-    sbFetch('scripts', `select=session_id,script_title,concept&${idFilter}`),
+  // sessions と scripts を並列取得
+  const [sessions, scripts] = await Promise.all([
+    sbFetch('sessions', `select=id,user_name,platform,content_url,created_at&${idFilter}`),
+    sbFetch('scripts',  `select=session_id,script_title,concept&${sidFilter}&is_selected=eq.true`),
   ]);
 
-  console.log('[fetchGallery] videos:', videos.length, 'scripts:', scripts.length);
+  console.log('[fetchGallery] sessions:', sessions.length, 'scripts:', scripts.length);
 
-  // sessions.id をキーにマッピング
-  const videoMap  = Object.fromEntries(videos.map(v => [v.session_id, v]));
-  const scriptMap = {};
-  scripts.forEach(s => {
-    if (!scriptMap[s.session_id]) scriptMap[s.session_id] = s;
-  });
+  // session_id をキーにマッピング
+  const sessionMap = Object.fromEntries(sessions.map(s => [s.id, s]));
+  const scriptMap  = Object.fromEntries(scripts.map(s => [s.session_id, s]));
 
-  return sessions.map(s => ({
-    ...s,
-    video:  videoMap[s.id]  || null,
-    script: scriptMap[s.id] || null,
-  }));
+  // videos を軸にマージして返す
+  return videos
+    .filter(v => sessionMap[v.session_id])
+    .map(v => ({
+      ...sessionMap[v.session_id],
+      video:  v,
+      script: scriptMap[v.session_id] || null,
+    }));
 }
 
 // ============================================================
