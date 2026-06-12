@@ -228,23 +228,25 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 // 設定 — Supabase プロジェクト情報
 // ============================================================
 const SUPABASE_URL     = 'https://eitwhzteuhouxfmogvnf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdHdoenRldWhvdXhmbW9ndm5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MjU1MDUsImV4cCI6MjA5NDQwMTUwNX0.5g2DLTtjCykdp3KGz9r5kcG64ueHyVUbbGKsfZW2434';  // ← anon key を入れてください
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';  // ← anon key を入れてください
 
 // ============================================================
 // Supabase REST ヘルパー
 // ============================================================
-async function sbFetch(path, params = {}) {
-  const url = new URL(`${SUPABASE_URL}/rest/v1/${path}`);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-  const res = await fetch(url.toString(), {
+async function sbFetch(path, queryString) {
+  const url = `${SUPABASE_URL}/rest/v1/${path}${queryString ? '?' + queryString : ''}`;
+  console.log('[sbFetch]', url);
+  const res = await fetch(url, {
     headers: {
       'apikey': SUPABASE_ANON_KEY,
       'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       'Accept': 'application/json',
     }
   });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}: ${await res.text()}`);
-  return res.json();
+  const text = await res.text();
+  console.log('[sbFetch] status:', res.status, 'body:', text.slice(0, 300));
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}: ${text}`);
+  return JSON.parse(text);
 }
 
 // ============================================================
@@ -252,40 +254,39 @@ async function sbFetch(path, params = {}) {
 // ============================================================
 async function fetchGallery() {
   // sessions を取得（新しい順）
-  const sessions = await sbFetch('sessions', {
-    select: 'session_id,user_name,platform,content_url,created_at',
-    order: 'created_at.desc',
-    limit: 200,
-  });
+  // 主キーは id (UUID)。session_id text列は削除済み。
+  const sessions = await sbFetch(
+    'sessions',
+    'select=id,user_name,platform,content_url,created_at&order=created_at.desc&limit=200'
+  );
 
+  console.log('[fetchGallery] sessions count:', sessions.length);
   if (!sessions.length) return [];
 
-  const sessionIds = sessions.map(s => s.session_id);
+  // sessions.id の値を使って videos/scripts を絞り込む
+  // videos/scripts/scenes の session_id カラムは text 型で sessions.id(UUID文字列) を格納
+  const sessionIds = sessions.map(s => s.id);
+  const idFilter = `session_id=in.(${sessionIds.join(',')})`;
 
   // videos と scripts を並列取得
   const [videos, scripts] = await Promise.all([
-    sbFetch('videos', {
-      select: 'session_id,video_url,status,created_at',
-      session_id: `in.(${sessionIds.join(',')})`,
-    }),
-    sbFetch('scripts', {
-      select: 'session_id,title,concept',
-      session_id: `in.(${sessionIds.join(',')})`,
-    }),
+    sbFetch('videos',  `select=session_id,video_url,status,created_at&${idFilter}`),
+    sbFetch('scripts', `select=session_id,script_title,concept&${idFilter}`),
   ]);
 
-  // session_id でマッピング
+  console.log('[fetchGallery] videos:', videos.length, 'scripts:', scripts.length);
+
+  // sessions.id をキーにマッピング
   const videoMap  = Object.fromEntries(videos.map(v => [v.session_id, v]));
   const scriptMap = {};
   scripts.forEach(s => {
-    // 同一セッションに複数候補あり得るので最初の1件を採用
     if (!scriptMap[s.session_id]) scriptMap[s.session_id] = s;
   });
 
   return sessions.map(s => ({
     ...s,
-    video:  videoMap[s.session_id]  || null,
-    script: scriptMap[s.session_id] || null,
+    video:  videoMap[s.id]  || null,
+    script: scriptMap[s.id] || null,
   }));
 }
 
@@ -309,7 +310,7 @@ function filterItems() {
 
 function resolveStatus(item) {
   if (!item.video) return 'pending';
-  const s = (item.video.status || '').toLowerCase();
+  const s = (item.video.video_status || item.video.status || '').toLowerCase();
   if (s === 'done' || s === 'completed' || s === 'complete') return 'done';
   if (s === 'error' || s === 'failed') return 'error';
   return 'pending';
@@ -355,7 +356,7 @@ function renderList(items) {
 
   items.forEach((item, idx) => {
     const status   = resolveStatus(item);
-    const title    = item.script?.title || item.content_url || `セッション ${item.session_id.slice(0,8)}`;
+    const title    = item.script?.script_title || item.script?.title || item.content_url || `セッション ${item.id.slice(0,8)}`;
     const videoUrl = item.video?.video_url || null;
     const date     = item.video?.created_at || item.created_at;
 
@@ -377,10 +378,10 @@ function renderList(items) {
       <div class="video-actions">
         ${videoUrl
           ? `<button class="btn-action btn-play" data-url="${escHtml(videoUrl)}" data-title="${escHtml(title)}">▶ 再生</button>
-             <a class="btn-action btn-dl" href="${escHtml(videoUrl)}" download="video-${escHtml(item.session_id)}.mp4" target="_blank">↓</a>`
+             <a class="btn-action btn-dl" href="${escHtml(videoUrl)}" download="video-${escHtml(item.id)}.mp4" target="_blank">↓</a>`
           : ''
         }
-        <button class="btn-action btn-copy" data-session="${escHtml(item.session_id)}" title="セッションIDをコピー">ID</button>
+        <button class="btn-action btn-copy" data-session="${escHtml(item.id)}" title="セッションIDをコピー">ID</button>
       </div>
     `;
 
