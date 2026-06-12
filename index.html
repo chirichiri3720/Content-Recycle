@@ -239,9 +239,113 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .pulse { animation: pulse 1.5s ease infinite; }
 .btn-download-main { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; border-radius: var(--radius2); background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.4); color: var(--accent3); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 500; text-decoration: none; transition: all 0.2s; cursor: pointer; }
 .btn-download-main:hover { background: rgba(67,233,123,0.28); transform: translateY(-1px); }
+
+/* ===== ハンバーガーメニュー / サイドドロワー ===== */
+.hamburger-btn {
+  position: fixed; top: 16px; right: 16px; z-index: 1100;
+  width: 40px; height: 40px; border-radius: var(--radius2);
+  background: var(--surface); border: 1px solid var(--border2);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px; padding: 10px; transition: border-color 0.2s;
+}
+.hamburger-btn:hover { border-color: var(--accent); }
+.hamburger-btn span {
+  display: block; width: 18px; height: 2px;
+  background: var(--text2); border-radius: 2px;
+  transition: transform 0.25s, opacity 0.25s, background 0.2s;
+  transform-origin: center;
+}
+.hamburger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--accent); }
+.hamburger-btn.open span:nth-child(2) { opacity: 0; }
+.hamburger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--accent); }
+
+.drawer-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 1050; opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+.drawer {
+  position: fixed; top: 0; right: -280px; height: 100vh; width: 260px;
+  background: var(--surface); border-left: 1px solid var(--border2);
+  z-index: 1060; transition: right 0.27s cubic-bezier(0.4,0,0.2,1);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.drawer.open { right: 0; }
+
+.drawer-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.drawer-title {
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase;
+}
+.drawer-close {
+  width: 28px; height: 28px; border-radius: 6px; background: transparent;
+  border: 1px solid var(--border); cursor: pointer; color: var(--text2);
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+  transition: all 0.15s;
+}
+.drawer-close:hover { border-color: var(--accent2); color: var(--accent2); }
+
+.drawer-nav { flex: 1; padding: 12px 0; }
+.drawer-nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 20px; font-size: 14px; color: var(--text2);
+  text-decoration: none; transition: all 0.15s; cursor: pointer;
+  border-left: 3px solid transparent;
+}
+.drawer-nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.drawer-nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(108,99,255,0.07); }
+.drawer-nav-item .nav-icon { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
+.drawer-nav-item .nav-label { flex: 1; }
+.drawer-nav-item .nav-badge {
+  font-size: 10px; background: rgba(108,99,255,0.15); color: var(--accent);
+  border: 1px solid rgba(108,99,255,0.3); border-radius: 100px; padding: 2px 7px;
+  font-family: 'Space Mono', monospace;
+}
+.drawer-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+.drawer-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--text3);
+  font-family: 'Space Mono', monospace;
+}
 </style>
 </head>
 <body>
+<!-- ハンバーガーボタン -->
+<button class="hamburger-btn" id="hamburgerBtn" aria-label="メニュー">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- オーバーレイ -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- サイドドロワー -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-title">⚡ Content-Recycle</span>
+    <button class="drawer-close" id="drawerClose">✕</button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="index.html" class="drawer-nav-item active" id="nav-home">
+      <span class="nav-icon">🎬</span>
+      <span class="nav-label">動画を生成</span>
+    </a>
+    <div class="drawer-divider"></div>
+    <a href="gallery.html" class="drawer-nav-item" id="nav-gallery">
+      <span class="nav-icon">🗂️</span>
+      <span class="nav-label">生成済み動画一覧</span>
+    </a>
+  </nav>
+  <div class="drawer-footer">Content-Recycle v0.1</div>
+</div>
+
 <div class="app">
   <div class="header">
     <div class="header-badge"><span>●</span> AI VIDEO GENERATOR</div>
@@ -1270,6 +1374,34 @@ function resetAll() {
   document.getElementById('btn-download').href        = '#';
   setStep(1);
 }
+
+// ============================================================
+// ハンバーガーメニュー
+// ============================================================
+(function() {
+  const btn     = document.getElementById('hamburgerBtn');
+  const drawer  = document.getElementById('drawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const close   = document.getElementById('drawerClose');
+
+  function openDrawer() {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    btn.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    btn.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  btn.addEventListener('click', () => drawer.classList.contains('open') ? closeDrawer() : openDrawer());
+  overlay.addEventListener('click', closeDrawer);
+  close.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+})();
 </script>
 </body>
 </html>
