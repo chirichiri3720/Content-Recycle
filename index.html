@@ -8,19 +8,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0a0f;
-  --surface: #12121a;
-  --surface2: #1a1a26;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.15);
-  --accent: #6c63ff;
-  --accent2: #ff6584;
-  --accent3: #43e97b;
-  --text: #f0f0f8;
-  --text2: #8888aa;
-  --text3: #555570;
-  --radius: 12px;
-  --radius2: 8px;
+  --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a26;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
+  --accent: #6c63ff; --accent2: #ff6584; --accent3: #43e97b;
+  --text: #f0f0f8; --text2: #8888aa; --text3: #555570;
+  --radius: 12px; --radius2: 8px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
@@ -31,17 +23,14 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
 .header h1 span { color: var(--accent); }
 .header p { font-size: 14px; color: var(--text2); }
-
 .progress-bar { display: flex; align-items: center; margin-bottom: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 6px 8px; overflow: hidden; }
 .progress-step { display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 100px; font-size: 11px; color: var(--text3); transition: all 0.3s ease; flex: 1; justify-content: center; white-space: nowrap; }
 .progress-step.active { background: rgba(108,99,255,0.15); color: var(--accent); font-weight: 500; }
 .progress-step.done { color: var(--accent3); }
 .progress-step .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
 .card-title { font-size: 16px; font-weight: 500; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
 .card-title .icon { width: 32px; height: 32px; border-radius: var(--radius2); background: rgba(108,99,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-
 .form-group { margin-bottom: 16px; }
 .form-label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 500; letter-spacing: 0.03em; }
 .form-input, .form-select, .form-textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; padding: 10px 14px; outline: none; transition: border-color 0.2s; appearance: none; }
@@ -49,7 +38,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .form-input::placeholder, .form-textarea::placeholder { color: var(--text3); }
 .form-textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; border-radius: var(--radius2); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
 .btn-primary { background: var(--accent); color: #fff; width: 100%; justify-content: center; font-size: 15px; padding: 13px; }
 .btn-primary:hover { background: #5a52e0; transform: translateY(-1px); }
@@ -61,7 +49,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .btn-success:hover { background: rgba(67,233,123,0.25); }
 .btn-danger { background: rgba(255,101,132,0.15); border: 1px solid rgba(255,101,132,0.3); color: var(--accent2); flex: 1; justify-content: center; }
 .btn-row { display: flex; gap: 10px; margin-top: 16px; }
-
 .loading-container { text-align: center; padding: 40px 20px; }
 .spinner { width: 48px; height: 48px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -72,7 +59,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .loading-step-item.active { color: var(--accent); }
 .loading-step-item.done { color: var(--accent3); }
 .step-icon { font-size: 16px; width: 20px; text-align: center; }
-
 .script-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; position: relative; }
 .script-option:hover { border-color: var(--accent); }
 .script-option.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
@@ -93,7 +79,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .scene-role { font-size: 10px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Space Mono', monospace; }
 .scene-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
 .scene-duration { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 4px; }
-
 .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
 .image-option { aspect-ratio: 9/16; border-radius: var(--radius2); border: 2px solid var(--border); cursor: pointer; overflow: hidden; position: relative; transition: all 0.2s; background: var(--surface2); }
 .image-option:hover { border-color: var(--accent); }
@@ -102,8 +87,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .image-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .image-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text3); font-size: 12px; }
 .image-placeholder .img-icon { font-size: 32px; }
-
-/* ===== STEP 4: シーン確認 + メタ情報 ===== */
+/* STEP4 */
 .scene-image-item { display: flex; flex-direction: column; gap: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s; }
 .scene-image-item.editing { border-color: var(--accent); }
 .scene-main-row { display: flex; gap: 12px; padding: 12px; align-items: flex-start; }
@@ -120,26 +104,24 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .btn-edit-narration { background: transparent; border: 1px solid var(--border2); border-radius: 6px; color: var(--text3); font-size: 11px; padding: 3px 8px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
 .btn-edit-narration:hover { border-color: var(--accent); color: var(--accent); }
 .scene-image-item.editing .btn-edit-narration { background: rgba(108,99,255,0.12); border-color: var(--accent); color: var(--accent); }
-.scene-edit-area { display: none; padding: 0 12px 12px; animation: slideDown 0.18s ease; }
-.scene-edit-area.open { display: block; }
+.scene-edit-area { display: none; padding: 0 12px 12px; }
+.scene-edit-area.open { display: block; animation: slideDown 0.18s ease; }
 @keyframes slideDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-.narration-textarea { width: 100%; background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius2); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 13px; line-height: 1.6; padding: 10px 12px; outline: none; resize: vertical; min-height: 80px; transition: border-color 0.2s; }
+.narration-textarea { width: 100%; background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius2); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 13px; line-height: 1.6; padding: 10px 12px; outline: none; resize: vertical; min-height: 80px; }
 .narration-textarea:focus { border-color: #9c95ff; }
 .edit-actions { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
-.btn-save-narration { background: var(--accent); color: #fff; border: none; border-radius: 6px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; padding: 6px 14px; cursor: pointer; transition: background 0.15s; }
+.btn-save-narration { background: var(--accent); color: #fff; border: none; border-radius: 6px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; padding: 6px 14px; cursor: pointer; }
 .btn-save-narration:hover { background: #5a52e0; }
-.btn-cancel-narration { background: transparent; color: var(--text3); border: 1px solid var(--border2); border-radius: 6px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px; padding: 6px 14px; cursor: pointer; transition: all 0.15s; }
+.btn-cancel-narration { background: transparent; color: var(--text3); border: 1px solid var(--border2); border-radius: 6px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px; padding: 6px 14px; cursor: pointer; }
 .btn-cancel-narration:hover { color: var(--text2); border-color: var(--text3); }
 .char-count { font-size: 10px; color: var(--text3); margin-left: auto; font-family: 'Space Mono', monospace; }
 .edited-badge { display: inline-flex; align-items: center; gap: 3px; background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3); border-radius: 100px; font-size: 9px; color: var(--accent); padding: 1px 6px; margin-left: 4px; font-family: 'Space Mono', monospace; }
 .edit-summary-banner { background: rgba(108,99,255,0.08); border: 1px solid rgba(108,99,255,0.2); border-radius: var(--radius2); padding: 10px 14px; font-size: 12px; color: var(--text2); margin-bottom: 14px; display: none; align-items: center; gap: 8px; }
 .edit-summary-banner.visible { display: flex; }
 .edit-summary-banner .icon { color: var(--accent); font-size: 14px; }
-
-/* メタ情報セクション */
+/* メタ情報 */
 .meta-section { margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px; }
 .meta-section-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-.meta-section-title .meta-icon { font-size: 15px; }
 .meta-platform-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
 .meta-tab { padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); color: var(--text3); background: transparent; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
 .meta-tab:hover { border-color: var(--accent); color: var(--accent); }
@@ -152,19 +134,16 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .hashtag-input-row .form-input { font-size: 12px; padding: 7px 10px; }
 .btn-add-tag { background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3); border-radius: var(--radius2); color: var(--accent); font-size: 12px; padding: 7px 14px; cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
 .btn-add-tag:hover { background: rgba(108,99,255,0.25); }
-.meta-save-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+.meta-save-row { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 16px; }
 .btn-meta-save { background: var(--accent); color: #fff; border: none; border-radius: var(--radius2); font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 20px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 6px; }
 .btn-meta-save:hover { background: #5a52e0; }
 .meta-saved-badge { display: none; align-items: center; gap: 4px; font-size: 11px; color: var(--accent3); font-family: 'Space Mono', monospace; }
 .meta-saved-badge.show { display: flex; }
-
-/* ===== STEP 5: 左右レイアウト ===== */
+/* STEP5 */
 .step5-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
 @media (max-width: 600px) { .step5-layout { grid-template-columns: 1fr; } }
-
-/* 左カラム：シーン確認（読み取り専用） */
 .step5-scenes { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
-.step5-scenes-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.step5-scenes-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 12px; }
 .step5-scene-list { display: flex; flex-direction: column; gap: 8px; max-height: 560px; overflow-y: auto; padding-right: 2px; }
 .step5-scene-row { display: flex; gap: 8px; align-items: flex-start; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 8px; }
 .step5-scene-thumb { width: 36px; height: 64px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); }
@@ -172,15 +151,11 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .step5-scene-info { flex: 1; min-width: 0; }
 .step5-scene-num { font-size: 9px; color: var(--accent); font-family: 'Space Mono', monospace; margin-bottom: 3px; }
 .step5-scene-text { font-size: 11px; color: var(--text2); line-height: 1.5; word-break: break-all; }
-
-/* 右カラム：設定パネル */
 .step5-settings { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
-.step5-settings-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+.step5-settings-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 16px; }
 .settings-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
 .settings-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.settings-section-label { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-
-/* AV選択 */
+.settings-section-label { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
 .av-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 10px 12px; margin-bottom: 6px; cursor: pointer; transition: all 0.2s; }
 .av-option:hover { border-color: var(--accent); }
 .av-option.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
@@ -189,8 +164,10 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .av-option audio { width: 100%; height: 28px; display: block; }
 .recommend-badge { display: inline-flex; align-items: center; gap: 3px; background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.3); border-radius: 100px; font-size: 9px; color: var(--accent3); padding: 1px 6px; font-family: 'Space Mono', monospace; }
 .reason-tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 100px; background: rgba(108,99,255,0.12); color: var(--accent); margin-right: 3px; }
-
-/* 字幕位置 */
+.av-toggle-btn { display: flex; align-items: center; gap: 6px; width: 100%; background: transparent; border: 1px dashed var(--border2); border-radius: var(--radius2); color: var(--text3); font-size: 11px; font-family: 'Noto Sans JP', sans-serif; padding: 7px 12px; cursor: pointer; transition: all 0.15s; margin-top: 4px; }
+.av-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+.av-toggle-extra { display: none; }
+.av-toggle-extra.open { display: block; }
 .subtitle-preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .subtitle-preset { height: 80px; border: 2px solid var(--border); border-radius: var(--radius2); cursor: pointer; position: relative; background: var(--surface2); transition: all 0.2s; overflow: hidden; }
 .subtitle-preset:hover { border-color: var(--accent); }
@@ -201,18 +178,31 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .subtitle-preset.pos-bottom .sub-bar { bottom: 20px; }
 .subtitle-preset .sub-label { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 9px; color: var(--text2); font-family: 'Space Mono', monospace; }
 .subtitle-preset.selected .sub-label { color: var(--accent); }
-
-/* 動画生成中の長時間待機バナー */
+.mood-info-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(108,99,255,0.06); border: 1px solid rgba(108,99,255,0.15); border-radius: var(--radius2); font-size: 11px; color: var(--text2); margin-bottom: 14px; }
+.mood-info-bar .icon { color: var(--accent); font-size: 13px; flex-shrink: 0; }
+/* STEP6/7 */
+.step67-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 600px) { .step67-layout { grid-template-columns: 1fr; } }
+.meta-view-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.meta-view-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.meta-view-label { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.meta-view-value { font-size: 12px; color: var(--text); line-height: 1.6; }
+.meta-view-value.muted { color: var(--text2); }
+.meta-view-platform-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+.meta-view-tab { padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); color: var(--text3); background: transparent; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
+.meta-view-tab:hover { border-color: var(--accent); color: var(--accent); }
+.meta-view-tab.active { background: rgba(108,99,255,0.15); border-color: var(--accent); color: var(--accent); }
+.meta-view-platform-panel { display: none; }
+.meta-view-platform-panel.active { display: block; }
+.meta-view-hashtags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.meta-view-hashtag { display: inline-block; background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.25); border-radius: 100px; font-size: 10px; color: var(--accent); padding: 2px 8px; font-family: 'Space Mono', monospace; }
+/* 共通 */
 .wait-banner { background: rgba(108,99,255,0.07); border: 1px solid rgba(108,99,255,0.2); border-radius: var(--radius2); padding: 12px 16px; font-size: 12px; color: var(--text2); margin-top: 16px; display: flex; align-items: flex-start; gap: 10px; line-height: 1.6; }
 .wait-banner .icon { color: var(--accent); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-
-/* ポーリング進捗バー */
 .polling-progress { margin-top: 20px; max-width: 280px; margin-left: auto; margin-right: auto; }
 .polling-bar-wrap { height: 3px; background: var(--border2); border-radius: 100px; overflow: hidden; margin-top: 8px; }
 .polling-bar-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 15s linear; width: 0; }
 .polling-status { font-size: 11px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 6px; text-align: center; }
-
-/* ライトボックス */
 .lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 9999; display: flex; align-items: center; justify-content: center; animation: fadeInBg 0.2s ease; }
 @keyframes fadeInBg { from { opacity:0; } to { opacity:1; } }
 .lightbox-inner { position: relative; max-width: min(340px, 90vw); border-radius: var(--radius); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); animation: zoomIn 0.2s ease; }
@@ -220,8 +210,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .lightbox-inner img { width: 100%; display: block; }
 .lightbox-close { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.6); border: none; color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .lightbox-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: #fff; font-size: 12px; padding: 24px 12px 10px; font-family: 'Space Mono', monospace; }
-
-/* その他 */
 .scene-loading { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 .video-container { background: #000; border-radius: var(--radius2); overflow: hidden; aspect-ratio: 9/16; max-width: 280px; margin: 0 auto 20px; position: relative; }
 .video-container video { width: 100%; height: 100%; object-fit: cover; }
@@ -241,46 +229,8 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .step.active { animation: fadeIn 0.3s ease; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 .pulse { animation: pulse 1.5s ease infinite; }
-
-.btn-download-main {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; padding: 14px; border-radius: var(--radius2);
-  background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.4);
-  color: var(--accent3); font-family: 'Noto Sans JP', sans-serif;
-  font-size: 15px; font-weight: 500; text-decoration: none;
-  transition: all 0.2s; cursor: pointer;
-}
+.btn-download-main { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; border-radius: var(--radius2); background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.4); color: var(--accent3); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 500; text-decoration: none; transition: all 0.2s; cursor: pointer; }
 .btn-download-main:hover { background: rgba(67,233,123,0.28); transform: translateY(-1px); }
-.btn-download-main:active { transform: translateY(0); }
-
-/* mood info bar (step5) */
-.mood-info-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(108,99,255,0.06); border: 1px solid rgba(108,99,255,0.15); border-radius: var(--radius2); font-size: 11px; color: var(--text2); margin-bottom: 14px; }
-.mood-info-bar .icon { color: var(--accent); font-size: 13px; flex-shrink: 0; }
-
-/* STEP 6/7 左右レイアウト */
-.step67-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
-@media (max-width: 600px) { .step67-layout { grid-template-columns: 1fr; } }
-
-/* メタ情報表示パネル（STEP6/7用） */
-.meta-view-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-.meta-view-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.meta-view-label { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-.meta-view-value { font-size: 12px; color: var(--text); line-height: 1.6; }
-.meta-view-value.muted { color: var(--text2); }
-.meta-view-platform-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
-.meta-view-tab { padding: 3px 10px; border-radius: 100px; font-size: 10px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); color: var(--text3); background: transparent; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
-.meta-view-tab:hover { border-color: var(--accent); color: var(--accent); }
-.meta-view-tab.active { background: rgba(108,99,255,0.15); border-color: var(--accent); color: var(--accent); }
-.meta-view-platform-panel { display: none; }
-.meta-view-platform-panel.active { display: block; }
-.meta-view-hashtags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
-.meta-view-hashtag { display: inline-block; background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.25); border-radius: 100px; font-size: 10px; color: var(--accent); padding: 2px 8px; font-family: 'Space Mono', monospace; }
-
-/* トグルボタン */
-.av-toggle-btn { display: flex; align-items: center; gap: 6px; width: 100%; background: transparent; border: 1px dashed var(--border2); border-radius: var(--radius2); color: var(--text3); font-size: 11px; font-family: 'Noto Sans JP', sans-serif; padding: 7px 12px; cursor: pointer; transition: all 0.15s; margin-top: 4px; }
-.av-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
-.av-toggle-extra { display: none; }
-.av-toggle-extra.open { display: block; }
 </style>
 </head>
 <body>
@@ -290,7 +240,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
     <h1>社内コンテンツ<span>動画生成</span>システム</h1>
     <p>URLを入力するだけで、AIが自動でクリエイティブを生成します</p>
   </div>
-
   <div class="progress-bar" id="progressBar">
     <div class="progress-step active" id="prog-1"><span class="dot"></span>入力</div>
     <div class="progress-step" id="prog-2"><span class="dot"></span>台本</div>
@@ -299,42 +248,19 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
     <div class="progress-step" id="prog-5"><span class="dot"></span>音声/BGM</div>
     <div class="progress-step" id="prog-6"><span class="dot"></span>完成</div>
   </div>
-
   <div class="error-toast" id="errorToast"></div>
 
-  <!-- STEP 1: 入力 -->
+  <!-- STEP 1 -->
   <div class="step active" id="step1">
     <div class="card">
       <div class="card-title"><div class="icon">📝</div>コンテンツ情報を入力</div>
-      <div class="form-group">
-        <label class="form-label">作成者名</label>
-        <input class="form-input" id="input-username" type="text" placeholder="例：田中 太郎">
-      </div>
-      <div class="form-group">
-        <label class="form-label">コンテンツ URL <span style="color:var(--accent2)">*</span></label>
-        <input class="form-input" id="input-url" type="url" placeholder="https://example.com/article/...">
-      </div>
+      <div class="form-group"><label class="form-label">作成者名</label><input class="form-input" id="input-username" type="text" placeholder="例：田中 太郎"></div>
+      <div class="form-group"><label class="form-label">コンテンツ URL <span style="color:var(--accent2)">*</span></label><input class="form-input" id="input-url" type="url" placeholder="https://example.com/article/..."></div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">コンテンツ種別 <span style="color:var(--accent2)">*</span></label>
-          <select class="form-select" id="input-content-type">
-            <option value="">選択してください</option>
-            <option value="解説系">解説系</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">プラットフォーム</label>
-          <select class="form-select" id="input-platform">
-            <option value="YouTube Shorts">YouTube Shorts</option>
-            <option value="TikTok">TikTok</option>
-            <option value="Instagram Reels">Instagram Reels</option>
-          </select>
-        </div>
+        <div class="form-group"><label class="form-label">コンテンツ種別 <span style="color:var(--accent2)">*</span></label><select class="form-select" id="input-content-type"><option value="">選択してください</option><option value="解説系">解説系</option></select></div>
+        <div class="form-group"><label class="form-label">プラットフォーム</label><select class="form-select" id="input-platform"><option value="YouTube Shorts">YouTube Shorts</option><option value="TikTok">TikTok</option><option value="Instagram Reels">Instagram Reels</option></select></div>
       </div>
-      <div class="info-row">
-        <span class="icon"></span>
-        処理には全体で約5分かかります。完了まで画面を開いたままにしてください。
-      </div>
+      <div class="info-row"><span class="icon"></span>処理には全体で約5分かかります。完了まで画面を開いたままにしてください。</div>
       <button class="btn btn-primary" onclick="startGeneration()">▶ 台本生成を開始する</button>
     </div>
   </div>
@@ -347,19 +273,13 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
         <div class="loading-title" id="loading-title">AIが処理中...</div>
         <div class="loading-sub" id="loading-sub">しばらくお待ちください</div>
         <div class="loading-steps" id="loading-steps-container"></div>
-        <div class="wait-banner" id="wait-banner" style="display:none">
-          <span class="icon">⏱</span>
-          <span>動画の合成には最大5分かかる場合があります。<br>完了まで<strong>ページを閉じないでください。</strong></span>
-        </div>
-        <div class="polling-progress" id="polling-progress" style="display:none">
-          <div class="polling-bar-wrap"><div class="polling-bar-fill" id="polling-bar"></div></div>
-          <div class="polling-status" id="polling-status">Shotstackでレンダリング中...</div>
-        </div>
+        <div class="wait-banner" id="wait-banner" style="display:none"><span class="icon">⏱</span><span>動画の合成には最大5分かかる場合があります。<br>完了まで<strong>ページを閉じないでください。</strong></span></div>
+        <div class="polling-progress" id="polling-progress" style="display:none"><div class="polling-bar-wrap"><div class="polling-bar-fill" id="polling-bar"></div></div><div class="polling-status" id="polling-status">Shotstackでレンダリング中...</div></div>
       </div>
     </div>
   </div>
 
-  <!-- STEP 2: 台本確認 -->
+  <!-- STEP 2 -->
   <div class="step" id="step2">
     <div class="card">
       <div class="card-title"><div class="icon">📜</div>台本を選択してください</div>
@@ -372,7 +292,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
     </div>
   </div>
 
-  <!-- STEP 3: 画像スタイル選択 -->
+  <!-- STEP 3 -->
   <div class="step" id="step3">
     <div class="card">
       <div class="card-title"><div class="icon">🎨</div>背景画像スタイルを選択してください</div>
@@ -385,35 +305,18 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
     </div>
   </div>
 
-  <!-- STEP 4: シーン確認 + ナレーション編集 + メタ情報 -->
+  <!-- STEP 4 -->
   <div class="step" id="step4">
     <div class="card">
       <div class="card-title"><div class="icon">🖼</div>シーンごとの画像・ナレーションを確認</div>
-      <div class="edit-summary-banner" id="edit-summary-banner">
-        <span class="icon">✏️</span>
-        <span id="edit-summary-text"></span>
-      </div>
+      <div class="edit-summary-banner" id="edit-summary-banner"><span class="icon">✏️</span><span id="edit-summary-text"></span></div>
       <div id="scene-image-list"></div>
-
-      <!-- メタ情報セクション -->
+      <!-- メタ情報 -->
       <div class="meta-section" id="meta-section">
-        <div class="meta-section-title"><span class="meta-icon">📋</span>動画メタ情報を確認・編集</div>
-
-        <!-- 共通フィールド -->
-        <div class="form-group">
-          <label class="form-label">スクリプトタイトル</label>
-          <input class="form-input" id="meta-script-title" type="text" placeholder="台本の管理タイトル">
-        </div>
-        <div class="form-group">
-          <label class="form-label">コンセプト</label>
-          <input class="form-input" id="meta-concept" type="text" placeholder="この動画で伝えたいこと">
-        </div>
-        <div class="form-group">
-          <label class="form-label">記事要約</label>
-          <textarea class="form-textarea" id="meta-summary" placeholder="記事の概要（1〜2行）"></textarea>
-        </div>
-
-        <!-- プラットフォームタブ -->
+        <div class="meta-section-title"><span>📋</span>動画メタ情報を確認・編集</div>
+        <div class="form-group"><label class="form-label">スクリプトタイトル</label><input class="form-input" id="meta-script-title" type="text" placeholder="台本の管理タイトル"></div>
+        <div class="form-group"><label class="form-label">コンセプト</label><input class="form-input" id="meta-concept" type="text" placeholder="この動画で伝えたいこと"></div>
+        <div class="form-group"><label class="form-label">記事要約</label><textarea class="form-textarea" id="meta-summary" placeholder="記事の概要（1〜2行）"></textarea></div>
         <div style="margin-top:18px">
           <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500">プラットフォーム別設定</div>
           <div class="meta-platform-tabs">
@@ -421,74 +324,27 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
             <button class="meta-tab" data-tab="tiktok" onclick="switchMetaTab('tiktok')">TikTok</button>
             <button class="meta-tab" data-tab="reels" onclick="switchMetaTab('reels')">Reels</button>
           </div>
-
-          <!-- YouTube -->
           <div class="meta-platform-panel active" id="meta-panel-youtube">
-            <div class="form-group">
-              <label class="form-label">動画タイトル <span style="color:var(--text3);font-weight:400">（100文字以内）</span></label>
-              <input class="form-input" id="meta-yt-title" type="text" placeholder="YouTube Shorts用タイトル" maxlength="100">
-            </div>
-            <div class="form-group">
-              <label class="form-label">概要欄 <span style="color:var(--text3);font-weight:400">（200文字以内）</span></label>
-              <textarea class="form-textarea" id="meta-yt-desc" placeholder="概要欄テキスト" maxlength="200"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">ハッシュタグ</label>
-              <div class="hashtag-wrap" id="tags-youtube"></div>
-              <div class="hashtag-input-row">
-                <input class="form-input" id="tag-input-youtube" type="text" placeholder="#タグを追加">
-                <button class="btn-add-tag" onclick="addHashtag('youtube')">追加</button>
-              </div>
-            </div>
+            <div class="form-group"><label class="form-label">動画タイトル <span style="color:var(--text3);font-weight:400">（100文字以内）</span></label><input class="form-input" id="meta-yt-title" type="text" placeholder="YouTube Shorts用タイトル" maxlength="100"></div>
+            <div class="form-group"><label class="form-label">概要欄 <span style="color:var(--text3);font-weight:400">（200文字以内）</span></label><textarea class="form-textarea" id="meta-yt-desc" placeholder="概要欄テキスト" maxlength="200"></textarea></div>
+            <div class="form-group"><label class="form-label">ハッシュタグ</label><div class="hashtag-wrap" id="tags-youtube"></div><div class="hashtag-input-row"><input class="form-input" id="tag-input-youtube" type="text" placeholder="#タグを追加"><button class="btn-add-tag" onclick="addHashtag('youtube')">追加</button></div></div>
           </div>
-
-          <!-- TikTok -->
           <div class="meta-platform-panel" id="meta-panel-tiktok">
-            <div class="form-group">
-              <label class="form-label">動画タイトル <span style="color:var(--text3);font-weight:400">（60文字以内）</span></label>
-              <input class="form-input" id="meta-tt-title" type="text" placeholder="TikTok用タイトル" maxlength="60">
-            </div>
-            <div class="form-group">
-              <label class="form-label">キャプション <span style="color:var(--text3);font-weight:400">（100文字以内）</span></label>
-              <textarea class="form-textarea" id="meta-tt-caption" placeholder="キャプションテキスト" maxlength="100"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">ハッシュタグ</label>
-              <div class="hashtag-wrap" id="tags-tiktok"></div>
-              <div class="hashtag-input-row">
-                <input class="form-input" id="tag-input-tiktok" type="text" placeholder="#タグを追加">
-                <button class="btn-add-tag" onclick="addHashtag('tiktok')">追加</button>
-              </div>
-            </div>
+            <div class="form-group"><label class="form-label">動画タイトル <span style="color:var(--text3);font-weight:400">（60文字以内）</span></label><input class="form-input" id="meta-tt-title" type="text" placeholder="TikTok用タイトル" maxlength="60"></div>
+            <div class="form-group"><label class="form-label">キャプション <span style="color:var(--text3);font-weight:400">（100文字以内）</span></label><textarea class="form-textarea" id="meta-tt-caption" placeholder="キャプションテキスト" maxlength="100"></textarea></div>
+            <div class="form-group"><label class="form-label">ハッシュタグ</label><div class="hashtag-wrap" id="tags-tiktok"></div><div class="hashtag-input-row"><input class="form-input" id="tag-input-tiktok" type="text" placeholder="#タグを追加"><button class="btn-add-tag" onclick="addHashtag('tiktok')">追加</button></div></div>
           </div>
-
-          <!-- Reels -->
           <div class="meta-platform-panel" id="meta-panel-reels">
-            <div class="form-group">
-              <label class="form-label">動画タイトル <span style="color:var(--text3);font-weight:400">（60文字以内）</span></label>
-              <input class="form-input" id="meta-re-title" type="text" placeholder="Reels用タイトル" maxlength="60">
-            </div>
-            <div class="form-group">
-              <label class="form-label">キャプション <span style="color:var(--text3);font-weight:400">（100文字以内）</span></label>
-              <textarea class="form-textarea" id="meta-re-caption" placeholder="キャプションテキスト" maxlength="100"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">ハッシュタグ</label>
-              <div class="hashtag-wrap" id="tags-reels"></div>
-              <div class="hashtag-input-row">
-                <input class="form-input" id="tag-input-reels" type="text" placeholder="#タグを追加">
-                <button class="btn-add-tag" onclick="addHashtag('reels')">追加</button>
-              </div>
-            </div>
+            <div class="form-group"><label class="form-label">動画タイトル <span style="color:var(--text3);font-weight:400">（60文字以内）</span></label><input class="form-input" id="meta-re-title" type="text" placeholder="Reels用タイトル" maxlength="60"></div>
+            <div class="form-group"><label class="form-label">キャプション <span style="color:var(--text3);font-weight:400">（100文字以内）</span></label><textarea class="form-textarea" id="meta-re-caption" placeholder="キャプションテキスト" maxlength="100"></textarea></div>
+            <div class="form-group"><label class="form-label">ハッシュタグ</label><div class="hashtag-wrap" id="tags-reels"></div><div class="hashtag-input-row"><input class="form-input" id="tag-input-reels" type="text" placeholder="#タグを追加"><button class="btn-add-tag" onclick="addHashtag('reels')">追加</button></div></div>
           </div>
         </div>
-
         <div class="meta-save-row">
           <span class="meta-saved-badge" id="meta-saved-badge">✓ 保存しました</span>
           <button class="btn-meta-save" onclick="saveMetaInfo()">💾 メタ情報を保存</button>
         </div>
       </div>
-
       <div class="btn-row" style="margin-top:20px">
         <button class="btn btn-outline" onclick="goBackToStep3()">← 戻る</button>
         <button class="btn btn-primary" onclick="proceedToAvSelection()" style="flex:2">音声・BGMを選ぶ →</button>
@@ -496,70 +352,47 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
     </div>
   </div>
 
-  <!-- STEP 5: 左右レイアウト（シーン確認 + 音声/BGM/字幕設定） -->
+  <!-- STEP 5 -->
   <div class="step" id="step5">
     <div class="step5-layout">
-
-      <!-- 左：確定シーン確認（読み取り専用） -->
       <div class="step5-scenes">
         <div class="step5-scenes-title">🖼 確定シーン</div>
         <div class="step5-scene-list" id="step5-scene-list"></div>
       </div>
-
-      <!-- 右：設定パネル -->
       <div class="step5-settings">
         <div class="step5-settings-title">⚙️ 動画設定</div>
-
-        <div class="mood-info-bar" id="mood-info">
-          <span class="icon">✨</span>
-          <span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span>
-        </div>
-
-        <!-- 音声選択 -->
+        <div class="mood-info-bar" id="mood-info"><span class="icon">✨</span><span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span></div>
         <div class="settings-section">
           <div class="settings-section-label">🎙 ナレーション音声</div>
           <div id="voice-list"></div>
         </div>
-
-        <!-- BGM選択 -->
         <div class="settings-section">
           <div class="settings-section-label">🎵 BGM</div>
           <div id="bgm-list"></div>
         </div>
-
-        <!-- 字幕位置 -->
         <div class="settings-section">
           <div class="settings-section-label">💬 字幕位置</div>
           <div class="subtitle-preset-grid" id="subtitle-position-list"></div>
         </div>
       </div>
     </div>
-
-    <!-- ボタン行（全幅） -->
     <div class="btn-row" style="margin-top:16px">
       <button class="btn btn-outline" onclick="goBackToStep4()">← 戻る</button>
       <button class="btn btn-primary" onclick="proceedToVideo()" style="flex:2">動画を生成する →</button>
     </div>
   </div>
 
-  <!-- STEP 6: 動画確認 -->
+  <!-- STEP 6 -->
   <div class="step" id="step6">
     <div class="step67-layout">
-      <!-- 左：動画プレビュー -->
       <div class="card" style="margin-bottom:0">
         <div class="card-title"><div class="icon">🎬</div>動画を確認してください</div>
-        <div class="video-container" id="video-container">
-          <div class="video-placeholder">
-            <div class="play-icon">▶</div>
-            <div>動画を読み込み中...</div>
-          </div>
-        </div>
+        <div class="video-container" id="video-container"><div class="video-placeholder"><div class="play-icon">▶</div><div>動画を読み込み中...</div></div></div>
         <div class="btn-row">
           <button class="btn btn-danger" onclick="rejectVideo()">✕ やり直す</button>
           <button class="btn btn-success" onclick="approveVideo()">✓ この動画で確定</button>
         </div>
       </div>
-      <!-- 右：メタ情報確認 -->
       <div class="card" style="margin-bottom:0">
         <div class="card-title"><div class="icon">📋</div>投稿メタ情報</div>
         <div id="step6-meta-panel"></div>
@@ -567,10 +400,9 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
     </div>
   </div>
 
-  <!-- STEP 7: 完成 -->
+  <!-- STEP 7 -->
   <div class="step" id="step7">
     <div class="step67-layout">
-      <!-- 左：動画ダウンロード -->
       <div class="card" style="text-align:center;margin-bottom:0">
         <div class="success-icon">✓</div>
         <div style="font-size:20px;font-weight:700;margin-bottom:8px">動画が完成しました！</div>
@@ -581,7 +413,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
           <button class="btn btn-outline" onclick="resetAll()">＋ 新しい動画を生成する</button>
         </div>
       </div>
-      <!-- 右：メタ情報確認 -->
       <div class="card" style="margin-bottom:0">
         <div class="card-title"><div class="icon">📋</div>投稿メタ情報</div>
         <div id="step7-meta-panel"></div>
@@ -607,8 +438,6 @@ const TMP_IMG_URL        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp
 // const SELECT_IMAGE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-image';
 // const GET_AV_OPTIONS_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-av-options';
 // const GENERATE_VIDEO_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-video';
-// const BASE_IMG_URL       = 'https://chirichiri3720.github.io/Content-Recycle/Images';
-// const TMP_IMG_URL        = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
 
 const VIDEO_URL_WHITELIST = [
   'cdn.shotstack.io',
@@ -616,7 +445,6 @@ const VIDEO_URL_WHITELIST = [
   'shotstack-api-stage-output.s3-ap-southeast-2.amazonaws.com',
   'storage.googleapis.com',
 ];
-
 const POLL_INTERVAL_MS = 15000;
 const POLL_MAX_TRIES   = 20;
 
@@ -627,37 +455,25 @@ let state = {
   currentStep: 1,
   input: { userName: '', url: '', contentType: '', platform: 'YouTube Shorts' },
   resumeUrls: { script: null, image: null, scene: null },
-  sessionId:        null,
-  selectedScript:   null,
-  selectedImage:    null,
-  videoUrl:         null,
-  scriptCandidates: [],
-  sceneImageUrls:   [],
-  loadingInterval:  null,
-  pollTimer:        null,
-  narrationEdits:   {},
-  // メタ情報
+  sessionId: null, selectedScript: null, selectedImage: null, videoUrl: null,
+  scriptCandidates: [], sceneImageUrls: [], loadingInterval: null, pollTimer: null,
+  narrationEdits: {},
   metaInfo: {
-    scriptTitle: '',
-    concept: '',
-    summaryShort: '',
+    scriptTitle: '', concept: '', summaryShort: '',
     platformPosts: {
       youtube_shorts: { video_title: '', description: '', hashtags: [] },
-      tiktok:         { video_title: '', caption: '',      hashtags: [] },
-      reels:          { video_title: '', caption: '',      hashtags: [] },
+      tiktok:         { video_title: '', caption: '',     hashtags: [] },
+      reels:          { video_title: '', caption: '',     hashtags: [] },
     }
   },
-  avOptions:        { voices: [], bgms: [], moodProfile: null },
-  selectedVoice:    null,
-  selectedBgm:      null,
-  bgmVolume:        0.3,
-  subtitlePosition: 'bottom',
+  avOptions: { voices: [], bgms: [], moodProfile: null },
+  selectedVoice: null, selectedBgm: null, bgmVolume: 0.3, subtitlePosition: 'bottom',
 };
 
 const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:6 };
 
 // ============================================================
-// URL検証
+// ユーティリティ
 // ============================================================
 function validateVideoUrl(url) {
   if (!url || typeof url !== 'string') return null;
@@ -671,14 +487,9 @@ function validateVideoUrl(url) {
 }
 
 function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-// ============================================================
-// ステップ表示
-// ============================================================
 function setStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   const el = document.getElementById('step' + n);
@@ -688,8 +499,8 @@ function setStep(n) {
     for (let i = 1; i <= 6; i++) {
       const p = document.getElementById('prog-' + i);
       if (!p) continue;
-      p.classList.remove('active', 'done');
-      if (i < progN)       p.classList.add('done');
+      p.classList.remove('active','done');
+      if (i < progN) p.classList.add('done');
       else if (i === progN) p.classList.add('active');
     }
   }
@@ -697,29 +508,20 @@ function setStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ============================================================
-// ローディング
-// ============================================================
 function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false) {
   const defaultSteps = [
-    { icon: '🌐', text: '記事を取得中' },
-    { icon: '🔍', text: 'コンテンツを解析中' },
-    { icon: '🧠', text: 'AIが要約を生成中' },
-    { icon: '📝', text: '台本を作成中' },
+    { icon: '🌐', text: '記事を取得中' }, { icon: '🔍', text: 'コンテンツを解析中' },
+    { icon: '🧠', text: 'AIが要約を生成中' }, { icon: '📝', text: '台本を作成中' },
   ];
   const useSteps = steps || defaultSteps;
   document.getElementById('loading-title').textContent = title || 'AIが処理中...';
   document.getElementById('loading-sub').textContent   = sub   || 'しばらくお待ちください';
   document.getElementById('wait-banner').style.display = showWaitBanner ? 'flex' : 'none';
   document.getElementById('polling-progress').style.display = 'none';
-
   const container = document.getElementById('loading-steps-container');
   container.innerHTML = useSteps.map((s, i) =>
-    `<div class="loading-step-item ${i===0?'active':''}" id="ls-${i+1}">
-       <span class="step-icon">${escapeHtml(s.icon)}</span>${escapeHtml(s.text)}
-     </div>`
+    `<div class="loading-step-item ${i===0?'active':''}" id="ls-${i+1}"><span class="step-icon">${escapeHtml(s.icon)}</span>${escapeHtml(s.text)}</div>`
   ).join('');
-
   if (state.loadingInterval) clearInterval(state.loadingInterval);
   let idx = 0;
   state.loadingInterval = setInterval(() => {
@@ -727,7 +529,6 @@ function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false)
     if (idx < useSteps.length) { const c = document.getElementById(`ls-${idx+1}`); if (c) c.classList.add('active'); idx++; }
     else clearInterval(state.loadingInterval);
   }, interval);
-
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step-loading').classList.add('active');
 }
@@ -746,10 +547,8 @@ function showError(msg) {
 }
 
 // ============================================================
-// 戻るボタン処理
+// 戻るボタン
 // ============================================================
-async function notifyBackStep(targetStep) { return; }
-
 function goBackToStep1() {
   const { userName, url, contentType, platform } = state.input;
   document.getElementById('input-username').value     = userName;
@@ -758,7 +557,6 @@ function goBackToStep1() {
   document.getElementById('input-platform').value     = platform;
   setStep(1);
 }
-
 function goBackToStep2() {
   renderScripts({ script_candidates: state.scriptCandidates });
   if (state.selectedScript !== null) {
@@ -767,7 +565,6 @@ function goBackToStep2() {
   }
   setStep(2);
 }
-
 function goBackToStep3() {
   renderImages({ images: [
     { index: 0, url: `${BASE_IMG_URL}/realistic.png`,  style: '実写風' },
@@ -777,11 +574,10 @@ function goBackToStep3() {
   if (state.selectedImage !== null) selectImageOption(state.selectedImage);
   setStep(3);
 }
-
 function goBackToStep4() { setStep(4); }
 
 // ============================================================
-// STEP 1: 開始
+// STEP 1
 // ============================================================
 async function startGeneration() {
   const url         = document.getElementById('input-url').value.trim();
@@ -792,98 +588,46 @@ async function startGeneration() {
   if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
   state.input = { userName, url, contentType, platform };
-
   showLoading('AIが処理中...', 'しばらくお待ちください');
   try {
-    const res = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform }),
-    });
+    const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform }) });
     hideLoading();
     if (res.status === 429) { showError('台本生成の実行回数が上限に達しました。'); return; }
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('n8n からのレスポンスが空です');
     const data = JSON.parse(text);
     if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); return; }
-
     state.resumeUrls.script = data.resume_url;
     state.sessionId         = data.session_id;
     state.scriptCandidates  = data.script_candidates || [];
-
-    // article_summary_short を state に保存
     state.metaInfo.summaryShort = data.article_summary_short || '';
-
     renderScripts(data);
     setStep(2);
-  } catch (err) {
-    hideLoading(); setStep(1); showError('エラー: ' + err.message);
-  }
+  } catch (err) { hideLoading(); setStep(1); showError('エラー: ' + err.message); }
 }
 
 // ============================================================
-// STEP 2: 台本
+// STEP 2
 // ============================================================
 function renderScripts(data) {
   const list = document.getElementById('script-list');
   list.innerHTML = '';
   document.getElementById('btn-select-script').disabled = true;
-
   const candidates = data.script_candidates || state.scriptCandidates || [];
-  const badges = [
-    { label: 'バリエーション 1', cls: 'badge-blue' },
-    { label: 'バリエーション 2', cls: 'badge-green' },
-    { label: 'バリエーション 3', cls: 'badge-pink' },
-  ];
-
+  const badges = [{ label: 'バリエーション 1', cls: 'badge-blue' }, { label: 'バリエーション 2', cls: 'badge-green' }, { label: 'バリエーション 3', cls: 'badge-pink' }];
   candidates.forEach((s, i) => {
     const score  = s.recommended_score || Math.floor(80 + Math.random() * 20);
     const scenes = s.scenes || [];
     const div    = document.createElement('div');
-    div.className = 'script-option';
-    div.dataset.index = i;
+    div.className = 'script-option'; div.dataset.index = i;
     div.addEventListener('click', () => selectScriptOption(i));
-
-    const scenesHtml = scenes.length ? `
-      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-        <div style="font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.05em">シーン構成</div>
-        <div class="scenes-container">
-          ${scenes.slice(0,4).map((sc, si) => `
-            <div class="scene-item">
-              <div class="scene-num">${si+1}</div>
-              <div class="scene-content">
-                <div class="scene-role">${escapeHtml(sc.role||'narration')}</div>
-                <div class="scene-text">${escapeHtml((sc.narration||'').slice(0,80))}${(sc.narration||'').length>80?'...':''}</div>
-                <div class="scene-duration">${escapeHtml(String(sc.duration_sec||5))}秒</div>
-              </div>
-            </div>`).join('')}
-          ${scenes.length > 4 ? `<div style="text-align:center;font-size:11px;color:var(--text3);padding:6px">他 ${scenes.length-4} シーン</div>` : ''}
-        </div>
-      </div>` : '';
-
-    const badge = document.createElement('span');
-    badge.className = `script-badge ${badges[i]?.cls||'badge-blue'}`;
-    badge.textContent = badges[i]?.label || 'オプション';
-
-    const title = document.createElement('div');
-    title.className = 'script-title';
-    title.textContent = s.script_title || 'タイトル未設定';
-
-    const body = document.createElement('div');
-    body.className = 'script-body';
-    body.textContent = s.concept || s.total_narration || '概要なし';
-
-    const scoreWrap = document.createElement('div');
-    scoreWrap.className = 'script-score';
-    scoreWrap.innerHTML = `
-      <span style="font-size:10px;color:var(--text3);width:50px;flex-shrink:0">推奨度</span>
-      <div class="score-bar"><div class="score-fill" style="width:${Number(score)}%"></div></div>
-      <span style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;width:28px;text-align:right">${Number(score)}</span>`;
-
-    div.appendChild(badge);
-    div.appendChild(title);
-    div.appendChild(body);
-    div.appendChild(scoreWrap);
+    const scenesHtml = scenes.length ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.05em">シーン構成</div><div class="scenes-container">${scenes.slice(0,4).map((sc, si) => `<div class="scene-item"><div class="scene-num">${si+1}</div><div class="scene-content"><div class="scene-role">${escapeHtml(sc.role||'narration')}</div><div class="scene-text">${escapeHtml((sc.narration||'').slice(0,80))}${(sc.narration||'').length>80?'...':''}</div><div class="scene-duration">${escapeHtml(String(sc.duration_sec||5))}秒</div></div></div>`).join('')}${scenes.length>4?`<div style="text-align:center;font-size:11px;color:var(--text3);padding:6px">他 ${scenes.length-4} シーン</div>`:''}</div></div>` : '';
+    const badge = document.createElement('span'); badge.className = `script-badge ${badges[i]?.cls||'badge-blue'}`; badge.textContent = badges[i]?.label || 'オプション';
+    const title = document.createElement('div'); title.className = 'script-title'; title.textContent = s.script_title || 'タイトル未設定';
+    const body  = document.createElement('div'); body.className  = 'script-body';  body.textContent  = s.concept || s.total_narration || '概要なし';
+    const scoreWrap = document.createElement('div'); scoreWrap.className = 'script-score';
+    scoreWrap.innerHTML = `<span style="font-size:10px;color:var(--text3);width:50px;flex-shrink:0">推奨度</span><div class="score-bar"><div class="score-fill" style="width:${Number(score)}%"></div></div><span style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;width:28px;text-align:right">${Number(score)}</span>`;
+    div.appendChild(badge); div.appendChild(title); div.appendChild(body); div.appendChild(scoreWrap);
     if (scenesHtml) div.insertAdjacentHTML('beforeend', scenesHtml);
     list.appendChild(div);
   });
@@ -899,95 +643,56 @@ function selectScriptOption(index) {
 
 async function selectScript() {
   if (!state.selectedScript) { showError('台本を選択してください'); return; }
-
-  showLoading('台本を確定中...', 'しばらくお待ちください', [
-    { icon: '📝', text: '台本を確定中' },
-    { icon: '💾', text: 'データを保存中' },
-    { icon: '✅', text: '完了' },
-  ], 1000);
-
+  showLoading('台本を確定中...', 'しばらくお待ちください', [{ icon: '📝', text: '台本を確定中' }, { icon: '💾', text: 'データを保存中' }, { icon: '✅', text: '完了' }], 1000);
   try {
-    const res = await fetch(SELECT_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        selected_script_id: state.selectedScript.script_id,
-        session_id:         state.sessionId,
-        action:             'select_script',
-      }),
-    });
+    const res = await fetch(SELECT_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ selected_script_id: state.selectedScript.script_id, session_id: state.sessionId, action: 'select_script' }) });
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
     hideLoading();
-    renderImages({ images: [
-      { index: 0, url: `${BASE_IMG_URL}/realistic.png`,  style: '実写風' },
-      { index: 1, url: `${BASE_IMG_URL}/cinematic.png`,  style: 'シネマティック風' },
-      { index: 2, url: `${BASE_IMG_URL}/anime.png`,      style: 'アニメーション風' },
-    ]});
+    renderImages({ images: [{ index: 0, url: `${BASE_IMG_URL}/realistic.png`, style: '実写風' }, { index: 1, url: `${BASE_IMG_URL}/cinematic.png`, style: 'シネマティック風' }, { index: 2, url: `${BASE_IMG_URL}/anime.png`, style: 'アニメーション風' }] });
     setStep(3);
-  } catch (err) {
-    hideLoading(); showError('台本確定エラー: ' + err.message); setStep(2);
-  }
+  } catch (err) { hideLoading(); showError('台本確定エラー: ' + err.message); setStep(2); }
 }
 
 async function regenerateScript() {
-  state.resumeUrls.script = null;
-  state.selectedScript    = null;
-  state.scriptCandidates  = [];
-
+  state.resumeUrls.script = null; state.selectedScript = null; state.scriptCandidates = [];
   showLoading('台本を再生成中...', 'AIが新しい台本を作成しています');
   try {
     const { userName, url, contentType, platform } = state.input;
-    const res = await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform }),
-    });
+    const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_name: userName, content_url: url, content_type: contentType, platform }) });
     hideLoading();
     if (res.status === 429) { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
     const text = await res.text();
     if (!text || text.trim() === '') throw new Error('レスポンスが空です');
     const data = JSON.parse(text);
     if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
-    state.resumeUrls.script = data.resume_url;
-    state.sessionId         = data.session_id;
+    state.resumeUrls.script = data.resume_url; state.sessionId = data.session_id;
     state.scriptCandidates  = data.script_candidates || [];
     state.metaInfo.summaryShort = data.article_summary_short || '';
-    renderScripts(data);
-    setStep(2);
-  } catch (err) {
-    hideLoading(); setStep(2); showError('再生成エラー: ' + err.message);
-  }
+    renderScripts(data); setStep(2);
+  } catch (err) { hideLoading(); setStep(2); showError('再生成エラー: ' + err.message); }
 }
 
 // ============================================================
-// STEP 3: 画像スタイル
+// STEP 3
 // ============================================================
 function renderImages(data) {
   const grid = document.getElementById('image-grid');
   grid.innerHTML = '';
   document.getElementById('btn-select-image').disabled = true;
-
   const images = data.images || [];
   for (let i = 0; i < 3; i++) {
-    const div = document.createElement('div');
-    div.className = 'image-option';
-    div.dataset.index = i;
+    const div = document.createElement('div'); div.className = 'image-option'; div.dataset.index = i;
     div.addEventListener('click', () => selectImageOption(i));
     if (images[i]?.url) {
-      const img = document.createElement('img');
-      img.src = images[i].url; img.alt = images[i].style || ''; img.loading = 'lazy';
+      const img = document.createElement('img'); img.src = images[i].url; img.alt = images[i].style || ''; img.loading = 'lazy';
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
       img.onerror = () => { img.style.display = 'none'; };
       div.appendChild(img);
       const caption = document.createElement('div');
       caption.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.8));color:white;font-size:12px;font-weight:500;padding:20px 8px 8px;text-align:center;letter-spacing:0.05em;';
-      caption.textContent = images[i].style || '';
-      div.appendChild(caption);
+      caption.textContent = images[i].style || ''; div.appendChild(caption);
     } else {
-      const placeholder = document.createElement('div');
-      placeholder.className = 'image-placeholder';
-      placeholder.innerHTML = `<div class="img-icon">🖼</div><div>画像 ${i+1}</div>`;
-      div.appendChild(placeholder);
+      const ph = document.createElement('div'); ph.className = 'image-placeholder'; ph.innerHTML = `<div class="img-icon">🖼</div><div>画像 ${i+1}</div>`; div.appendChild(ph);
     }
     grid.appendChild(div);
   }
@@ -1001,91 +706,53 @@ function selectImageOption(index) {
   document.getElementById('btn-select-image').disabled = false;
 }
 
-async function regenerateImages() {
-  renderImages({ images: [
-    { index: 0, url: `${BASE_IMG_URL}/realistic.png`,  style: '実写風' },
-    { index: 1, url: `${BASE_IMG_URL}/cinematic.png`,  style: 'シネマティック風' },
-    { index: 2, url: `${BASE_IMG_URL}/anime.png`,      style: 'アニメーション風' },
-  ]});
+function regenerateImages() {
+  renderImages({ images: [{ index: 0, url: `${BASE_IMG_URL}/realistic.png`, style: '実写風' }, { index: 1, url: `${BASE_IMG_URL}/cinematic.png`, style: 'シネマティック風' }, { index: 2, url: `${BASE_IMG_URL}/anime.png`, style: 'アニメーション風' }] });
   setStep(3);
 }
 
 async function selectImage() {
   if (state.selectedImage === null) { showError('画像スタイルを選択してください'); return; }
-
-  showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [
-    { icon: '🎨', text: 'スタイルを確定中' },
-    { icon: '🖼', text: 'シーン画像を準備中' },
-    { icon: '✅', text: '完了' },
-  ], 3000);
-
+  showLoading('画像スタイルを確定中...', 'しばらくお待ちください', [{ icon: '🎨', text: 'スタイルを確定中' }, { icon: '🖼', text: 'シーン画像を準備中' }, { icon: '✅', text: '完了' }], 3000);
   try {
     const styleNames = ['realistic', 'cinematic', 'anime'];
     const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
-    const res = await fetch(SELECT_IMAGE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        selected_image_style: styleNames[state.selectedImage] || 'realistic',
-        selected_image_index: state.selectedImage,
-        session_id:           state.sessionId,
-        action:               'select_image_style',
-        scenes:               scenes,
-      }),
-    });
+    const res = await fetch(SELECT_IMAGE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ selected_image_style: styleNames[state.selectedImage] || 'realistic', selected_image_index: state.selectedImage, session_id: state.sessionId, action: 'select_image_style', scenes }) });
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
     hideLoading();
-
-    const TMP_BASE = 'https://chirichiri3720.github.io/Content-Recycle/Tmp_Image';
-    const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_BASE}/tmp${n}.png`);
+    const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_IMG_URL}/tmp${n}.png`);
     state.sceneImageUrls = imageUrls;
-
-    // メタ情報をフォームにセット
     populateMetaForm();
     renderSceneImages(scenes, imageUrls);
     setStep(4);
-  } catch (err) {
-    hideLoading(); showError('画像スタイル確定エラー: ' + err.message); setStep(3);
-  }
+  } catch (err) { hideLoading(); showError('画像スタイル確定エラー: ' + err.message); setStep(3); }
 }
 
 // ============================================================
-// STEP 4: メタ情報フォーム
+// STEP 4: メタ情報
 // ============================================================
 function populateMetaForm() {
   const sc = state.selectedScript;
   if (!sc) return;
-
-  // 共通フィールド
   document.getElementById('meta-script-title').value = sc.script_title || '';
   document.getElementById('meta-concept').value       = sc.concept      || '';
   document.getElementById('meta-summary').value       = state.metaInfo.summaryShort || '';
-
-  // platform_posts
   const pp = sc.platform_posts || {};
-
-  // YouTube
   const yt = pp.youtube_shorts || {};
-  document.getElementById('meta-yt-title').value = yt.video_title  || '';
-  document.getElementById('meta-yt-desc').value  = yt.description  || '';
+  document.getElementById('meta-yt-title').value = yt.video_title || '';
+  document.getElementById('meta-yt-desc').value  = yt.description || '';
   renderHashtags('youtube', yt.hashtags || []);
-
-  // TikTok
   const tt = pp.tiktok || {};
   document.getElementById('meta-tt-title').value   = tt.video_title || '';
   document.getElementById('meta-tt-caption').value = tt.caption     || '';
   renderHashtags('tiktok', tt.hashtags || []);
-
-  // Reels
   const re = pp.reels || {};
   document.getElementById('meta-re-title').value   = re.video_title || '';
   document.getElementById('meta-re-caption').value = re.caption     || '';
   renderHashtags('reels', re.hashtags || []);
-
-  // stateにも保存
-  state.metaInfo.scriptTitle    = sc.script_title || '';
-  state.metaInfo.concept        = sc.concept      || '';
-  state.metaInfo.platformPosts  = JSON.parse(JSON.stringify(pp));
+  state.metaInfo.scriptTitle   = sc.script_title || '';
+  state.metaInfo.concept       = sc.concept      || '';
+  state.metaInfo.platformPosts = JSON.parse(JSON.stringify(pp));
 }
 
 function switchMetaTab(platform) {
@@ -1099,16 +766,11 @@ function renderHashtags(platform, tags) {
   const wrap = document.getElementById(`tags-${platform}`);
   wrap.innerHTML = '';
   tags.forEach(tag => {
-    const chip = document.createElement('span');
-    chip.className = 'hashtag-chip';
-    const text = document.createTextNode(tag);
-    const del  = document.createElement('span');
-    del.textContent = '×';
-    del.style.cssText = 'cursor:pointer;opacity:0.6;margin-left:2px;';
+    const chip = document.createElement('span'); chip.className = 'hashtag-chip';
+    chip.appendChild(document.createTextNode(tag));
+    const del = document.createElement('span'); del.textContent = '×'; del.style.cssText = 'cursor:pointer;opacity:0.6;margin-left:2px;';
     del.addEventListener('click', () => removeHashtag(platform, tag));
-    chip.appendChild(text);
-    chip.appendChild(del);
-    wrap.appendChild(chip);
+    chip.appendChild(del); wrap.appendChild(chip);
   });
 }
 
@@ -1117,50 +779,40 @@ function addHashtag(platform) {
   let tag = input.value.trim();
   if (!tag) return;
   if (!tag.startsWith('#')) tag = '#' + tag;
-
-  const pp = state.metaInfo.platformPosts;
   const key = platform === 'youtube' ? 'youtube_shorts' : platform;
+  const pp = state.metaInfo.platformPosts;
   if (!pp[key]) pp[key] = { hashtags: [] };
-  if (!pp[key].hashtags.includes(tag)) {
-    pp[key].hashtags.push(tag);
-    renderHashtags(platform, pp[key].hashtags);
-  }
+  if (!pp[key].hashtags.includes(tag)) { pp[key].hashtags.push(tag); renderHashtags(platform, pp[key].hashtags); }
   input.value = '';
 }
 
 function removeHashtag(platform, tag) {
-  const pp  = state.metaInfo.platformPosts;
   const key = platform === 'youtube' ? 'youtube_shorts' : platform;
+  const pp = state.metaInfo.platformPosts;
   if (!pp[key]) return;
   pp[key].hashtags = pp[key].hashtags.filter(t => t !== tag);
   renderHashtags(platform, pp[key].hashtags);
 }
 
 function saveMetaInfo() {
-  // フォームの値をstateに反映
   state.metaInfo.scriptTitle  = document.getElementById('meta-script-title').value.trim();
   state.metaInfo.concept      = document.getElementById('meta-concept').value.trim();
   state.metaInfo.summaryShort = document.getElementById('meta-summary').value.trim();
-
   const pp = state.metaInfo.platformPosts;
   if (!pp.youtube_shorts) pp.youtube_shorts = { hashtags: [] };
   if (!pp.tiktok)         pp.tiktok         = { hashtags: [] };
   if (!pp.reels)          pp.reels          = { hashtags: [] };
-
   pp.youtube_shorts.video_title = document.getElementById('meta-yt-title').value.trim();
   pp.youtube_shorts.description = document.getElementById('meta-yt-desc').value.trim();
   pp.tiktok.video_title         = document.getElementById('meta-tt-title').value.trim();
   pp.tiktok.caption             = document.getElementById('meta-tt-caption').value.trim();
   pp.reels.video_title          = document.getElementById('meta-re-title').value.trim();
   pp.reels.caption              = document.getElementById('meta-re-caption').value.trim();
-
-  // 保存済みバッジを一瞬表示
   const badge = document.getElementById('meta-saved-badge');
   badge.classList.add('show');
   setTimeout(() => badge.classList.remove('show'), 2000);
 }
 
-// Enterキーでタグ追加
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
   const id = e.target.id;
@@ -1176,114 +828,41 @@ function renderSceneImages(scenes, imageUrls) {
   const list = document.getElementById('scene-image-list');
   list.innerHTML = '';
   updateEditSummaryBanner();
-
   scenes.forEach((scene, i) => {
     const originalNarration = scene.narration || '';
-    if (!state.narrationEdits[i]) {
-      state.narrationEdits[i] = { original: originalNarration, current: originalNarration, edited: false };
-    }
-
-    const item = document.createElement('div');
-    item.className = 'scene-image-item';
-    item.id = `scene-item-${i}`;
-
+    if (!state.narrationEdits[i]) state.narrationEdits[i] = { original: originalNarration, current: originalNarration, edited: false };
+    const item = document.createElement('div'); item.className = 'scene-image-item'; item.id = `scene-item-${i}`;
     const imgUrl = imageUrls[i] || '';
-
-    const thumb = document.createElement('div');
-    thumb.className = 'scene-image-thumb';
+    const thumb = document.createElement('div'); thumb.className = 'scene-image-thumb';
     thumb.addEventListener('click', () => openLightbox(imgUrl, `Scene ${scene.scene} · ${scene.role || 'narration'}`));
     if (imgUrl) {
-      const img = document.createElement('img');
-      img.src = imgUrl; img.alt = `シーン ${scene.scene}`;
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-      img.onerror = () => { thumb.innerHTML = '<div class="scene-loading">🖼</div>'; };
-      thumb.appendChild(img);
-    } else {
-      thumb.innerHTML = '<div class="scene-loading pulse">⏳</div>';
-    }
-    const overlay = document.createElement('div');
-    overlay.className = 'thumb-overlay';
-    overlay.textContent = '🔍';
-    thumb.appendChild(overlay);
-
-    const info = document.createElement('div');
-    info.className = 'scene-image-info';
-
-    const roleRow = document.createElement('div');
-    roleRow.className = 'scene-image-role';
-    const roleSpan = document.createElement('span');
-    roleSpan.textContent = `Scene ${scene.scene} · ${scene.role || 'narration'}`;
-    const editBtn = document.createElement('button');
-    editBtn.className = 'btn-edit-narration';
-    editBtn.id = `edit-btn-${i}`;
-    editBtn.textContent = '✏️ 編集';
+      const img = document.createElement('img'); img.src = imgUrl; img.alt = `シーン ${scene.scene}`; img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      img.onerror = () => { thumb.innerHTML = '<div class="scene-loading">🖼</div>'; }; thumb.appendChild(img);
+    } else { thumb.innerHTML = '<div class="scene-loading pulse">⏳</div>'; }
+    const overlay = document.createElement('div'); overlay.className = 'thumb-overlay'; overlay.textContent = '🔍'; thumb.appendChild(overlay);
+    const info = document.createElement('div'); info.className = 'scene-image-info';
+    const roleRow = document.createElement('div'); roleRow.className = 'scene-image-role';
+    const roleSpan = document.createElement('span'); roleSpan.textContent = `Scene ${scene.scene} · ${scene.role || 'narration'}`;
+    const editBtn = document.createElement('button'); editBtn.className = 'btn-edit-narration'; editBtn.id = `edit-btn-${i}`; editBtn.textContent = '✏️ 編集';
     editBtn.addEventListener('click', () => toggleEditArea(i));
-    roleRow.appendChild(roleSpan);
-    roleRow.appendChild(editBtn);
-
-    const narrationDisplay = document.createElement('div');
-    narrationDisplay.className = 'scene-narration-display';
-    narrationDisplay.id = `narration-display-${i}`;
-    narrationDisplay.textContent = state.narrationEdits[i].current;
+    roleRow.appendChild(roleSpan); roleRow.appendChild(editBtn);
+    const narrationDisplay = document.createElement('div'); narrationDisplay.className = 'scene-narration-display'; narrationDisplay.id = `narration-display-${i}`; narrationDisplay.textContent = state.narrationEdits[i].current;
     if (state.narrationEdits[i].edited) narrationDisplay.classList.add('edited');
-
-    const duration = document.createElement('div');
-    duration.className = 'scene-image-duration';
-    duration.textContent = `${scene.duration_sec || 5}秒`;
-
-    info.appendChild(roleRow);
-    info.appendChild(narrationDisplay);
-    info.appendChild(duration);
-
-    const mainRow = document.createElement('div');
-    mainRow.className = 'scene-main-row';
-    mainRow.appendChild(thumb);
-    mainRow.appendChild(info);
-
-    const editArea = document.createElement('div');
-    editArea.className = 'scene-edit-area';
-    editArea.id = `edit-area-${i}`;
-
-    const ta = document.createElement('textarea');
-    ta.className = 'narration-textarea';
-    ta.id = `textarea-${i}`;
-    ta.placeholder = 'ナレーションを入力...';
-    ta.value = state.narrationEdits[i].current;
+    const duration = document.createElement('div'); duration.className = 'scene-image-duration'; duration.textContent = `${scene.duration_sec || 5}秒`;
+    info.appendChild(roleRow); info.appendChild(narrationDisplay); info.appendChild(duration);
+    const mainRow = document.createElement('div'); mainRow.className = 'scene-main-row'; mainRow.appendChild(thumb); mainRow.appendChild(info);
+    const editArea = document.createElement('div'); editArea.className = 'scene-edit-area'; editArea.id = `edit-area-${i}`;
+    const ta = document.createElement('textarea'); ta.className = 'narration-textarea'; ta.id = `textarea-${i}`; ta.placeholder = 'ナレーションを入力...'; ta.value = state.narrationEdits[i].current;
     ta.addEventListener('input', () => onNarrationInput(i));
-
-    const editActions = document.createElement('div');
-    editActions.className = 'edit-actions';
-
-    const saveBtn = document.createElement('button');
-    saveBtn.className = 'btn-save-narration';
-    saveBtn.textContent = '保存';
-    saveBtn.addEventListener('click', () => saveNarration(i));
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.className = 'btn-cancel-narration';
-    cancelBtn.textContent = 'キャンセル';
-    cancelBtn.addEventListener('click', () => cancelEdit(i));
-
-    const charCount = document.createElement('span');
-    charCount.className = 'char-count';
-    charCount.id = `char-count-${i}`;
-    charCount.textContent = `${state.narrationEdits[i].current.length}文字`;
-
-    editActions.appendChild(saveBtn);
-    editActions.appendChild(cancelBtn);
-    editActions.appendChild(charCount);
-    editArea.appendChild(ta);
-    editArea.appendChild(editActions);
-
-    item.appendChild(mainRow);
-    item.appendChild(editArea);
-    list.appendChild(item);
-
+    const editActions = document.createElement('div'); editActions.className = 'edit-actions';
+    const saveBtn = document.createElement('button'); saveBtn.className = 'btn-save-narration'; saveBtn.textContent = '保存'; saveBtn.addEventListener('click', () => saveNarration(i));
+    const cancelBtn = document.createElement('button'); cancelBtn.className = 'btn-cancel-narration'; cancelBtn.textContent = 'キャンセル'; cancelBtn.addEventListener('click', () => cancelEdit(i));
+    const charCount = document.createElement('span'); charCount.className = 'char-count'; charCount.id = `char-count-${i}`; charCount.textContent = `${state.narrationEdits[i].current.length}文字`;
+    editActions.appendChild(saveBtn); editActions.appendChild(cancelBtn); editActions.appendChild(charCount);
+    editArea.appendChild(ta); editArea.appendChild(editActions);
+    item.appendChild(mainRow); item.appendChild(editArea); list.appendChild(item);
     if (state.narrationEdits[i].edited) {
-      const badge = document.createElement('span');
-      badge.className = 'edited-badge';
-      badge.textContent = '✏ 編集済み';
-      roleSpan.insertAdjacentElement('afterend', badge);
+      const badge = document.createElement('span'); badge.className = 'edited-badge'; badge.textContent = '✏ 編集済み'; roleSpan.insertAdjacentElement('afterend', badge);
     }
   });
 }
@@ -1293,118 +872,65 @@ function onNarrationInput(index) {
   const cc = document.getElementById(`char-count-${index}`);
   if (cc) cc.textContent = ta.value.length + '文字';
 }
-
 function toggleEditArea(index) {
   const area = document.getElementById(`edit-area-${index}`);
   const item = document.getElementById(`scene-item-${index}`);
   const btn  = document.getElementById(`edit-btn-${index}`);
   const isOpen = area.classList.contains('open');
-  if (isOpen) {
-    area.classList.remove('open'); item.classList.remove('editing'); btn.textContent = '✏️ 編集';
-  } else {
-    const ta = document.getElementById(`textarea-${index}`);
-    ta.value = state.narrationEdits[index]?.current || '';
-    onNarrationInput(index);
-    area.classList.add('open'); item.classList.add('editing'); btn.textContent = '▲ 閉じる';
-    ta.focus();
-  }
+  if (isOpen) { area.classList.remove('open'); item.classList.remove('editing'); btn.textContent = '✏️ 編集'; }
+  else { const ta = document.getElementById(`textarea-${index}`); ta.value = state.narrationEdits[index]?.current || ''; onNarrationInput(index); area.classList.add('open'); item.classList.add('editing'); btn.textContent = '▲ 閉じる'; ta.focus(); }
 }
-
-function cancelEdit(index) {
-  const ta = document.getElementById(`textarea-${index}`);
-  ta.value = state.narrationEdits[index]?.current || '';
-  toggleEditArea(index);
-}
-
+function cancelEdit(index) { const ta = document.getElementById(`textarea-${index}`); ta.value = state.narrationEdits[index]?.current || ''; toggleEditArea(index); }
 function saveNarration(index) {
-  const ta      = document.getElementById(`textarea-${index}`);
+  const ta = document.getElementById(`textarea-${index}`);
   const newText = ta.value.trim();
   if (!newText) { showError('ナレーションを入力してください'); return; }
-
-  const prev      = state.narrationEdits[index];
+  const prev = state.narrationEdits[index];
   const isChanged = newText !== prev.original;
-
   const displayEl = document.getElementById(`narration-display-${index}`);
-  displayEl.textContent = newText;
-  displayEl.classList.toggle('edited', isChanged);
+  displayEl.textContent = newText; displayEl.classList.toggle('edited', isChanged);
   state.narrationEdits[index] = { original: prev.original, current: newText, edited: isChanged };
-
   const roleEl = document.querySelector(`#scene-item-${index} .scene-image-role`);
   if (roleEl) {
     const existingBadge = roleEl.querySelector('.edited-badge');
-    if (isChanged && !existingBadge) {
-      const badge = document.createElement('span');
-      badge.className = 'edited-badge';
-      badge.textContent = '✏ 編集済み';
-      roleEl.querySelector('span').insertAdjacentElement('afterend', badge);
-    } else if (!isChanged && existingBadge) {
-      existingBadge.remove();
-    }
+    if (isChanged && !existingBadge) { const badge = document.createElement('span'); badge.className = 'edited-badge'; badge.textContent = '✏ 編集済み'; roleEl.querySelector('span').insertAdjacentElement('afterend', badge); }
+    else if (!isChanged && existingBadge) existingBadge.remove();
   }
-  updateEditSummaryBanner();
-  toggleEditArea(index);
+  updateEditSummaryBanner(); toggleEditArea(index);
 }
-
 function updateEditSummaryBanner() {
   const count  = Object.values(state.narrationEdits).filter(e => e.edited).length;
   const banner = document.getElementById('edit-summary-banner');
   const text   = document.getElementById('edit-summary-text');
   if (count > 0) { text.textContent = `${count}件のシーンのナレーションを編集済み`; banner.classList.add('visible'); }
-  else { banner.classList.remove('visible'); }
+  else banner.classList.remove('visible');
 }
 
 // ライトボックス
 function openLightbox(imgUrl, caption) {
   if (!imgUrl) return;
-  const existing = document.getElementById('lightbox');
-  if (existing) existing.remove();
-
-  const overlay = document.createElement('div');
-  overlay.className = 'lightbox-overlay';
-  overlay.id = 'lightbox';
+  const existing = document.getElementById('lightbox'); if (existing) existing.remove();
+  const overlay = document.createElement('div'); overlay.className = 'lightbox-overlay'; overlay.id = 'lightbox';
   overlay.addEventListener('click', e => { if (e.target === overlay) closeLightbox(); });
-
-  const inner = document.createElement('div');
-  inner.className = 'lightbox-inner';
-
-  const img = document.createElement('img');
-  img.src = imgUrl; img.alt = caption || '';
-
-  const closeBtn = document.createElement('button');
-  closeBtn.className = 'lightbox-close';
-  closeBtn.textContent = '✕';
-  closeBtn.addEventListener('click', closeLightbox);
-
-  const cap = document.createElement('div');
-  cap.className = 'lightbox-caption';
-  cap.textContent = caption || '';
-
-  inner.appendChild(img);
-  inner.appendChild(closeBtn);
-  inner.appendChild(cap);
-  overlay.appendChild(inner);
-  document.body.appendChild(overlay);
-  document.body.style.overflow = 'hidden';
+  const inner = document.createElement('div'); inner.className = 'lightbox-inner';
+  const img = document.createElement('img'); img.src = imgUrl; img.alt = caption || '';
+  const closeBtn = document.createElement('button'); closeBtn.className = 'lightbox-close'; closeBtn.textContent = '✕'; closeBtn.addEventListener('click', closeLightbox);
+  const cap = document.createElement('div'); cap.className = 'lightbox-caption'; cap.textContent = caption || '';
+  inner.appendChild(img); inner.appendChild(closeBtn); inner.appendChild(cap); overlay.appendChild(inner); document.body.appendChild(overlay); document.body.style.overflow = 'hidden';
 }
-
-function closeLightbox() {
-  const lb = document.getElementById('lightbox');
-  if (lb) lb.remove();
-  document.body.style.overflow = '';
-}
+function closeLightbox() { const lb = document.getElementById('lightbox'); if (lb) lb.remove(); document.body.style.overflow = ''; }
 
 // ============================================================
-// STEP 4 → STEP 5 遷移（AV選択 + Step5シーンリスト描画）
+// STEP 4 → STEP 5
 // ============================================================
 const USE_MOCK_AV = false;
-
 const MOCK_AV_OPTIONS = {
   mood_profile: { primary_mood: 'reassuring', secondary_mood: 'trustworthy', energy: 2, tone_keywords: ['calm'], genre: 'casestudy' },
   voices: [
-    { id: 'v1', label: '自然な女性の声',    voice_name: 'ja-JP-Neural2-B',        ssml_gender: 'FEMALE', speaking_rate: 0.98, pitch: 0,  sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.wav', reason: ['reassuring','calm','warm'],         energy: 2, genre_affinity: ['faq','howto','casestudy'] },
-    { id: 'v2', label: '落ち着いた男性の声', voice_name: 'ja-JP-Neural2-C',        ssml_gender: 'MALE',   speaking_rate: 0.95, pitch: -1, sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.wav', reason: ['trustworthy','serious','informative'], energy: 2, genre_affinity: ['faq','casestudy','compare','opinion'] },
-    { id: 'v3', label: '信頼感のある男性の声', voice_name: 'ja-JP-Neural2-D',      ssml_gender: 'MALE',   speaking_rate: 1.02, pitch: 0,  sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.wav', reason: ['calm','trustworthy','neutral'],     energy: 3, genre_affinity: ['faq','howto','compare'] },
-    { id: 'v4', label: 'ナチュラルな女性の声', voice_name: 'ja-JP-Chirp3-HD-Zephyr', ssml_gender: 'FEMALE', speaking_rate: 1.0,  pitch: 0,  sample_url: 'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts4.wav', reason: ['natural','friendly','reassuring','positive'], energy: 3, genre_affinity: ['faq','howto','opinion'] },
+    { id:'v1', label:'自然な女性の声',     voice_name:'ja-JP-Neural2-B',        ssml_gender:'FEMALE', speaking_rate:0.98, pitch:0,  sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.wav', reason:['reassuring','calm','warm'],            energy:2, genre_affinity:['faq','howto','casestudy'] },
+    { id:'v2', label:'落ち着いた男性の声',  voice_name:'ja-JP-Neural2-C',        ssml_gender:'MALE',   speaking_rate:0.95, pitch:-1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.wav', reason:['trustworthy','serious','informative'], energy:2, genre_affinity:['faq','casestudy','compare','opinion'] },
+    { id:'v3', label:'信頼感のある男性の声', voice_name:'ja-JP-Neural2-D',        ssml_gender:'MALE',   speaking_rate:1.02, pitch:0,  sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.wav', reason:['calm','trustworthy','neutral'],        energy:3, genre_affinity:['faq','howto','compare'] },
+    { id:'v4', label:'ナチュラルな女性の声', voice_name:'ja-JP-Chirp3-HD-Zephyr', ssml_gender:'FEMALE', speaking_rate:1.0,  pitch:0,  sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts4.wav', reason:['natural','friendly','reassuring','positive'], energy:3, genre_affinity:['faq','howto','opinion'] },
   ],
   bgms: [
     { id:'b1', name:'BGM1', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm1.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm1.mp3', reason:['neutral','calm','informative'],   energy:2, genre_affinity:['casestudy','faq','howto','compare'], label:'落ち着いた解説系' },
@@ -1417,19 +943,13 @@ const MOCK_AV_OPTIONS = {
   ],
   subtitle_presets: ['top','center','bottom'],
 };
-
-const REASON_LABELS = {
-  hopeful:'希望', positive:'前向き', friendly:'親しみやすさ', bright:'明るさ',
-  calm:'落ち着き', reassuring:'安心感', informative:'情報性', empathetic:'共感',
-  curious:'興味喚起', hook:'フック感', serious:'真剣', trustworthy:'信頼感',
-  uplifting:'前向きな高揚感', warm:'温かみ', urgent:'緊迫感', neutral:'無難', natural:'自然',
-};
+const REASON_LABELS = { hopeful:'希望', positive:'前向き', friendly:'親しみやすさ', bright:'明るさ', calm:'落ち着き', reassuring:'安心感', informative:'情報性', empathetic:'共感', curious:'興味喚起', hook:'フック感', serious:'真剣', trustworthy:'信頼感', uplifting:'前向きな高揚感', warm:'温かみ', urgent:'緊迫感', neutral:'無難', natural:'自然' };
 
 function scoreAndSort(items, mood) {
   const want = new Set([mood.primary_mood, mood.secondary_mood, ...(mood.tone_keywords||[])].filter(Boolean));
   return items.map(item => {
-    const matched   = (item.reason||[]).filter(m => want.has(m));
-    const moodScore = matched.length / Math.max((item.reason||[]).length, 1);
+    const matched     = (item.reason||[]).filter(m => want.has(m));
+    const moodScore   = matched.length / Math.max((item.reason||[]).length, 1);
     const energyScore = 1 - Math.abs((item.energy??3) - (mood.energy??3)) / 4;
     const genreScore  = (item.genre_affinity||[]).includes(mood.genre) ? 1 : 0;
     const total = 0.5*moodScore + 0.3*energyScore + 0.2*genreScore;
@@ -1438,98 +958,52 @@ function scoreAndSort(items, mood) {
 }
 
 async function proceedToAvSelection() {
-  showLoading('音声・BGMを準備中...', 'おすすめを計算しています', [
-    { icon: '✨', text: '動画の雰囲気を分析中' },
-    { icon: '🎙', text: '音声候補を選定中' },
-    { icon: '🎵', text: 'BGM候補を選定中' },
-    { icon: '✅', text: '完了' },
-  ], 800);
-
+  showLoading('音声・BGMを準備中...', 'おすすめを計算しています', [{ icon:'✨', text:'動画の雰囲気を分析中' }, { icon:'🎙', text:'音声候補を選定中' }, { icon:'🎵', text:'BGM候補を選定中' }, { icon:'✅', text:'完了' }], 800);
   try {
     let data;
     if (USE_MOCK_AV) {
       await new Promise(r => setTimeout(r, 1500));
       const mood = state.selectedScript?.mood_profile || MOCK_AV_OPTIONS.mood_profile;
-      data = {
-        mood_profile: mood,
-        voices: scoreAndSort(MOCK_AV_OPTIONS.voices, mood),
-        bgms:   scoreAndSort(MOCK_AV_OPTIONS.bgms, mood),
-        subtitle_presets: MOCK_AV_OPTIONS.subtitle_presets,
-      };
+      data = { mood_profile: mood, voices: scoreAndSort(MOCK_AV_OPTIONS.voices, mood), bgms: scoreAndSort(MOCK_AV_OPTIONS.bgms, mood), subtitle_presets: MOCK_AV_OPTIONS.subtitle_presets };
     } else {
-      const res = await fetch(GET_AV_OPTIONS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'get_av_options', session_id: state.sessionId }),
-      });
+      const res = await fetch(GET_AV_OPTIONS_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get_av_options', session_id: state.sessionId }) });
       if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
       data = await res.json();
       if (Array.isArray(data)) data = data[0];
     }
-
     state.avOptions = { voices: data.voices||[], bgms: data.bgms||[], moodProfile: data.mood_profile };
-    renderStep5();
-    hideLoading();
-    setStep(5);
-  } catch (err) {
-    hideLoading(); setStep(4); showError('音声・BGM取得エラー: ' + err.message);
-  }
+    renderStep5(); hideLoading(); setStep(5);
+  } catch (err) { hideLoading(); setStep(4); showError('音声・BGM取得エラー: ' + err.message); }
 }
 
 // ============================================================
-// STEP 5: 描画（左：シーン読み取り専用 / 右：設定）
+// STEP 5
 // ============================================================
-function renderStep5() {
-  renderStep5SceneList();
-  renderAvOptions();
-}
+function renderStep5() { renderStep5SceneList(); renderAvOptions(); }
 
 function renderStep5SceneList() {
   const container = document.getElementById('step5-scene-list');
   container.innerHTML = '';
   const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
   scenes.forEach((scene, i) => {
-    const row = document.createElement('div');
-    row.className = 'step5-scene-row';
-
-    const thumb = document.createElement('div');
-    thumb.className = 'step5-scene-thumb';
+    const row = document.createElement('div'); row.className = 'step5-scene-row';
+    const thumb = document.createElement('div'); thumb.className = 'step5-scene-thumb';
     const imgUrl = state.sceneImageUrls[i] || '';
     if (imgUrl) {
-      const img = document.createElement('img');
-      img.src = imgUrl; img.alt = `Scene ${scene.scene}`;
-      img.onerror = () => { thumb.textContent = '🖼'; thumb.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:14px;'; };
-      thumb.appendChild(img);
-    } else {
-      thumb.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:14px;';
-      thumb.textContent = '🖼';
-    }
-
-    const info = document.createElement('div');
-    info.className = 'step5-scene-info';
-
-    const num = document.createElement('div');
-    num.className = 'step5-scene-num';
-    num.textContent = `SCENE ${scene.scene} · ${scene.role || 'narration'}`;
-
-    const text = document.createElement('div');
-    text.className = 'step5-scene-text';
-    // 編集済みナレーションを優先表示
-    text.textContent = state.narrationEdits[i]?.current || scene.narration || '';
-
-    info.appendChild(num);
-    info.appendChild(text);
-    row.appendChild(thumb);
-    row.appendChild(info);
-    container.appendChild(row);
+      const img = document.createElement('img'); img.src = imgUrl; img.alt = `Scene ${scene.scene}`;
+      img.onerror = () => { thumb.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:14px;'; thumb.textContent = '🖼'; }; thumb.appendChild(img);
+    } else { thumb.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:14px;'; thumb.textContent = '🖼'; }
+    const info = document.createElement('div'); info.className = 'step5-scene-info';
+    const num  = document.createElement('div'); num.className  = 'step5-scene-num';  num.textContent  = `SCENE ${scene.scene} · ${scene.role || 'narration'}`;
+    const text = document.createElement('div'); text.className = 'step5-scene-text'; text.textContent = state.narrationEdits[i]?.current || scene.narration || '';
+    info.appendChild(num); info.appendChild(text); row.appendChild(thumb); row.appendChild(info); container.appendChild(row);
   });
 }
 
 function renderAvOptions() {
   const mp = state.avOptions.moodProfile;
   if (mp) {
-    const tags = [mp.primary_mood, mp.secondary_mood].filter(Boolean)
-      .map(m => REASON_LABELS[m]||m).join(' × ');
+    const tags = [mp.primary_mood, mp.secondary_mood].filter(Boolean).map(m => REASON_LABELS[m]||m).join(' × ');
     document.getElementById('mood-info-text').textContent = `この動画の雰囲気: ${tags} → おすすめ順`;
   }
   renderAvList('voice-list', state.avOptions.voices, 'voice');
@@ -1542,90 +1016,40 @@ function renderAvOptions() {
 function renderAvList(containerId, items, kind) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
-  const TOP = 2; // 上位2件を常時表示
-
-  // 上位2件
-  items.slice(0, TOP).forEach((it, i) => {
-    container.appendChild(buildAvRow(it, i, kind));
-  });
-
-  // 残りがあればトグル
+  const TOP = 2;
+  items.slice(0, TOP).forEach((it, i) => container.appendChild(buildAvRow(it, i, kind)));
   if (items.length > TOP) {
-    const extra = document.createElement('div');
-    extra.className = 'av-toggle-extra';
-    extra.id = `${containerId}-extra`;
-    items.slice(TOP).forEach((it, i) => {
-      extra.appendChild(buildAvRow(it, TOP + i, kind));
-    });
-
-    const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'av-toggle-btn';
-    toggleBtn.id = `${containerId}-toggle`;
+    const extra = document.createElement('div'); extra.className = 'av-toggle-extra'; extra.id = `${containerId}-extra`;
+    items.slice(TOP).forEach((it, i) => extra.appendChild(buildAvRow(it, TOP + i, kind)));
+    const toggleBtn = document.createElement('button'); toggleBtn.className = 'av-toggle-btn'; toggleBtn.id = `${containerId}-toggle`;
     toggleBtn.innerHTML = `<span>▾</span> 他 ${items.length - TOP} 件を表示`;
     toggleBtn.addEventListener('click', () => {
       const isOpen = extra.classList.toggle('open');
-      toggleBtn.innerHTML = isOpen
-        ? `<span>▴</span> 閉じる`
-        : `<span>▾</span> 他 ${items.length - TOP} 件を表示`;
+      toggleBtn.innerHTML = isOpen ? `<span>▴</span> 閉じる` : `<span>▾</span> 他 ${items.length - TOP} 件を表示`;
     });
-
-    container.appendChild(toggleBtn);
-    container.appendChild(extra);
+    container.appendChild(toggleBtn); container.appendChild(extra);
   }
 }
 
 function buildAvRow(it, i, kind) {
-  const row = document.createElement('div');
-  row.className = 'av-option';
-  row.dataset.index = i; row.dataset.kind = kind;
-  row.addEventListener('click', e => {
-    if (e.target.tagName === 'AUDIO' || e.target.closest('audio')) return;
-    selectAv(kind, i);
-  });
-
-  const info = document.createElement('div');
-  info.className = 'av-info';
-
-  const label = document.createElement('div');
-  label.className = 'av-label';
-  const name = document.createElement('span');
-  name.textContent = it.label || it.name;
-  label.appendChild(name);
-  if (i === 0) {
-    const badge = document.createElement('span');
-    badge.className = 'recommend-badge';
-    badge.textContent = '★ おすすめ';
-    label.appendChild(badge);
-  }
-
-  const reasonRow = document.createElement('div');
-  reasonRow.className = 'av-reason';
-  if (it.reason && it.reason.length) {
-    it.reason.forEach(r => {
-      const tag = document.createElement('span');
-      tag.className = 'reason-tag';
-      tag.textContent = REASON_LABELS[r] || r;
-      reasonRow.appendChild(tag);
-    });
-  } else { reasonRow.textContent = '—'; }
-
-  info.appendChild(label);
-  info.appendChild(reasonRow);
-
-  const audio = document.createElement('audio');
-  audio.controls = true; audio.preload = 'none';
-  audio.src = it.sample_url || '';
+  const row = document.createElement('div'); row.className = 'av-option'; row.dataset.index = i; row.dataset.kind = kind;
+  row.addEventListener('click', e => { if (e.target.tagName === 'AUDIO' || e.target.closest('audio')) return; selectAv(kind, i); });
+  const info = document.createElement('div'); info.className = 'av-info';
+  const label = document.createElement('div'); label.className = 'av-label';
+  const name  = document.createElement('span'); name.textContent = it.label || it.name; label.appendChild(name);
+  if (i === 0) { const badge = document.createElement('span'); badge.className = 'recommend-badge'; badge.textContent = '★ おすすめ'; label.appendChild(badge); }
+  const reasonRow = document.createElement('div'); reasonRow.className = 'av-reason';
+  if (it.reason && it.reason.length) { it.reason.forEach(r => { const tag = document.createElement('span'); tag.className = 'reason-tag'; tag.textContent = REASON_LABELS[r]||r; reasonRow.appendChild(tag); }); }
+  else reasonRow.textContent = '—';
+  info.appendChild(label); info.appendChild(reasonRow);
+  const audio = document.createElement('audio'); audio.controls = true; audio.preload = 'none'; audio.src = it.sample_url || '';
   audio.addEventListener('play', () => stopOtherAudios(audio));
-
-  row.appendChild(info);
-  row.appendChild(audio);
+  row.appendChild(info); row.appendChild(audio);
   return row;
 }
 
 function stopOtherAudios(current) {
-  document.querySelectorAll('#step5 audio').forEach(a => {
-    if (a !== current) a.pause();
-  });
+  document.querySelectorAll('#step5 audio').forEach(a => { if (a !== current) a.pause(); });
 }
 
 function selectAv(kind, index) {
@@ -1639,21 +1063,14 @@ function selectAv(kind, index) {
 
 function renderSubtitlePresets() {
   const positions = [{ key:'top', label:'上' }, { key:'center', label:'中央' }, { key:'bottom', label:'下' }];
-  const container = document.getElementById('subtitle-position-list');
-  container.innerHTML = '';
+  const container = document.getElementById('subtitle-position-list'); container.innerHTML = '';
   positions.forEach(p => {
-    const div = document.createElement('div');
-    div.className = `subtitle-preset pos-${p.key}`;
+    const div = document.createElement('div'); div.className = `subtitle-preset pos-${p.key}`;
     if (state.subtitlePosition === p.key) div.classList.add('selected');
-    div.addEventListener('click', () => {
-      state.subtitlePosition = p.key;
-      document.querySelectorAll('.subtitle-preset').forEach(el => el.classList.remove('selected'));
-      div.classList.add('selected');
-    });
+    div.addEventListener('click', () => { state.subtitlePosition = p.key; document.querySelectorAll('.subtitle-preset').forEach(el => el.classList.remove('selected')); div.classList.add('selected'); });
     const bar = document.createElement('div'); bar.className = 'sub-bar';
     const lbl = document.createElement('div'); lbl.className = 'sub-label'; lbl.textContent = p.label;
-    div.appendChild(bar); div.appendChild(lbl);
-    container.appendChild(div);
+    div.appendChild(bar); div.appendChild(lbl); container.appendChild(div);
   });
 }
 
@@ -1662,57 +1079,17 @@ function renderSubtitlePresets() {
 // ============================================================
 async function proceedToVideo() {
   const scenes = state.selectedScript ? (state.selectedScript.scenes || []) : [];
-  const finalNarrations = scenes.map((sc, i) => ({
-    scene:        sc.scene,
-    role:         sc.role,
-    narration:    state.narrationEdits[i]?.current ?? sc.narration,
-    duration_sec: sc.duration_sec,
-    edited:       state.narrationEdits[i]?.edited ?? false,
-  }));
-
-  showLoading('動画を生成中...', 'TTS音声とShotstackで動画を合成しています', [
-    { icon: '🎙', text: 'Google TTSで音声を生成中' },
-    { icon: '🖼', text: '画像を準備中' },
-    { icon: '💬', text: '字幕を生成中' },
-    { icon: '🎞', text: 'Shotstackで動画を合成中' },
-    { icon: '✅', text: '完成' },
-  ], 20000, true);
-
+  const finalNarrations = scenes.map((sc, i) => ({ scene: sc.scene, role: sc.role, narration: state.narrationEdits[i]?.current ?? sc.narration, duration_sec: sc.duration_sec, edited: state.narrationEdits[i]?.edited ?? false }));
+  showLoading('動画を生成中...', 'TTS音声とShotstackで動画を合成しています', [{ icon:'🎙', text:'Google TTSで音声を生成中' }, { icon:'🖼', text:'画像を準備中' }, { icon:'💬', text:'字幕を生成中' }, { icon:'🎞', text:'Shotstackで動画を合成中' }, { icon:'✅', text:'完成' }], 20000, true);
   setTimeout(() => {
     document.getElementById('polling-progress').style.display = 'block';
-    const bar = document.getElementById('polling-bar');
-    bar.style.width = '0%';
+    const bar = document.getElementById('polling-bar'); bar.style.width = '0%';
     requestAnimationFrame(() => { bar.style.transition = 'width 90s linear'; bar.style.width = '100%'; });
     document.getElementById('polling-status').textContent = '動画を生成中...';
   }, 100);
-
-  const controller  = new AbortController();
-  const fetchTimeout = setTimeout(() => controller.abort(), 300000);
-
+  const controller = new AbortController(); const fetchTimeout = setTimeout(() => controller.abort(), 300000);
   try {
-    const res = await fetch(GENERATE_VIDEO_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify({
-        action:             'approve_scenes',
-        session_id:         state.sessionId,
-        final_narrations:   finalNarrations,
-        edited_scene_count: finalNarrations.filter(s => s.edited).length,
-        scene_image_urls:   state.sceneImageUrls,
-        voice_id:           state.selectedVoice?.id,
-        voice_name:         state.selectedVoice?.voice_name,
-        ssml_gender:        state.selectedVoice?.ssml_gender,
-        speaking_rate:      state.selectedVoice?.speaking_rate,
-        pitch:              state.selectedVoice?.pitch,
-        bgm_id:             state.selectedBgm?.id,
-        bgm_storage_url:    state.selectedBgm?.storage_url,
-        bgm_volume:         state.bgmVolume,
-        subtitle_position:  state.subtitlePosition,
-        // メタ情報も一緒に送信
-        meta_info:          state.metaInfo,
-      }),
-    });
+    const res = await fetch(GENERATE_VIDEO_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal, body: JSON.stringify({ action: 'approve_scenes', session_id: state.sessionId, final_narrations: finalNarrations, edited_scene_count: finalNarrations.filter(s => s.edited).length, scene_image_urls: state.sceneImageUrls, voice_id: state.selectedVoice?.id, voice_name: state.selectedVoice?.voice_name, ssml_gender: state.selectedVoice?.ssml_gender, speaking_rate: state.selectedVoice?.speaking_rate, pitch: state.selectedVoice?.pitch, bgm_id: state.selectedBgm?.id, bgm_storage_url: state.selectedBgm?.storage_url, bgm_volume: state.bgmVolume, subtitle_position: state.subtitlePosition, meta_info: state.metaInfo }) });
     clearTimeout(fetchTimeout);
     if (res.status === 429) { hideLoading(); setStep(5); showError('動画生成の実行回数が上限に達しました。'); return; }
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
@@ -1722,53 +1099,29 @@ async function proceedToVideo() {
     if (data.status === 'failed' || data.error) throw new Error(data.error || '動画生成に失敗しました');
     const videoUrl = validateVideoUrl(data.video_url);
     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
-    state.videoUrl = videoUrl;
-    hideLoading();
-    renderVideo({ video_url: videoUrl });
-    setStep(6);
+    state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
   } catch (err) {
     clearTimeout(fetchTimeout);
-    if (err.name === 'AbortError' || err.message.includes('空')) {
-      startVideoPolling();
-    } else {
-      hideLoading(); setStep(5); showError('生成エラー: ' + err.message);
-    }
+    if (err.name === 'AbortError' || err.message.includes('空')) startVideoPolling();
+    else { hideLoading(); setStep(5); showError('生成エラー: ' + err.message); }
   }
 }
 
-// ============================================================
-// フォールバック: ポーリング
-// ============================================================
 function startVideoPolling() {
   document.getElementById('wait-banner').style.display = 'flex';
   document.getElementById('polling-progress').style.display = 'block';
   let tries = 0;
   function runPoll() {
     tries++;
-    const bar = document.getElementById('polling-bar');
-    const statusEl = document.getElementById('polling-status');
+    const bar = document.getElementById('polling-bar'); const statusEl = document.getElementById('polling-status');
     if (bar) { bar.style.width = '0'; requestAnimationFrame(() => { bar.style.width = '100%'; }); }
     if (statusEl) statusEl.textContent = `確認中... (${tries}/${POLL_MAX_TRIES})`;
-    fetch(`${CHECK_VIDEO_URL}?session_id=${encodeURIComponent(state.sessionId)}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.video_status === 'done' && data.video_url) {
-          const videoUrl = validateVideoUrl(data.video_url);
-          if (!videoUrl) throw new Error('Invalid video URL from polling');
-          state.videoUrl = videoUrl;
-          hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
-        } else if (data.video_status === 'failed') {
-          hideLoading(); setStep(4); showError('動画生成に失敗しました。');
-        } else if (tries >= POLL_MAX_TRIES) {
-          hideLoading(); setStep(4); showError('タイムアウト: しばらく後に再度お試しください。');
-        } else {
-          state.pollTimer = setTimeout(runPoll, POLL_INTERVAL_MS);
-        }
-      })
-      .catch(e => {
-        if (tries >= POLL_MAX_TRIES) { hideLoading(); setStep(4); showError('通信エラー: ' + e.message); }
-        else state.pollTimer = setTimeout(runPoll, POLL_INTERVAL_MS);
-      });
+    fetch(`${CHECK_VIDEO_URL}?session_id=${encodeURIComponent(state.sessionId)}`).then(r => r.json()).then(data => {
+      if (data.video_status === 'done' && data.video_url) { const videoUrl = validateVideoUrl(data.video_url); if (!videoUrl) throw new Error('Invalid video URL'); state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6); }
+      else if (data.video_status === 'failed') { hideLoading(); setStep(4); showError('動画生成に失敗しました。'); }
+      else if (tries >= POLL_MAX_TRIES) { hideLoading(); setStep(4); showError('タイムアウト: しばらく後に再度お試しください。'); }
+      else state.pollTimer = setTimeout(runPoll, POLL_INTERVAL_MS);
+    }).catch(e => { if (tries >= POLL_MAX_TRIES) { hideLoading(); setStep(4); showError('通信エラー: ' + e.message); } else state.pollTimer = setTimeout(runPoll, POLL_INTERVAL_MS); });
   }
   runPoll();
 }
@@ -1777,203 +1130,69 @@ function startVideoPolling() {
 // メタ情報表示パネル（STEP6/7共通）
 // ============================================================
 function buildMetaViewPanel(containerId) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  container.innerHTML = '';
-
+  const container = document.getElementById(containerId); if (!container) return; container.innerHTML = '';
   const m = state.metaInfo;
-
-  // スクリプトタイトル
-  if (m.scriptTitle) {
-    const sec = document.createElement('div');
-    sec.className = 'meta-view-section';
-    sec.innerHTML = `<div class="meta-view-label">スクリプトタイトル</div>`;
-    const val = document.createElement('div');
-    val.className = 'meta-view-value';
-    val.textContent = m.scriptTitle;
-    sec.appendChild(val);
-    container.appendChild(sec);
-  }
-
-  // コンセプト
-  if (m.concept) {
-    const sec = document.createElement('div');
-    sec.className = 'meta-view-section';
-    sec.innerHTML = `<div class="meta-view-label">コンセプト</div>`;
-    const val = document.createElement('div');
-    val.className = 'meta-view-value muted';
-    val.textContent = m.concept;
-    sec.appendChild(val);
-    container.appendChild(sec);
-  }
-
-  // 記事要約
-  if (m.summaryShort) {
-    const sec = document.createElement('div');
-    sec.className = 'meta-view-section';
-    sec.innerHTML = `<div class="meta-view-label">記事要約</div>`;
-    const val = document.createElement('div');
-    val.className = 'meta-view-value muted';
-    val.textContent = m.summaryShort;
-    sec.appendChild(val);
-    container.appendChild(sec);
-  }
-
-  // プラットフォーム別
+  const addSection = (label, text, muted) => { if (!text) return; const sec = document.createElement('div'); sec.className = 'meta-view-section'; const lbl = document.createElement('div'); lbl.className = 'meta-view-label'; lbl.textContent = label; const val = document.createElement('div'); val.className = 'meta-view-value' + (muted ? ' muted' : ''); val.textContent = text; sec.appendChild(lbl); sec.appendChild(val); container.appendChild(sec); };
+  addSection('スクリプトタイトル', m.scriptTitle, false);
+  addSection('コンセプト', m.concept, true);
+  addSection('記事要約', m.summaryShort, true);
   const pp = m.platformPosts || {};
   const platforms = [
-    { key: 'youtube', storeKey: 'youtube_shorts', label: 'YouTube Shorts', titleField: 'video_title', bodyField: 'description', bodyLabel: '概要欄' },
-    { key: 'tiktok',  storeKey: 'tiktok',         label: 'TikTok',         titleField: 'video_title', bodyField: 'caption',     bodyLabel: 'キャプション' },
-    { key: 'reels',   storeKey: 'reels',           label: 'Reels',          titleField: 'video_title', bodyField: 'caption',     bodyLabel: 'キャプション' },
+    { key:'youtube', storeKey:'youtube_shorts', label:'YouTube Shorts', titleField:'video_title', bodyField:'description', bodyLabel:'概要欄' },
+    { key:'tiktok',  storeKey:'tiktok',         label:'TikTok',         titleField:'video_title', bodyField:'caption',     bodyLabel:'キャプション' },
+    { key:'reels',   storeKey:'reels',           label:'Reels',          titleField:'video_title', bodyField:'caption',     bodyLabel:'キャプション' },
   ];
-
-  const platSec = document.createElement('div');
-  platSec.className = 'meta-view-section';
-
-  const tabLabel = document.createElement('div');
-  tabLabel.className = 'meta-view-label';
-  tabLabel.textContent = 'プラットフォーム別投稿情報';
-  platSec.appendChild(tabLabel);
-
-  const tabRow = document.createElement('div');
-  tabRow.className = 'meta-view-platform-tabs';
-
-  const uid = containerId; // パネルごとにユニークなID用
-
+  const platSec = document.createElement('div'); platSec.className = 'meta-view-section';
+  const tabLbl  = document.createElement('div'); tabLbl.className  = 'meta-view-label'; tabLbl.textContent = 'プラットフォーム別投稿情報'; platSec.appendChild(tabLbl);
+  const tabRow  = document.createElement('div'); tabRow.className  = 'meta-view-platform-tabs';
   platforms.forEach((p, idx) => {
-    const tab = document.createElement('button');
-    tab.className = 'meta-view-tab' + (idx === 0 ? ' active' : '');
-    tab.dataset.tab = p.key;
-    tab.textContent = p.label;
-    tab.addEventListener('click', () => {
-      platSec.querySelectorAll('.meta-view-tab').forEach(t => t.classList.remove('active'));
-      platSec.querySelectorAll('.meta-view-platform-panel').forEach(panel => panel.classList.remove('active'));
-      tab.classList.add('active');
-      platSec.querySelector(`#mvp-${uid}-${p.key}`).classList.add('active');
-    });
+    const tab = document.createElement('button'); tab.className = 'meta-view-tab' + (idx === 0 ? ' active' : ''); tab.textContent = p.label;
+    tab.addEventListener('click', () => { platSec.querySelectorAll('.meta-view-tab').forEach(t => t.classList.remove('active')); platSec.querySelectorAll('.meta-view-platform-panel').forEach(panel => panel.classList.remove('active')); tab.classList.add('active'); platSec.querySelector(`#mvp-${containerId}-${p.key}`).classList.add('active'); });
     tabRow.appendChild(tab);
   });
   platSec.appendChild(tabRow);
-
   platforms.forEach((p, idx) => {
     const d = pp[p.storeKey] || {};
-    const panel = document.createElement('div');
-    panel.className = 'meta-view-platform-panel' + (idx === 0 ? ' active' : '');
-    panel.id = `mvp-${uid}-${p.key}`;
-
-    // タイトル
-    const titleSec = document.createElement('div');
-    titleSec.style.marginBottom = '10px';
-    const titleLbl = document.createElement('div');
-    titleLbl.className = 'meta-view-label';
-    titleLbl.textContent = '動画タイトル';
-    const titleVal = document.createElement('div');
-    titleVal.className = 'meta-view-value';
-    titleVal.textContent = d[p.titleField] || '—';
-    titleSec.appendChild(titleLbl);
-    titleSec.appendChild(titleVal);
-    panel.appendChild(titleSec);
-
-    // 概要/キャプション
-    const bodySec = document.createElement('div');
-    bodySec.style.marginBottom = '10px';
-    const bodyLbl = document.createElement('div');
-    bodyLbl.className = 'meta-view-label';
-    bodyLbl.textContent = p.bodyLabel;
-    const bodyVal = document.createElement('div');
-    bodyVal.className = 'meta-view-value muted';
-    bodyVal.textContent = d[p.bodyField] || '—';
-    bodySec.appendChild(bodyLbl);
-    bodySec.appendChild(bodyVal);
-    panel.appendChild(bodySec);
-
-    // ハッシュタグ
-    const tagSec = document.createElement('div');
-    const tagLbl = document.createElement('div');
-    tagLbl.className = 'meta-view-label';
-    tagLbl.textContent = 'ハッシュタグ';
-    const tagWrap = document.createElement('div');
-    tagWrap.className = 'meta-view-hashtags';
+    const panel = document.createElement('div'); panel.className = 'meta-view-platform-panel' + (idx === 0 ? ' active' : ''); panel.id = `mvp-${containerId}-${p.key}`;
+    const mk = (label, text) => { const s = document.createElement('div'); s.style.marginBottom = '10px'; const l = document.createElement('div'); l.className = 'meta-view-label'; l.textContent = label; const v = document.createElement('div'); v.className = 'meta-view-value muted'; v.textContent = text || '—'; s.appendChild(l); s.appendChild(v); return s; };
+    panel.appendChild(mk('動画タイトル', d[p.titleField]));
+    panel.appendChild(mk(p.bodyLabel, d[p.bodyField]));
+    const tagSec = document.createElement('div'); const tagLbl = document.createElement('div'); tagLbl.className = 'meta-view-label'; tagLbl.textContent = 'ハッシュタグ';
+    const tagWrap = document.createElement('div'); tagWrap.className = 'meta-view-hashtags';
     const tags = d.hashtags || [];
-    if (tags.length) {
-      tags.forEach(tag => {
-        const chip = document.createElement('span');
-        chip.className = 'meta-view-hashtag';
-        chip.textContent = tag;
-        tagWrap.appendChild(chip);
-      });
-    } else {
-      tagWrap.style.color = 'var(--text3)';
-      tagWrap.style.fontSize = '12px';
-      tagWrap.textContent = '—';
-    }
-    tagSec.appendChild(tagLbl);
-    tagSec.appendChild(tagWrap);
-    panel.appendChild(tagSec);
-
-    platSec.appendChild(panel);
+    if (tags.length) { tags.forEach(tag => { const chip = document.createElement('span'); chip.className = 'meta-view-hashtag'; chip.textContent = tag; tagWrap.appendChild(chip); }); }
+    else { tagWrap.style.color = 'var(--text3)'; tagWrap.style.fontSize = '12px'; tagWrap.textContent = '—'; }
+    tagSec.appendChild(tagLbl); tagSec.appendChild(tagWrap); panel.appendChild(tagSec); platSec.appendChild(panel);
   });
-
   container.appendChild(platSec);
 }
 
 // ============================================================
-// STEP 6: 動画確認
+// STEP 6
 // ============================================================
 function renderVideo(data) {
   const container = document.getElementById('video-container');
-  const videoUrl  = validateVideoUrl(data.video_url);
-  state.videoUrl  = videoUrl;
+  const videoUrl  = validateVideoUrl(data.video_url); state.videoUrl = videoUrl;
   container.innerHTML = '';
   if (videoUrl) {
-    const video = document.createElement('video');
-    video.controls = true; video.playsInline = true;
-    video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-    const src = document.createElement('source');
-    src.src = videoUrl; src.type = 'video/mp4';
-    video.appendChild(src);
-    container.appendChild(video);
-  } else {
-    container.innerHTML = `<div class="video-placeholder"><div class="play-icon">▶</div><div>動画の準備ができました</div></div>`;
-  }
-  // STEP6のメタ情報パネルを描画
+    const video = document.createElement('video'); video.controls = true; video.playsInline = true; video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+    const src = document.createElement('source'); src.src = videoUrl; src.type = 'video/mp4';
+    video.appendChild(src); container.appendChild(video);
+  } else { container.innerHTML = `<div class="video-placeholder"><div class="play-icon">▶</div><div>動画の準備ができました</div></div>`; }
   buildMetaViewPanel('step6-meta-panel');
 }
 
 async function approveVideo() {
-  const fc = document.getElementById('final-video-container');
-  fc.innerHTML = '';
+  const fc = document.getElementById('final-video-container'); fc.innerHTML = '';
   if (state.videoUrl) {
-    const videoWrap = document.createElement('div');
-    videoWrap.className = 'video-container';
-    videoWrap.style.marginBottom = '0';
-    const video = document.createElement('video');
-    video.controls = true; video.playsInline = true;
-    video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-    const src = document.createElement('source');
-    src.src = state.videoUrl; src.type = 'video/mp4';
-    video.appendChild(src);
-    videoWrap.appendChild(video);
-    fc.appendChild(videoWrap);
-
-    const dlBtn = document.getElementById('btn-download');
-    dlBtn.href = state.videoUrl;
-    dlBtn.style.display = 'flex';
-    dlBtn.onclick = async e => {
-      e.preventDefault();
-      try {
-        const response = await fetch(state.videoUrl);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl; a.download = `video-${state.sessionId||Date.now()}.mp4`;
-        a.click(); URL.revokeObjectURL(blobUrl);
-      } catch (err) { window.open(state.videoUrl, '_blank'); }
-    };
+    const videoWrap = document.createElement('div'); videoWrap.className = 'video-container'; videoWrap.style.marginBottom = '0';
+    const video = document.createElement('video'); video.controls = true; video.playsInline = true; video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+    const src = document.createElement('source'); src.src = state.videoUrl; src.type = 'video/mp4';
+    video.appendChild(src); videoWrap.appendChild(video); fc.appendChild(videoWrap);
+    const dlBtn = document.getElementById('btn-download'); dlBtn.href = state.videoUrl; dlBtn.style.display = 'flex';
+    dlBtn.onclick = async e => { e.preventDefault(); try { const response = await fetch(state.videoUrl); const blob = await response.blob(); const blobUrl = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = blobUrl; a.download = `video-${state.sessionId||Date.now()}.mp4`; a.click(); URL.revokeObjectURL(blobUrl); } catch (err) { window.open(state.videoUrl, '_blank'); } };
   }
-  // STEP7のメタ情報パネルを描画
-  buildMetaViewPanel('step7-meta-panel');
-  setStep(7);
+  buildMetaViewPanel('step7-meta-panel'); setStep(7);
 }
 
 async function rejectVideo() { setStep(5); }
@@ -1984,29 +1203,12 @@ async function rejectVideo() { setStep(5); }
 function resetAll() {
   if (state.pollTimer)      clearTimeout(state.pollTimer);
   if (state.loadingInterval) clearInterval(state.loadingInterval);
-  state = {
-    currentStep: 1,
-    input: { userName:'', url:'', contentType:'', platform:'YouTube Shorts' },
-    resumeUrls: { script:null, image:null, scene:null },
-    sessionId: null, selectedScript: null, selectedImage: null, videoUrl: null,
-    scriptCandidates: [], sceneImageUrls: [], loadingInterval: null, pollTimer: null,
-    narrationEdits: {},
-    metaInfo: {
-      scriptTitle: '', concept: '', summaryShort: '',
-      platformPosts: {
-        youtube_shorts: { video_title:'', description:'', hashtags:[] },
-        tiktok:         { video_title:'', caption:'',     hashtags:[] },
-        reels:          { video_title:'', caption:'',     hashtags:[] },
-      }
-    },
-    avOptions: { voices:[], bgms:[], moodProfile:null },
-    selectedVoice: null, selectedBgm: null, bgmVolume: 0.3, subtitlePosition: 'bottom',
-  };
-  document.getElementById('input-url').value           = '';
-  document.getElementById('input-username').value      = '';
-  document.getElementById('input-content-type').value  = '';
-  document.getElementById('input-platform').value      = 'YouTube Shorts';
-  document.getElementById('btn-download').href         = '#';
+  state = { currentStep:1, input:{ userName:'', url:'', contentType:'', platform:'YouTube Shorts' }, resumeUrls:{ script:null, image:null, scene:null }, sessionId:null, selectedScript:null, selectedImage:null, videoUrl:null, scriptCandidates:[], sceneImageUrls:[], loadingInterval:null, pollTimer:null, narrationEdits:{}, metaInfo:{ scriptTitle:'', concept:'', summaryShort:'', platformPosts:{ youtube_shorts:{ video_title:'', description:'', hashtags:[] }, tiktok:{ video_title:'', caption:'', hashtags:[] }, reels:{ video_title:'', caption:'', hashtags:[] } } }, avOptions:{ voices:[], bgms:[], moodProfile:null }, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom' };
+  document.getElementById('input-url').value          = '';
+  document.getElementById('input-username').value     = '';
+  document.getElementById('input-content-type').value = '';
+  document.getElementById('input-platform').value     = 'YouTube Shorts';
+  document.getElementById('btn-download').href        = '#';
   setStep(1);
 }
 </script>
