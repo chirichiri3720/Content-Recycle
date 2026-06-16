@@ -288,12 +288,14 @@ async function fetchGallery() {
 
   const sessionMap = Object.fromEntries(sessions.map(s => [s.id, s]));
 
-  return videos
-    .filter(v => sessionMap[v.session_id])
-    .map(v => ({
-      ...sessionMap[v.session_id],
-      video: v,
-    }));
+  return videos.map(v => ({
+  id: v.session_id,
+  user_name: sessionMap[v.session_id]?.user_name || '',
+  platform: sessionMap[v.session_id]?.platform || 'YouTube Shorts',
+  content_url: sessionMap[v.session_id]?.content_url || '',
+  created_at: sessionMap[v.session_id]?.created_at || v.created_at,
+  video: v,
+}));
 }
 
 // ============================================================
