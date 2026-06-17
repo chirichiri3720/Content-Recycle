@@ -802,7 +802,7 @@ async function selectImage() {
     const res = await fetch(SELECT_IMAGE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ selected_image_style: styleNames[state.selectedImage] || 'realistic', selected_image_index: state.selectedImage, session_id: state.sessionId, action: 'select_image_style', scenes }) });
     if (!res.ok) throw new Error(`HTTPエラー: ${res.status}`);
     hideLoading();
-    const imageUrls = [1,2,3,4,5,6].map(n => `${TMP_IMG_URL}/tmp${n}.png`);
+    const imageUrls = [1,2,3,4,5,6,7].map(n => `${TMP_IMG_URL}/tmp${n}.png`);
     state.sceneImageUrls = imageUrls;
     initMetaFromScript();
     renderStep4Meta();
