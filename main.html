@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
+<title>動画生成システム</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!--
+=====================================================================
+ main.html — 新フロー版（index.html からの再設計）
+ 変更の要点:
+  1. 台本編集を「画像生成より前(STEP3)」に移動し、本文をここで凍結
+  2. 音声(TTS)をマスタークロック化し、画像/動画より前に生成 → audio_duration が全下流の正
+  3. visual_type(画像 / 動画)をシーン単位で選択可能に(全体既定 + 個別上書き)
+  4. BGM/字幕位置を「確認の後(STEP6)」へ分離
+  5. メタは台本生成AIが platform_posts を候補ごとに生成 → 選択候補のみ最終保存
+
+ Webhook 契約(n8n 側で実装する想定):
+  - Content-Recycle          (WH1) 記事+台本+メタ生成 → script_candidates
+  - Content-Recycle-select   (WH2) 台本選択 + narration凍結 + scenes作成
+  - Content-Recycle-options  (WH3) Phase2: ジャンル/ハイライトAI → voices/bgms/styles/mood
+  - Content-Recycle-generate (WH4+5) TTS(マスタークロック)→ 画像/動画生成 → scene media
+  - Content-Recycle-compose  (WH7) 字幕合成 + 動画合成 → video_url
+  - Content-Recycle-meta            メタ保存(selected候補のみ videos へ)
+=====================================================================
+-->
+<style>
+:root {
+  --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a26;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
+  --accent: #6c63ff; --accent2: #ff6584; --accent3: #43e97b;
+  --text: #f0f0f8; --text2: #8888aa; --text3: #555570;
+  --radius: 12px; --radius2: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+.app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 40px 32px 80px; }
+.header { text-align: center; margin-bottom: 48px; }
+.header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(108,99,255,0.12); border: 1px solid rgba(108,99,255,0.3); border-radius: 100px; padding: 4px 14px; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); margin-bottom: 16px; letter-spacing: 0.05em; }
+.header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+.header h1 span { color: var(--accent); }
+.header p { font-size: 14px; color: var(--text2); }
+.progress-bar { display: flex; align-items: center; margin-bottom: 40px; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 6px 8px; overflow: hidden; }
+.progress-step { display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 100px; font-size: 11px; color: var(--text3); transition: all 0.3s ease; flex: 1; justify-content: center; white-space: nowrap; }
+.progress-step.active { background: rgba(108,99,255,0.15); color: var(--accent); font-weight: 500; }
+.progress-step.done { color: var(--accent3); }
+.progress-step .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
+.card-title { font-size: 16px; font-weight: 500; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.card-title .icon { width: 32px; height: 32px; border-radius: var(--radius2); background: rgba(108,99,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 500; letter-spacing: 0.03em; }
+.form-input, .form-select, .form-textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; padding: 10px 14px; outline: none; transition: border-color 0.2s; appearance: none; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text3); }
+.form-textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; border-radius: var(--radius2); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+.btn-primary { background: var(--accent); color: #fff; width: 100%; justify-content: center; font-size: 15px; padding: 13px; }
+.btn-primary:hover { background: #5a52e0; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { background: var(--text3); cursor: not-allowed; transform: none; }
+.btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text); flex: 1; justify-content: center; }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-success { background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.3); color: var(--accent3); flex: 1; justify-content: center; }
+.btn-success:hover { background: rgba(67,233,123,0.25); }
+.btn-danger { background: rgba(255,101,132,0.15); border: 1px solid rgba(255,101,132,0.3); color: var(--accent2); flex: 1; justify-content: center; }
+.btn-row { display: flex; gap: 10px; margin-top: 16px; }
+.loading-container { text-align: center; padding: 40px 20px; }
+.spinner { width: 48px; height: 48px; border: 3px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-title { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+.loading-sub { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.loading-steps { margin-top: 24px; text-align: left; max-width: 280px; margin-left: auto; margin-right: auto; }
+.loading-step-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; color: var(--text3); border-bottom: 1px solid var(--border); transition: color 0.3s; }
+.loading-step-item.active { color: var(--accent); }
+.loading-step-item.done { color: var(--accent3); }
+.step-icon { font-size: 16px; width: 20px; text-align: center; }
+.script-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; position: relative; }
+.script-option:hover { border-color: var(--accent); }
+.script-option.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
+.script-option.selected::after { content: '✓'; position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+.script-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 100px; margin-bottom: 8px; font-weight: 500; margin-right: 6px; }
+.badge-blue { background: rgba(108,99,255,0.15); color: var(--accent); }
+.badge-green { background: rgba(67,233,123,0.15); color: var(--accent3); }
+.badge-pink { background: rgba(255,101,132,0.15); color: var(--accent2); }
+.hook-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 100px; margin-bottom: 8px; font-weight: 500; background: rgba(255,255,255,0.06); color: var(--text2); border: 1px solid var(--border2); font-family: 'Space Mono', monospace; }
+.script-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+.script-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.script-score { display: flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 11px; color: var(--text3); }
+.score-bar { flex: 1; height: 3px; background: var(--border2); border-radius: 100px; overflow: hidden; }
+.score-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 0.5s ease; }
+.scenes-container { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 4px; }
+.scene-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 12px; display: flex; gap: 10px; }
+.scene-num { width: 24px; height: 24px; border-radius: 6px; background: rgba(108,99,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--accent); font-weight: 700; flex-shrink: 0; font-family: 'Space Mono', monospace; }
+.scene-content { flex: 1; }
+.scene-role { font-size: 10px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Space Mono', monospace; }
+.scene-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.scene-duration { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 4px; }
+
+/* ===== STEP3 台本編集（画像なし） ===== */
+.editor-scene { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 14px; margin-bottom: 12px; transition: border-color 0.2s; }
+.editor-scene.cta { opacity: 0.7; border-style: dashed; }
+.editor-scene-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
+.editor-scene-role { font-size: 10px; color: var(--accent); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
+.editor-scene-meta { display: flex; align-items: center; gap: 8px; font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; }
+.dur-pill { background: rgba(108,99,255,0.12); color: var(--accent); border-radius: 100px; padding: 2px 9px; }
+.dur-pill.over { background: rgba(255,101,132,0.15); color: var(--accent2); }
+.editor-textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius2); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 13px; line-height: 1.7; padding: 10px 12px; outline: none; resize: vertical; min-height: 64px; transition: border-color 0.2s; }
+.editor-textarea:focus { border-color: var(--accent); }
+.editor-textarea:disabled { color: var(--text3); cursor: not-allowed; }
+.editor-hint { font-size: 10px; color: var(--text3); margin-top: 6px; line-height: 1.5; }
+.cta-note { font-size: 11px; color: var(--text3); }
+.edited-badge { display: inline-flex; align-items: center; gap: 3px; background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3); border-radius: 100px; font-size: 9px; color: var(--accent); padding: 1px 6px; font-family: 'Space Mono', monospace; }
+.edit-summary-banner { background: rgba(108,99,255,0.08); border: 1px solid rgba(108,99,255,0.2); border-radius: var(--radius2); padding: 10px 14px; font-size: 12px; color: var(--text2); margin-bottom: 14px; display: none; align-items: center; gap: 8px; }
+.edit-summary-banner.visible { display: flex; }
+.edit-summary-banner .icon { color: var(--accent); font-size: 14px; }
+.total-dur-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius2); font-size: 12px; color: var(--text2); margin-bottom: 14px; }
+.total-dur-bar strong { color: var(--text); font-family: 'Space Mono', monospace; }
+
+/* ===== STEP4 設定 ===== */
+.settings-layout { display: grid; grid-template-columns: 5fr 6fr; gap: 20px; align-items: start; }
+@media (max-width: 760px) { .settings-layout { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.panel-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 12px; }
+.settings-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.settings-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.settings-section-label { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+/* スタイル選択 */
+.image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.image-option { aspect-ratio: 9/16; border-radius: var(--radius2); border: 2px solid var(--border); cursor: pointer; overflow: hidden; position: relative; transition: all 0.2s; background: var(--surface2); }
+.image-option:hover { border-color: var(--accent); }
+.image-option.selected { border-color: var(--accent); }
+.image-option.selected::after { content: '✓'; position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; z-index: 2; }
+.image-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.image-option .img-cap { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: #fff; font-size: 12px; font-weight: 500; padding: 18px 6px 7px; text-align: center; }
+.image-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text3); font-size: 12px; }
+.image-placeholder .img-icon { font-size: 28px; }
+/* visual_type セグメント */
+.seg { display: inline-flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 3px; gap: 2px; }
+.seg button { background: transparent; border: none; color: var(--text3); font-family: 'Noto Sans JP', sans-serif; font-size: 12px; padding: 5px 14px; border-radius: 100px; cursor: pointer; transition: all 0.15s; }
+.seg button.active { background: var(--accent); color: #fff; }
+.seg button:disabled { opacity: 0.4; cursor: not-allowed; }
+.vt-note { font-size: 10px; color: var(--text3); margin-top: 6px; }
+/* シーン別 visual_type のミニトグル */
+.vt-mini { display: inline-flex; background: var(--surface); border: 1px solid var(--border2); border-radius: 100px; overflow: hidden; }
+.vt-mini button { background: transparent; border: none; color: var(--text3); font-size: 10px; padding: 3px 9px; cursor: pointer; font-family: 'Space Mono', monospace; transition: all 0.15s; }
+.vt-mini button.active { background: var(--accent); color: #fff; }
+.vt-mini button:disabled { opacity: 0.4; cursor: not-allowed; }
+/* ボイス/BGM */
+.av-option { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 10px 12px; margin-bottom: 6px; cursor: pointer; transition: all 0.2s; }
+.av-option:hover { border-color: var(--accent); }
+.av-option.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
+.av-option .av-label { font-size: 12px; font-weight: 500; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.av-option .av-reason { font-size: 10px; color: var(--text3); margin-bottom: 6px; }
+.av-option audio { width: 100%; height: 28px; display: block; }
+.recommend-badge { display: inline-flex; align-items: center; gap: 3px; background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.3); border-radius: 100px; font-size: 9px; color: var(--accent3); padding: 1px 6px; font-family: 'Space Mono', monospace; }
+.reason-tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 100px; background: rgba(108,99,255,0.12); color: var(--accent); margin-right: 3px; }
+.av-toggle-btn { display: flex; align-items: center; gap: 6px; width: 100%; background: transparent; border: 1px dashed var(--border2); border-radius: var(--radius2); color: var(--text3); font-size: 11px; font-family: 'Noto Sans JP', sans-serif; padding: 7px 12px; cursor: pointer; transition: all 0.15s; margin-top: 4px; }
+.av-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+.av-toggle-extra { display: none; }
+.av-toggle-extra.open { display: block; }
+.mood-info-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(108,99,255,0.06); border: 1px solid rgba(108,99,255,0.15); border-radius: var(--radius2); font-size: 11px; color: var(--text2); margin-bottom: 14px; }
+.mood-info-bar .icon { color: var(--accent); font-size: 13px; flex-shrink: 0; }
+/* 字幕プリセット */
+.subtitle-preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.subtitle-preset { height: 80px; border: 2px solid var(--border); border-radius: var(--radius2); cursor: pointer; position: relative; background: var(--surface2); transition: all 0.2s; overflow: hidden; }
+.subtitle-preset:hover { border-color: var(--accent); }
+.subtitle-preset.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
+.subtitle-preset .sub-bar { position: absolute; left: 10%; right: 10%; height: 8px; background: rgba(255,255,255,0.85); border-radius: 2px; }
+.subtitle-preset.pos-top    .sub-bar { top: 12px; }
+.subtitle-preset.pos-center .sub-bar { top: 50%; transform: translateY(-50%); }
+.subtitle-preset.pos-bottom .sub-bar { bottom: 20px; }
+.subtitle-preset .sub-label { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 9px; color: var(--text2); font-family: 'Space Mono', monospace; }
+.subtitle-preset.selected .sub-label { color: var(--accent); }
+
+/* ===== STEP5 シーン確認（生成済みメディア） ===== */
+.review-scene { display: flex; gap: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 12px; margin-bottom: 12px; }
+.review-thumb { width: 80px; flex-shrink: 0; aspect-ratio: 9/16; border-radius: 6px; overflow: hidden; background: var(--surface); border: 1px solid var(--border); position: relative; cursor: pointer; }
+.review-thumb img, .review-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.review-thumb .vt-tag { position: absolute; top: 4px; left: 4px; font-size: 8px; font-family: 'Space Mono', monospace; background: rgba(0,0,0,0.6); color: #fff; padding: 1px 5px; border-radius: 100px; }
+.review-thumb .loading-mini { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.review-info { flex: 1; min-width: 0; }
+.review-role { font-size: 10px; color: var(--accent); font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.review-narration { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 8px; word-break: break-all; }
+.review-audio { width: 100%; height: 30px; }
+.review-dur { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 4px; }
+.btn-mini { background: transparent; border: 1px solid var(--border2); border-radius: 6px; color: var(--text3); font-size: 10px; padding: 3px 8px; cursor: pointer; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; white-space: nowrap; }
+.btn-mini:hover { border-color: var(--accent); color: var(--accent); }
+
+/* メタ編集 */
+.meta-platform-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.meta-tab { padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); color: var(--text3); background: transparent; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
+.meta-tab:hover { border-color: var(--accent); color: var(--accent); }
+.meta-tab.active { background: rgba(108,99,255,0.15); border-color: var(--accent); color: var(--accent); }
+.meta-platform-panel { display: none; }
+.meta-platform-panel.active { display: block; }
+.hashtag-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.hashtag-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.25); border-radius: 100px; font-size: 11px; color: var(--accent); padding: 3px 10px; font-family: 'Space Mono', monospace; }
+.hashtag-input-row { display: flex; gap: 8px; margin-top: 8px; }
+.hashtag-input-row .form-input { font-size: 12px; padding: 7px 10px; }
+.btn-add-tag { background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3); border-radius: var(--radius2); color: var(--accent); font-size: 12px; padding: 7px 14px; cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
+.btn-add-tag:hover { background: rgba(108,99,255,0.25); }
+.meta-save-row { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 16px; }
+.btn-meta-save { background: var(--accent); color: #fff; border: none; border-radius: var(--radius2); font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 20px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 6px; }
+.btn-meta-save:hover { background: #5a52e0; }
+.btn-meta-save:disabled { background: var(--text3); cursor: not-allowed; }
+.meta-saved-badge { display: none; align-items: center; gap: 4px; font-size: 11px; color: var(--accent3); font-family: 'Space Mono', monospace; }
+.meta-saved-badge.show { display: flex; }
+
+/* レイアウト */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+@media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+.scroll-area { max-height: 600px; overflow-y: auto; padding-right: 2px; }
+
+/* 共通 */
+.wait-banner { background: rgba(108,99,255,0.07); border: 1px solid rgba(108,99,255,0.2); border-radius: var(--radius2); padding: 12px 16px; font-size: 12px; color: var(--text2); margin-top: 16px; display: flex; align-items: flex-start; gap: 10px; line-height: 1.6; }
+.wait-banner .icon { color: var(--accent); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.polling-progress { margin-top: 20px; max-width: 280px; margin-left: auto; margin-right: auto; }
+.polling-bar-wrap { height: 3px; background: var(--border2); border-radius: 100px; overflow: hidden; margin-top: 8px; }
+.polling-bar-fill { height: 100%; background: var(--accent); border-radius: 100px; transition: width 15s linear; width: 0; }
+.polling-status { font-size: 11px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 6px; text-align: center; }
+.lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 9999; display: flex; align-items: center; justify-content: center; animation: fadeInBg 0.2s ease; }
+@keyframes fadeInBg { from { opacity:0; } to { opacity:1; } }
+.lightbox-inner { position: relative; max-width: min(340px, 90vw); border-radius: var(--radius); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); animation: zoomIn 0.2s ease; }
+@keyframes zoomIn { from { transform: scale(0.93); opacity:0; } to { transform: scale(1); opacity:1; } }
+.lightbox-inner img, .lightbox-inner video { width: 100%; display: block; }
+.lightbox-close { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.6); border: none; color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.lightbox-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: #fff; font-size: 12px; padding: 24px 12px 10px; font-family: 'Space Mono', monospace; }
+.video-container { background: #000; border-radius: var(--radius2); overflow: hidden; aspect-ratio: 9/16; max-width: 280px; margin: 0 auto 20px; position: relative; }
+.video-container video { width: 100%; height: 100%; object-fit: contain; }
+video:fullscreen { object-fit: contain !important; width: 100%; height: 100%; background: #000; }
+video:-webkit-full-screen { object-fit: contain !important; width: 100%; height: 100%; background: #000; }
+.video-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: var(--surface2); color: var(--text2); font-size: 13px; }
+.play-icon { font-size: 48px; color: var(--accent); }
+.info-row { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(108,99,255,0.06); border: 1px solid rgba(108,99,255,0.15); border-radius: var(--radius2); font-size: 12px; color: var(--text2); margin-bottom: 16px; }
+.info-row .icon { color: var(--accent); font-size: 16px; }
+.success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(67,233,123,0.15); border: 2px solid rgba(67,233,123,0.3); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; }
+.error-toast { background: rgba(255,101,132,0.1); border: 1px solid rgba(255,101,132,0.3); border-radius: var(--radius2); padding: 12px 16px; font-size: 13px; color: var(--accent2); margin-bottom: 16px; display: none; }
+.error-toast.show { display: block; }
+.step { display: none; }
+.step.active { display: block; animation: fadeIn 0.3s ease; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 100px; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 1.5s ease infinite; }
+.btn-download-main { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; border-radius: var(--radius2); background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.4); color: var(--accent3); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; font-weight: 500; text-decoration: none; transition: all 0.2s; cursor: pointer; }
+.btn-download-main:hover { background: rgba(67,233,123,0.28); transform: translateY(-1px); }
+
+/* ハンバーガー / ドロワー */
+.hamburger-btn { position: fixed; top: 16px; right: 16px; z-index: 1100; width: 40px; height: 40px; border-radius: var(--radius2); background: var(--surface); border: 1px solid var(--border2); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 5px; padding: 10px; transition: border-color 0.2s; }
+.hamburger-btn:hover { border-color: var(--accent); }
+.hamburger-btn span { display: block; width: 18px; height: 2px; background: var(--text2); border-radius: 2px; transition: transform 0.25s, opacity 0.25s, background 0.2s; transform-origin: center; }
+.hamburger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--accent); }
+.hamburger-btn.open span:nth-child(2) { opacity: 0; }
+.hamburger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--accent); }
+.drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1050; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+.drawer-overlay.open { opacity: 1; pointer-events: all; }
+.drawer { position: fixed; top: 0; right: -280px; height: 100vh; width: 260px; background: var(--surface); border-left: 1px solid var(--border2); z-index: 1060; transition: right 0.27s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; overflow: hidden; }
+.drawer.open { right: 0; }
+.drawer-header { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.drawer-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+.drawer-close { width: 28px; height: 28px; border-radius: 6px; background: transparent; border: 1px solid var(--border); cursor: pointer; color: var(--text2); display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
+.drawer-close:hover { border-color: var(--accent2); color: var(--accent2); }
+.drawer-nav { flex: 1; padding: 12px 0; }
+.drawer-nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 20px; font-size: 14px; color: var(--text2); text-decoration: none; transition: all 0.15s; cursor: pointer; border-left: 3px solid transparent; }
+.drawer-nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.drawer-nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(108,99,255,0.07); }
+.drawer-nav-item .nav-icon { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
+.drawer-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.drawer-footer { padding: 14px 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); font-family: 'Space Mono', monospace; }
+</style>
+</head>
+<body>
+<button class="hamburger-btn" id="hamburgerBtn" aria-label="メニュー"><span></span><span></span><span></span></button>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-title">⚡ Content-Recycle</span>
+    <button class="drawer-close" id="drawerClose">✕</button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="main.html" class="drawer-nav-item active"><span class="nav-icon">🎬</span><span class="nav-label">動画を生成</span></a>
+    <div class="drawer-divider"></div>
+    <a href="gallery.html" class="drawer-nav-item"><span class="nav-icon">🗂️</span><span class="nav-label">生成済み動画一覧</span></a>
+  </nav>
+  <div class="drawer-footer">Content-Recycle v0.2</div>
+</div>
+
+<div class="app">
+  <div class="header">
+    <div class="header-badge"><span>●</span> AI VIDEO GENERATOR</div>
+    <h1>社内コンテンツ<span>動画生成</span>システム</h1>
+    <p>URLを入力するだけで、AIが自動でクリエイティブを生成します</p>
+  </div>
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-step active" id="prog-1"><span class="dot"></span>入力</div>
+    <div class="progress-step" id="prog-2"><span class="dot"></span>台本</div>
+    <div class="progress-step" id="prog-3"><span class="dot"></span>編集</div>
+    <div class="progress-step" id="prog-4"><span class="dot"></span>設定</div>
+    <div class="progress-step" id="prog-5"><span class="dot"></span>確認</div>
+    <div class="progress-step" id="prog-6"><span class="dot"></span>完成</div>
+  </div>
+  <div class="error-toast" id="errorToast"></div>
+
+  <!-- STEP 1 入力 -->
+  <div class="step active" id="step1">
+    <div class="card">
+      <div class="card-title"><div class="icon">📝</div>コンテンツ情報を入力</div>
+      <div class="form-group"><label class="form-label">作成者名</label><input class="form-input" id="input-username" type="text" placeholder="例：田中 太郎"></div>
+      <div class="form-group"><label class="form-label">コンテンツ URL <span style="color:var(--accent2)">*</span></label><input class="form-input" id="input-url" type="url" placeholder="https://example.com/article/..."></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">コンテンツ種別 <span style="color:var(--accent2)">*</span></label><select class="form-select" id="input-content-type"><option value="">選択してください</option><option value="解説系">解説系</option></select></div>
+        <div class="form-group"><label class="form-label">プラットフォーム</label><select class="form-select" id="input-platform"><option value="YouTube Shorts">YouTube Shorts</option><option value="TikTok">TikTok</option><option value="Instagram Reels">Instagram Reels</option></select></div>
+      </div>
+      <div class="info-row"><span class="icon">⏱</span>台本生成には数十秒かかります。完了まで画面を開いたままにしてください。</div>
+      <button class="btn btn-primary" onclick="startGeneration()">▶ 台本生成を開始する</button>
+    </div>
+  </div>
+
+  <!-- loading -->
+  <div class="step" id="step-loading">
+    <div class="card">
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <div class="loading-title" id="loading-title">AIが処理中...</div>
+        <div class="loading-sub" id="loading-sub">しばらくお待ちください</div>
+        <div class="loading-steps" id="loading-steps-container"></div>
+        <div class="wait-banner" id="wait-banner" style="display:none"><span class="icon">⏱</span><span>動画の合成には最大5分かかる場合があります。<br>完了まで<strong>ページを閉じないでください。</strong></span></div>
+        <div class="polling-progress" id="polling-progress" style="display:none"><div class="polling-bar-wrap"><div class="polling-bar-fill" id="polling-bar"></div></div><div class="polling-status" id="polling-status">レンダリング中...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 台本選択 -->
+  <div class="step" id="step2">
+    <div class="card">
+      <div class="card-title"><div class="icon">📜</div>台本を選択してください</div>
+      <div id="script-list"></div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="goBackToStep1()">← 戻る</button>
+        <button class="btn btn-outline" onclick="regenerateScript()">🔄 再生成</button>
+        <button class="btn btn-primary" id="btn-select-script" onclick="proceedToEditor()" disabled style="flex:2">この台本を編集する →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 台本編集（本文凍結・画像なし） -->
+  <div class="step" id="step3">
+    <div class="card">
+      <div class="card-title"><div class="icon">✏️</div>ナレーションを編集・確定</div>
+      <div class="info-row"><span class="icon">🕒</span>各シーンの尺はナレーションの文字数から自動で見積もります（日本語 約5.5字/秒）。実尺は音声生成後に確定します。</div>
+      <div class="total-dur-bar"><span>本編合計（見積り）</span><strong id="total-dur">— 秒</strong></div>
+      <div class="edit-summary-banner" id="edit-summary-banner"><span class="icon">✏️</span><span id="edit-summary-text"></span></div>
+      <div id="editor-list"></div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="goBackToStep2()">← 台本選択へ</button>
+        <button class="btn btn-primary" onclick="freezeAndProceed()" style="flex:2">この内容で設定へ →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 設定（スタイル / visual_type / ボイス） -->
+  <div class="step" id="step4">
+    <div class="settings-layout">
+      <!-- 左：シーン一覧 + シーン別 visual_type -->
+      <div class="panel">
+        <div class="panel-title">🎬 シーンと映像タイプ</div>
+        <div class="settings-section-label" style="margin-bottom:10px">全体の既定
+          <span class="seg" id="vt-global" style="margin-left:auto">
+            <button data-vt="image" class="active" onclick="setGlobalVisualType('image')">🖼 画像</button>
+            <button data-vt="video" onclick="setGlobalVisualType('video')">🎞 動画</button>
+          </span>
+        </div>
+        <div class="vt-note">シーンごとに個別で切り替えできます。動画(Kling)は順次対応予定です。</div>
+        <div class="scroll-area" id="settings-scene-list" style="margin-top:12px;max-height:520px"></div>
+      </div>
+      <!-- 右：スタイル + ボイス -->
+      <div class="panel">
+        <div class="panel-title">⚙️ 生成設定</div>
+        <div class="mood-info-bar" id="mood-info"><span class="icon">✨</span><span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span></div>
+        <div class="settings-section">
+          <div class="settings-section-label">🎨 画像スタイル</div>
+          <div class="image-grid" id="style-grid"></div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-label">🎙 ナレーション音声</div>
+          <div id="voice-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-outline" onclick="goBackToStep3()">← 編集へ戻る</button>
+      <button class="btn btn-primary" id="btn-to-generate" onclick="proceedToGenerate()" style="flex:2">音声と映像を生成する →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 シーン確認（生成済み） -->
+  <div class="step" id="step5">
+    <div class="card">
+      <div class="card-title"><div class="icon">🔍</div>生成されたシーンを確認</div>
+      <div class="info-row"><span class="icon">ℹ</span>映像と音声を確認してください。気になるシーンは個別に再生成、または編集に戻れます。</div>
+      <div id="review-list"></div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="goBackToStep3()">← 編集に戻る</button>
+        <button class="btn btn-primary" onclick="proceedToSubtitleBgm()" style="flex:2">字幕・BGMを選ぶ →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 6 字幕位置・BGM -->
+  <div class="step" id="step6">
+    <div class="panel">
+      <div class="panel-title">🎵 仕上げ設定</div>
+      <div class="mood-info-bar" id="mood-info2"><span class="icon">✨</span><span id="mood-info-text2">雰囲気に合わせておすすめ順に並べています</span></div>
+      <div class="settings-section">
+        <div class="settings-section-label">🎵 BGM</div>
+        <div id="bgm-list"></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-label">💬 字幕位置</div>
+        <div class="subtitle-preset-grid" id="subtitle-position-list"></div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-outline" onclick="goBackToStep5()">← シーン確認へ</button>
+      <button class="btn btn-primary" onclick="proceedToCompose()" style="flex:2">動画を合成する →</button>
+    </div>
+  </div>
+
+  <!-- STEP 7 動画確認 -->
+  <div class="step" id="step7">
+    <div class="card" style="max-width:380px;margin:0 auto">
+      <div class="card-title"><div class="icon">🎬</div>動画を確認してください</div>
+      <div class="video-container" id="video-container"><div class="video-placeholder"><div class="play-icon">▶</div><div>動画を読み込み中...</div></div></div>
+      <div class="btn-row">
+        <button class="btn btn-danger" onclick="rejectVideo()">✕ やり直す</button>
+        <button class="btn btn-success" onclick="approveVideo()">✓ この動画で確定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 8 完成 + メタ編集 -->
+  <div class="step" id="step8">
+    <div class="two-col">
+      <div class="card" style="text-align:center;margin-bottom:0">
+        <div class="success-icon">✓</div>
+        <div style="font-size:20px;font-weight:700;margin-bottom:8px">動画が完成しました！</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:24px">動画のダウンロードまたは共有ができます</div>
+        <div id="final-video-container" style="margin-bottom:20px"></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <a id="btn-download" href="#" class="btn-download-main" download="video.mp4">⬇ 動画をダウンロード</a>
+          <button class="btn btn-outline" onclick="resetAll()">＋ 新しい動画を生成する</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title"><div class="icon">📋</div>投稿メタ情報を編集</div>
+        <div id="meta-panel"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 定数 / Webhook
+// ============================================================
+const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
+const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
+const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
+const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
+const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
+const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';     // メタ保存
+const BASE_IMG_URL   = 'https://chirichiri3720.github.io/Content-Recycle/Images';
+
+const VIDEO_URL_WHITELIST = [
+  'cdn.shotstack.io',
+  'shotstack-assets.s3.ap-southeast-2.amazonaws.com',
+  'shotstack-api-stage-output.s3-ap-southeast-2.amazonaws.com',
+  'storage.googleapis.com',
+];
+const CHARS_PER_SEC = 5.5; // 日本語TTS 見積り基準（マスタークロックは実音声）
+const USE_MOCK_OPTIONS = false;
+
+// ============================================================
+// state
+// ============================================================
+let state = {
+  input: { userName:'', url:'', contentType:'', platform:'YouTube Shorts' },
+  sessionId: null,
+  scriptCandidates: [],
+  selectedScript: null,
+  narrationEdits: {},        // {sceneIndex: {original, current, edited}}（本編のみ）
+  defaultVisualType: 'image',
+  sceneVisualTypes: {},      // {sceneIndex: 'image'|'video'}
+  selectedStyle: null,       // 'realistic'|'cinematic'|'anime'
+  options: { voices: [], bgms: [], moodProfile: null },
+  selectedVoice: null,
+  selectedBgm: null,
+  bgmVolume: 0.3,
+  subtitlePosition: 'bottom',
+  sceneMedia: [],            // [{scene, type, asset_url, audio_url, audio_duration}]
+  videoUrl: null,
+  metaInfo: null,
+  loadingInterval: null,
+};
+
+// STEP → 進捗バーのバケット
+const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:5, 6:5, 7:5, 8:6 };
+
+const STYLE_KEYS  = ['realistic','cinematic','anime'];
+const STYLE_LABEL = { realistic:'実写風', cinematic:'シネマティック風', anime:'アニメーション風' };
+const VT_LABEL    = { image:'画像', video:'動画' };
+const REASON_LABELS = { hopeful:'希望', positive:'前向き', friendly:'親しみやすさ', bright:'明るさ', calm:'落ち着き', reassuring:'安心感', informative:'情報性', empathetic:'共感', curious:'興味喚起', hook:'フック感', serious:'真剣', trustworthy:'信頼感', uplifting:'前向きな高揚感', warm:'温かみ', urgent:'緊迫感', neutral:'無難', natural:'自然' };
+
+// ============================================================
+// ユーティリティ
+// ============================================================
+function validateVideoUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  try { const u = new URL(url); if (u.protocol !== 'https:') return null;
+    if (VIDEO_URL_WHITELIST.some(d => u.hostname === d || u.hostname.endsWith('.' + d))) return url;
+  } catch (e) {}
+  console.error('validateVideoUrl: rejected', url); return null;
+}
+function escapeHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+function estDuration(text) { return Math.max(2, Math.round((text || '').length / CHARS_PER_SEC)); }
+
+// 本編シーン（scene !== 7 / role !== cta）だけを返す
+function bodyScenes() {
+  const sc = state.selectedScript ? (state.selectedScript.scenes || []) : [];
+  return sc.filter(s => s.role !== 'cta' && s.scene !== 7);
+}
+
+function setStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('step' + n);
+  if (el) el.classList.add('active');
+  if (n !== 'loading') {
+    const progN = progressMap[n] || 1;
+    for (let i = 1; i <= 6; i++) {
+      const p = document.getElementById('prog-' + i); if (!p) continue;
+      p.classList.remove('active','done');
+      if (i < progN) p.classList.add('done'); else if (i === progN) p.classList.add('active');
+    }
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false) {
+  const useSteps = steps || [{icon:'🌐',text:'記事を取得中'},{icon:'🔍',text:'コンテンツを解析中'},{icon:'🧠',text:'AIが要約を生成中'},{icon:'📝',text:'台本を作成中'}];
+  document.getElementById('loading-title').textContent = title || 'AIが処理中...';
+  document.getElementById('loading-sub').textContent   = sub   || 'しばらくお待ちください';
+  document.getElementById('wait-banner').style.display = showWaitBanner ? 'flex' : 'none';
+  document.getElementById('polling-progress').style.display = 'none';
+  const container = document.getElementById('loading-steps-container');
+  container.innerHTML = useSteps.map((s,i) => `<div class="loading-step-item ${i===0?'active':''}" id="ls-${i+1}"><span class="step-icon">${escapeHtml(s.icon)}</span>${escapeHtml(s.text)}</div>`).join('');
+  if (state.loadingInterval) clearInterval(state.loadingInterval);
+  let idx = 0;
+  state.loadingInterval = setInterval(() => {
+    if (idx > 0) { const p = document.getElementById(`ls-${idx}`); if (p) p.classList.replace('active','done'); }
+    if (idx < useSteps.length) { const c = document.getElementById(`ls-${idx+1}`); if (c) c.classList.add('active'); idx++; }
+    else clearInterval(state.loadingInterval);
+  }, interval);
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-loading').classList.add('active');
+}
+function hideLoading() {
+  if (state.loadingInterval) { clearInterval(state.loadingInterval); state.loadingInterval = null; }
+  document.getElementById('wait-banner').style.display = 'none';
+  document.getElementById('polling-progress').style.display = 'none';
+}
+function showError(msg) {
+  const el = document.getElementById('errorToast');
+  el.textContent = '⚠ ' + msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 6000);
+}
+
+// ============================================================
+// STEP 1 → 台本生成
+// ============================================================
+async function startGeneration() {
+  const url = document.getElementById('input-url').value.trim();
+  const contentType = document.getElementById('input-content-type').value;
+  const platform = document.getElementById('input-platform').value;
+  const userName = document.getElementById('input-username').value.trim();
+  if (!url) { showError('コンテンツ URL を入力してください'); return; }
+  if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
+  if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
+  state.input = { userName, url, contentType, platform };
+  showLoading('AIが処理中...', 'しばらくお待ちください');
+  try {
+    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform }) });
+    hideLoading();
+    if (res.status === 429) { showError('台本生成の実行回数が上限に達しました。'); return; }
+    const text = await res.text();
+    if (!text || !text.trim()) throw new Error('n8n からのレスポンスが空です');
+    let data = JSON.parse(text);
+    if (Array.isArray(data)) data = data[0];
+    if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); return; }
+    state.sessionId = data.session_id;
+    state.scriptCandidates = data.script_candidates || [];
+    renderScripts(); setStep(2);
+  } catch (err) { hideLoading(); setStep(1); showError('エラー: ' + err.message); }
+}
+async function regenerateScript() {
+  state.selectedScript = null; state.scriptCandidates = [];
+  showLoading('台本を再生成中...', 'AIが新しい台本を作成しています');
+  try {
+    const { userName, url, contentType, platform } = state.input;
+    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform }) });
+    hideLoading();
+    if (res.status === 429) { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
+    const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
+    let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
+    if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
+    state.sessionId = data.session_id; state.scriptCandidates = data.script_candidates || [];
+    renderScripts(); setStep(2);
+  } catch (err) { hideLoading(); setStep(2); showError('再生成エラー: ' + err.message); }
+}
+
+// ============================================================
+// STEP 2 台本選択
+// ============================================================
+function renderScripts() {
+  const list = document.getElementById('script-list'); list.innerHTML = '';
+  document.getElementById('btn-select-script').disabled = true;
+  const badges = [{label:'バリエーション 1',cls:'badge-blue'},{label:'バリエーション 2',cls:'badge-green'},{label:'バリエーション 3',cls:'badge-pink'}];
+  state.scriptCandidates.forEach((s, i) => {
+    const score = Number(s.recommended_score) || 0;
+    const body = bodyScenesOf(s);
+    const div = document.createElement('div'); div.className = 'script-option'; div.dataset.index = i;
+    div.addEventListener('click', () => selectScriptOption(i));
+    // バッジ行
+    const badgeRow = document.createElement('div');
+    const b = document.createElement('span'); b.className = `script-badge ${badges[i]?.cls||'badge-blue'}`; b.textContent = badges[i]?.label || 'オプション'; badgeRow.appendChild(b);
+    if (s.hook_type) { const h = document.createElement('span'); h.className = 'hook-badge'; h.textContent = s.hook_type; badgeRow.appendChild(h); }
+    const title = document.createElement('div'); title.className = 'script-title'; title.textContent = s.script_title || 'タイトル未設定';
+    const concept = document.createElement('div'); concept.className = 'script-body'; concept.textContent = s.concept || s.total_narration || '概要なし';
+    const scoreWrap = document.createElement('div'); scoreWrap.className = 'script-score';
+    scoreWrap.innerHTML = `<span style="font-size:10px;color:var(--text3);width:50px;flex-shrink:0">推奨度</span><div class="score-bar"><div class="score-fill" style="width:${score}%"></div></div><span style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;width:28px;text-align:right">${score}</span>`;
+    div.appendChild(badgeRow); div.appendChild(title); div.appendChild(concept); div.appendChild(scoreWrap);
+    if (body.length) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'margin-top:12px;padding-top:12px;border-top:1px solid var(--border)';
+      wrap.innerHTML = `<div style="font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.05em">シーン構成</div>`;
+      const sceneWrap = document.createElement('div'); sceneWrap.className = 'scenes-container';
+      body.slice(0,4).forEach((sc, si) => {
+        const row = document.createElement('div'); row.className = 'scene-item';
+        row.innerHTML = `<div class="scene-num">${si+1}</div><div class="scene-content"><div class="scene-role">${escapeHtml(sc.role||'narration')}</div><div class="scene-text">${escapeHtml((sc.narration||'').slice(0,80))}${(sc.narration||'').length>80?'...':''}</div><div class="scene-duration">${escapeHtml(String(sc.duration_sec||5))}秒</div></div>`;
+        sceneWrap.appendChild(row);
+      });
+      wrap.appendChild(sceneWrap);
+      if (body.length > 4) { const more = document.createElement('div'); more.style.cssText='text-align:center;font-size:11px;color:var(--text3);padding:6px'; more.textContent = `他 ${body.length-4} シーン`; wrap.appendChild(more); }
+      div.appendChild(wrap);
+    }
+    list.appendChild(div);
+  });
+}
+function bodyScenesOf(s) { return (s.scenes || []).filter(x => x.role !== 'cta' && x.scene !== 7); }
+
+function selectScriptOption(index) {
+  document.querySelectorAll('.script-option').forEach(el => el.classList.remove('selected'));
+  const t = document.querySelector(`.script-option[data-index="${index}"]`); if (t) t.classList.add('selected');
+  state.selectedScript = state.scriptCandidates[index];
+  document.getElementById('btn-select-script').disabled = false;
+}
+
+// 台本選択 → 編集へ（webhook はまだ叩かない。凍結は STEP3 で）
+function proceedToEditor() {
+  if (!state.selectedScript) { showError('台本を選択してください'); return; }
+  state.narrationEdits = {};
+  state.sceneVisualTypes = {};
+  renderEditor();
+  setStep(3);
+}
+
+// ============================================================
+// STEP 3 台本編集（本文凍結・画像なし）
+// ============================================================
+function renderEditor() {
+  const list = document.getElementById('editor-list'); list.innerHTML = '';
+  const body = bodyScenes();
+  body.forEach((scene, i) => {
+    const original = scene.narration || '';
+    if (!state.narrationEdits[i]) state.narrationEdits[i] = { original, current: original, edited: false };
+    const item = document.createElement('div'); item.className = 'editor-scene'; item.id = `ed-${i}`;
+    const head = document.createElement('div'); head.className = 'editor-scene-head';
+    const role = document.createElement('div'); role.className = 'editor-scene-role';
+    role.innerHTML = `<span>SCENE ${scene.scene} · ${escapeHtml(scene.role||'narration')}</span>`;
+    if (state.narrationEdits[i].edited) { const b = document.createElement('span'); b.className='edited-badge'; b.textContent='✏ 編集済み'; role.appendChild(b); }
+    const meta = document.createElement('div'); meta.className = 'editor-scene-meta';
+    const dur = document.createElement('span'); dur.className = 'dur-pill'; dur.id = `ed-dur-${i}`;
+    head.appendChild(role); meta.appendChild(dur); head.appendChild(meta);
+    const ta = document.createElement('textarea'); ta.className = 'editor-textarea'; ta.id = `ed-ta-${i}`; ta.value = state.narrationEdits[i].current;
+    ta.addEventListener('input', () => onEditorInput(i));
+    const hint = document.createElement('div'); hint.className = 'editor-hint';
+    hint.textContent = scene.visual_direction ? `映像メモ: ${scene.visual_direction}` : '';
+    item.appendChild(head); item.appendChild(ta); if (hint.textContent) item.appendChild(hint);
+    list.appendChild(item);
+    updateDurPill(i);
+  });
+  // 固定CTA（読み取り専用表示）
+  const cta = (state.selectedScript.scenes || []).find(x => x.role === 'cta' || x.scene === 7);
+  if (cta) {
+    const item = document.createElement('div'); item.className = 'editor-scene cta';
+    item.innerHTML = `<div class="editor-scene-head"><div class="editor-scene-role"><span>SCENE 7 · CTA（固定）</span></div><div class="editor-scene-meta">${escapeHtml(String(cta.duration_sec||4))}秒</div></div><div class="cta-note">🔒 ${escapeHtml(cta.narration||'')}（音声のみ・字幕なし・固定画像）</div>`;
+    list.appendChild(item);
+  }
+  updateEditSummary(); updateTotalDur();
+}
+function onEditorInput(i) {
+  const ta = document.getElementById(`ed-ta-${i}`);
+  const prev = state.narrationEdits[i];
+  state.narrationEdits[i] = { original: prev.original, current: ta.value, edited: ta.value.trim() !== prev.original.trim() };
+  updateDurPill(i); updateTotalDur(); updateEditSummary();
+  // 編集済みバッジの即時反映
+  const role = document.querySelector(`#ed-${i} .editor-scene-role`);
+  if (role) { const ex = role.querySelector('.edited-badge');
+    if (state.narrationEdits[i].edited && !ex) { const b=document.createElement('span'); b.className='edited-badge'; b.textContent='✏ 編集済み'; role.appendChild(b); }
+    else if (!state.narrationEdits[i].edited && ex) ex.remove();
+  }
+}
+function updateDurPill(i) {
+  const pill = document.getElementById(`ed-dur-${i}`); if (!pill) return;
+  const txt = state.narrationEdits[i].current; const sec = estDuration(txt);
+  pill.textContent = `約${sec}秒 / ${txt.length}字`;
+  pill.classList.toggle('over', sec > 6); // 1シーン6秒超は要注意（離脱リスク）
+}
+function updateTotalDur() {
+  let total = 0; bodyScenes().forEach((_, i) => { total += estDuration(state.narrationEdits[i]?.current || ''); });
+  const el = document.getElementById('total-dur'); if (el) el.textContent = `約 ${total} 秒`;
+}
+function updateEditSummary() {
+  const count = Object.values(state.narrationEdits).filter(e => e.edited).length;
+  const banner = document.getElementById('edit-summary-banner'); const text = document.getElementById('edit-summary-text');
+  if (count > 0) { text.textContent = `${count}件のシーンを編集済み（保存時に強調語を自動で再分析します）`; banner.classList.add('visible'); }
+  else banner.classList.remove('visible');
+}
+
+// 凍結 → 設定へ。WH2(select) で選択確定 + narration凍結 + scenes作成 + ハイライトAIトリガ
+async function freezeAndProceed() {
+  const body = bodyScenes();
+  const finalScenes = body.map((sc, i) => ({
+    scene: sc.scene, role: sc.role,
+    narration: (state.narrationEdits[i]?.current || sc.narration || '').trim(),
+    duration_sec: sc.duration_sec,
+    edited: state.narrationEdits[i]?.edited || false,
+  }));
+  if (finalScenes.some(s => !s.narration)) { showError('空のナレーションがあります。各シーンを入力してください。'); return; }
+  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 1200);
+  try {
+    const res = await fetch(SELECT_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+      action: 'select_and_freeze', session_id: state.sessionId,
+      selected_script_id: state.selectedScript.script_id,
+      hook_type: state.selectedScript.hook_type || '',
+      final_scenes: finalScenes,
+    }) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    hideLoading();
+    await loadOptionsAndRenderStep4();
+  } catch (err) { hideLoading(); setStep(3); showError('台本確定エラー: ' + err.message); }
+}
+
+// ============================================================
+// STEP 4 設定（options取得 → スタイル / visual_type / ボイス）
+// ============================================================
+async function loadOptionsAndRenderStep4() {
+  showLoading('設定を準備中...', 'おすすめを計算しています', [{icon:'✨',text:'雰囲気を分析中'},{icon:'🎙',text:'音声候補を選定中'},{icon:'🎨',text:'スタイルを準備中'},{icon:'✅',text:'完了'}], 700);
+  try {
+    let data;
+    if (USE_MOCK_OPTIONS) { await new Promise(r=>setTimeout(r,900)); data = MOCK_OPTIONS; }
+    else {
+      const res = await fetch(OPTIONS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'get_options', session_id: state.sessionId }) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      data = await res.json(); if (Array.isArray(data)) data = data[0];
+    }
+    state.options = { voices: data.voices||[], bgms: data.bgms||[], moodProfile: data.mood_profile || state.selectedScript?.mood_profile || null };
+    hideLoading(); renderStep4(); setStep(4);
+  } catch (err) { hideLoading(); setStep(3); showError('設定取得エラー: ' + err.message); }
+}
+
+function renderStep4() {
+  renderStyleGrid();
+  renderSettingsSceneList();
+  renderVoiceList();
+  const mp = state.options.moodProfile;
+  if (mp) { const tags = [mp.primary_mood, mp.secondary_mood].filter(Boolean).map(m => REASON_LABELS[m]||m).join(' × '); document.getElementById('mood-info-text').textContent = `この動画の雰囲気: ${tags} → おすすめ順`; }
+  // 既定で先頭ボイス選択
+  if (state.options.voices[0]) selectVoice(0);
+  validateStep4();
+}
+
+function renderStyleGrid() {
+  const grid = document.getElementById('style-grid'); grid.innerHTML = '';
+  STYLE_KEYS.forEach((key, i) => {
+    const div = document.createElement('div'); div.className = 'image-option'; div.dataset.style = key;
+    if (state.selectedStyle === key) div.classList.add('selected');
+    div.addEventListener('click', () => selectStyle(key));
+    const img = document.createElement('img'); img.src = `${BASE_IMG_URL}/${key}.png`; img.alt = STYLE_LABEL[key]; img.loading='lazy';
+    img.onerror = () => { img.remove(); const ph = document.createElement('div'); ph.className='image-placeholder'; ph.innerHTML=`<div class="img-icon">🖼</div><div>${STYLE_LABEL[key]}</div>`; div.insertBefore(ph, div.firstChild); };
+    const cap = document.createElement('div'); cap.className = 'img-cap'; cap.textContent = STYLE_LABEL[key];
+    div.appendChild(img); div.appendChild(cap); grid.appendChild(div);
+  });
+}
+function selectStyle(key) {
+  state.selectedStyle = key;
+  document.querySelectorAll('#style-grid .image-option').forEach(el => el.classList.toggle('selected', el.dataset.style === key));
+  validateStep4();
+}
+
+function setGlobalVisualType(vt) {
+  state.defaultVisualType = vt;
+  document.querySelectorAll('#vt-global button').forEach(b => b.classList.toggle('active', b.dataset.vt === vt));
+  // 個別未指定のシーンは既定に追従して再描画
+  renderSettingsSceneList();
+}
+function effectiveVisualType(i) { return state.sceneVisualTypes[i] || state.defaultVisualType; }
+
+function renderSettingsSceneList() {
+  const c = document.getElementById('settings-scene-list'); c.innerHTML = '';
+  bodyScenes().forEach((scene, i) => {
+    const cur = effectiveVisualType(i);
+    const row = document.createElement('div'); row.className = 'review-scene'; row.style.padding = '10px';
+    const info = document.createElement('div'); info.className = 'review-info';
+    const role = document.createElement('div'); role.className = 'review-role';
+    role.innerHTML = `<span>SCENE ${scene.scene} · ${escapeHtml(scene.role||'narration')}</span>`;
+    // シーン別 visual_type ミニトグル
+    const mini = document.createElement('div'); mini.className = 'vt-mini';
+    ['image','video'].forEach(vt => {
+      const b = document.createElement('button'); b.textContent = VT_LABEL[vt]; b.dataset.vt = vt;
+      if (cur === vt) b.classList.add('active');
+      b.addEventListener('click', () => setSceneVisualType(i, vt));
+      mini.appendChild(b);
+    });
+    role.appendChild(mini);
+    const text = document.createElement('div'); text.className = 'review-narration';
+    text.textContent = state.narrationEdits[i]?.current || scene.narration || '';
+    info.appendChild(role); info.appendChild(text);
+    row.appendChild(info); c.appendChild(row);
+  });
+}
+function setSceneVisualType(i, vt) {
+  state.sceneVisualTypes[i] = vt;
+  renderSettingsSceneList();
+}
+
+function renderVoiceList() { renderAvList('voice-list', state.options.voices, 'voice'); }
+function renderAvList(containerId, items, kind) {
+  const container = document.getElementById(containerId); container.innerHTML = '';
+  const TOP = 2;
+  items.slice(0, TOP).forEach((it, i) => container.appendChild(buildAvRow(it, i, kind)));
+  if (items.length > TOP) {
+    const extra = document.createElement('div'); extra.className = 'av-toggle-extra'; extra.id = `${containerId}-extra`;
+    items.slice(TOP).forEach((it, i) => extra.appendChild(buildAvRow(it, TOP+i, kind)));
+    const tg = document.createElement('button'); tg.className = 'av-toggle-btn'; tg.innerHTML = `<span>▾</span> 他 ${items.length-TOP} 件を表示`;
+    tg.addEventListener('click', () => { const open = extra.classList.toggle('open'); tg.innerHTML = open ? `<span>▴</span> 閉じる` : `<span>▾</span> 他 ${items.length-TOP} 件を表示`; });
+    container.appendChild(tg); container.appendChild(extra);
+  }
+}
+function buildAvRow(it, i, kind) {
+  const row = document.createElement('div'); row.className = 'av-option'; row.dataset.index = i; row.dataset.kind = kind;
+  row.addEventListener('click', e => { if (e.target.tagName === 'AUDIO' || e.target.closest('audio')) return; kind==='voice'?selectVoice(i):selectBgm(i); });
+  const label = document.createElement('div'); label.className = 'av-label';
+  const name = document.createElement('span'); name.textContent = it.label || it.name; label.appendChild(name);
+  if (i === 0) { const b = document.createElement('span'); b.className='recommend-badge'; b.textContent='★ おすすめ'; label.appendChild(b); }
+  const reason = document.createElement('div'); reason.className = 'av-reason';
+  if (it.reason && it.reason.length) it.reason.forEach(r => { const t=document.createElement('span'); t.className='reason-tag'; t.textContent=REASON_LABELS[r]||r; reason.appendChild(t); });
+  else reason.textContent = '—';
+  const audio = document.createElement('audio'); audio.controls = true; audio.preload = 'none'; audio.src = it.sample_url || '';
+  audio.addEventListener('play', () => stopOtherAudios(audio, '#step4, #step6'));
+  row.appendChild(label); row.appendChild(reason); row.appendChild(audio);
+  return row;
+}
+function stopOtherAudios(current, scope) { document.querySelectorAll(`${scope} audio`).forEach(a => { if (a !== current) a.pause(); }); }
+function selectVoice(i) {
+  document.querySelectorAll('#voice-list .av-option').forEach(el => el.classList.remove('selected'));
+  const t = document.querySelector(`#voice-list .av-option[data-index="${i}"]`); if (t) t.classList.add('selected');
+  state.selectedVoice = state.options.voices[i]; validateStep4();
+}
+function validateStep4() {
+  const ok = !!state.selectedStyle && !!state.selectedVoice;
+  document.getElementById('btn-to-generate').disabled = !ok;
+}
+
+// ============================================================
+// STEP 4 → 生成（TTS=マスタークロック → 画像/動画）
+// ============================================================
+async function proceedToGenerate() {
+  if (!state.selectedStyle) { showError('画像スタイルを選択してください'); return; }
+  if (!state.selectedVoice) { showError('ナレーション音声を選択してください'); return; }
+  const sceneVt = bodyScenes().map((sc, i) => ({ scene: sc.scene, visual_type: effectiveVisualType(i) }));
+  showLoading('音声と映像を生成中...', 'TTSで尺を確定し、各シーンの映像を生成しています', [{icon:'🎙',text:'TTSで音声を生成中（尺を確定）'},{icon:'🖼',text:'画像シーンを生成中'},{icon:'🎞',text:'動画シーンを生成中'},{icon:'🧩',text:'各シーンを整列中'},{icon:'✅',text:'完了'}], 9000, true);
+  try {
+    const res = await fetch(GENERATE_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+      action: 'generate_scenes', session_id: state.sessionId,
+      selected_script_id: state.selectedScript.script_id,
+      style: state.selectedStyle,
+      default_visual_type: state.defaultVisualType,
+      scene_visual_types: sceneVt,
+      voice: { id: state.selectedVoice.id, voice_name: state.selectedVoice.voice_name, ssml_gender: state.selectedVoice.ssml_gender, speaking_rate: state.selectedVoice.speaking_rate, pitch: state.selectedVoice.pitch },
+    }) });
+    hideLoading();
+    if (res.status === 429) { showError('生成の実行回数が上限に達しました。'); setStep(4); return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
+    let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
+    if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
+    state.sceneMedia = data.scenes || [];
+    renderReview(); setStep(5);
+  } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
+}
+
+// ============================================================
+// STEP 5 シーン確認
+// ============================================================
+function renderReview() {
+  const list = document.getElementById('review-list'); list.innerHTML = '';
+  bodyScenes().forEach((scene, i) => {
+    const media = state.sceneMedia.find(m => Number(m.scene) === Number(scene.scene)) || state.sceneMedia[i] || {};
+    const type = media.type || effectiveVisualType(i);
+    const assetUrl = media.asset_url || '';
+    const audioUrl = media.audio_url || '';
+    const dur = media.audio_duration;
+    const row = document.createElement('div'); row.className = 'review-scene';
+    // サムネ
+    const thumb = document.createElement('div'); thumb.className = 'review-thumb';
+    thumb.addEventListener('click', () => openLightbox(assetUrl, type, `Scene ${scene.scene} · ${scene.role||''}`));
+    const tag = document.createElement('div'); tag.className='vt-tag'; tag.textContent = type === 'video' ? 'VIDEO' : 'IMAGE';
+    if (assetUrl && type === 'video') { const v=document.createElement('video'); v.src=assetUrl; v.muted=true; v.playsInline=true; thumb.appendChild(v); }
+    else if (assetUrl) { const im=document.createElement('img'); im.src=assetUrl; im.onerror=()=>{ thumb.innerHTML='<div class="loading-mini">🖼</div>'; thumb.appendChild(tag); }; thumb.appendChild(im); }
+    else { thumb.innerHTML = '<div class="loading-mini pulse">⏳</div>'; }
+    thumb.appendChild(tag);
+    // 情報
+    const info = document.createElement('div'); info.className = 'review-info';
+    const role = document.createElement('div'); role.className = 'review-role';
+    const rs = document.createElement('span'); rs.textContent = `SCENE ${scene.scene} · ${scene.role||'narration'}`;
+    const rb = document.createElement('button'); rb.className='btn-mini'; rb.textContent='🔄 このシーンを再生成'; rb.addEventListener('click', () => regenerateScene(i, scene.scene));
+    role.appendChild(rs); role.appendChild(rb);
+    const narr = document.createElement('div'); narr.className = 'review-narration'; narr.textContent = state.narrationEdits[i]?.current || scene.narration || '';
+    info.appendChild(role); info.appendChild(narr);
+    if (audioUrl) { const au=document.createElement('audio'); au.className='review-audio'; au.controls=true; au.preload='none'; au.src=audioUrl; au.addEventListener('play',()=>stopOtherAudios(au,'#step5')); info.appendChild(au); }
+    const d = document.createElement('div'); d.className='review-dur'; d.textContent = dur ? `実尺 ${Number(dur).toFixed(1)}秒 · ${VT_LABEL[type]}` : `${VT_LABEL[type]}`;
+    info.appendChild(d);
+    row.appendChild(thumb); row.appendChild(info); list.appendChild(row);
+  });
+}
+async function regenerateScene(i, sceneNo) {
+  showLoading('シーンを再生成中...', '対象シーンのみ作り直しています', [{icon:'🎙',text:'音声を再生成中'},{icon:'🖼',text:'映像を再生成中'},{icon:'✅',text:'完了'}], 4000);
+  try {
+    const res = await fetch(GENERATE_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+      action: 'regenerate_scene', session_id: state.sessionId, scene: sceneNo,
+      style: state.selectedStyle, visual_type: effectiveVisualType(i),
+      voice: { id: state.selectedVoice?.id, voice_name: state.selectedVoice?.voice_name, ssml_gender: state.selectedVoice?.ssml_gender, speaking_rate: state.selectedVoice?.speaking_rate, pitch: state.selectedVoice?.pitch },
+    }) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    let data = await res.json(); if (Array.isArray(data)) data = data[0];
+    const updated = (data.scenes && data.scenes[0]) || data;
+    const idx = state.sceneMedia.findIndex(m => Number(m.scene) === Number(sceneNo));
+    if (idx >= 0) state.sceneMedia[idx] = updated; else state.sceneMedia.push(updated);
+    hideLoading(); renderReview(); setStep(5);
+  } catch (err) { hideLoading(); setStep(5); showError('再生成エラー: ' + err.message); }
+}
+
+// ============================================================
+// STEP 5 → STEP 6 字幕・BGM
+// ============================================================
+function proceedToSubtitleBgm() { renderStep6(); setStep(6); }
+function renderStep6() {
+  const mp = state.options.moodProfile;
+  if (mp) { const tags=[mp.primary_mood,mp.secondary_mood].filter(Boolean).map(m=>REASON_LABELS[m]||m).join(' × '); document.getElementById('mood-info-text2').textContent = `雰囲気: ${tags} → おすすめ順`; }
+  renderAvList('bgm-list', state.options.bgms, 'bgm');
+  if (state.options.bgms[0]) selectBgm(0);
+  renderSubtitlePresets();
+}
+function selectBgm(i) {
+  document.querySelectorAll('#bgm-list .av-option').forEach(el => el.classList.remove('selected'));
+  const t = document.querySelector(`#bgm-list .av-option[data-index="${i}"]`); if (t) t.classList.add('selected');
+  state.selectedBgm = state.options.bgms[i];
+}
+function renderSubtitlePresets() {
+  const positions = [{key:'top',label:'上'},{key:'center',label:'中央'},{key:'bottom',label:'下'}];
+  const c = document.getElementById('subtitle-position-list'); c.innerHTML = '';
+  positions.forEach(p => {
+    const div = document.createElement('div'); div.className = `subtitle-preset pos-${p.key}`;
+    if (state.subtitlePosition === p.key) div.classList.add('selected');
+    div.addEventListener('click', () => { state.subtitlePosition = p.key; document.querySelectorAll('.subtitle-preset').forEach(el=>el.classList.remove('selected')); div.classList.add('selected'); });
+    const bar = document.createElement('div'); bar.className='sub-bar';
+    const lbl = document.createElement('div'); lbl.className='sub-label'; lbl.textContent=p.label;
+    div.appendChild(bar); div.appendChild(lbl); c.appendChild(div);
+  });
+}
+
+// ============================================================
+// STEP 6 → 合成（字幕 + 動画合成）
+// ============================================================
+async function proceedToCompose() {
+  showLoading('動画を合成中...', '字幕を焼き込み、Shotstackで最終レンダリングしています', [{icon:'💬',text:'字幕を生成中'},{icon:'🎵',text:'BGMをミックス中'},{icon:'🎞',text:'Shotstackで合成中'},{icon:'✅',text:'完成'}], 20000, true);
+  setTimeout(() => {
+    document.getElementById('polling-progress').style.display = 'block';
+    const bar = document.getElementById('polling-bar'); bar.style.width = '0%';
+    requestAnimationFrame(() => { bar.style.transition = 'width 300s linear'; bar.style.width = '100%'; });
+    document.getElementById('polling-status').textContent = '動画を合成中...';
+  }, 100);
+  const controller = new AbortController();
+  const fetchTimeout = setTimeout(() => controller.abort(), 300000);
+  const failsafe = setTimeout(() => { hideLoading(); setStep(6); showError('タイムアウト: 動画合成に5分以上かかっています。しばらく後に再度お試しください。'); }, 305000);
+  try {
+    const res = await fetch(COMPOSE_URL, { method:'POST', headers:{'Content-Type':'application/json'}, signal: controller.signal, body: JSON.stringify({
+      action: 'compose', session_id: state.sessionId,
+      subtitle_position: state.subtitlePosition,
+      bgm_id: state.selectedBgm?.id, bgm_storage_url: state.selectedBgm?.storage_url, bgm_volume: state.bgmVolume,
+    }) });
+    clearTimeout(fetchTimeout); clearTimeout(failsafe);
+    if (res.status === 429) { hideLoading(); setStep(6); showError('合成の実行回数が上限に達しました。'); return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
+    let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
+    if (data.status === 'failed' || data.error) throw new Error(data.error || '動画合成に失敗しました');
+    const videoUrl = validateVideoUrl(data.video_url);
+    if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
+    state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(7);
+  } catch (err) {
+    clearTimeout(fetchTimeout); clearTimeout(failsafe); hideLoading(); setStep(6);
+    showError(err.name === 'AbortError' ? 'タイムアウト: 動画合成に5分以上かかっています。' : '合成エラー: ' + err.message);
+  }
+}
+
+// ============================================================
+// STEP 7 動画確認
+// ============================================================
+function renderVideo(data) {
+  const container = document.getElementById('video-container');
+  const videoUrl = validateVideoUrl(data.video_url); state.videoUrl = videoUrl;
+  container.innerHTML = ''; container.style.aspectRatio='9/16'; container.style.maxWidth='280px';
+  if (videoUrl) {
+    const video = document.createElement('video'); video.controls=true; video.playsInline=true; video.style.cssText='width:100%;height:100%;object-fit:contain;';
+    video.addEventListener('loadedmetadata', function(){ if (video.videoWidth>0 && video.videoHeight>0){ if (video.videoWidth>video.videoHeight){ container.style.aspectRatio='16/9'; container.style.maxWidth='100%'; } else { container.style.aspectRatio='9/16'; container.style.maxWidth='280px'; } } });
+    const src = document.createElement('source'); src.src=videoUrl; src.type='video/mp4'; video.appendChild(src); container.appendChild(video);
+  } else { container.innerHTML = `<div class="video-placeholder"><div class="play-icon">▶</div><div>動画の準備ができました</div></div>`; }
+}
+function rejectVideo() { setStep(6); }
+async function approveVideo() {
+  const fc = document.getElementById('final-video-container'); fc.innerHTML = '';
+  if (state.videoUrl) {
+    const wrap = document.createElement('div'); wrap.className='video-container'; wrap.style.cssText='margin-bottom:0;aspect-ratio:9/16;max-width:280px;';
+    const video = document.createElement('video'); video.controls=true; video.playsInline=true; video.style.cssText='width:100%;height:100%;object-fit:contain;';
+    video.addEventListener('loadedmetadata', function(){ if (video.videoWidth>0 && video.videoHeight>0){ if (video.videoWidth>video.videoHeight){ wrap.style.aspectRatio='16/9'; wrap.style.maxWidth='100%'; } else { wrap.style.aspectRatio='9/16'; wrap.style.maxWidth='280px'; } } });
+    const src = document.createElement('source'); src.src=state.videoUrl; src.type='video/mp4'; video.appendChild(src); wrap.appendChild(video); fc.appendChild(wrap);
+    const dl = document.getElementById('btn-download'); dl.href=state.videoUrl; dl.style.display='flex';
+    dl.onclick = async e => { e.preventDefault(); try { const r=await fetch(state.videoUrl); const b=await r.blob(); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=`video-${state.sessionId||Date.now()}.mp4`; a.click(); URL.revokeObjectURL(u); } catch(_){ window.open(state.videoUrl,'_blank'); } };
+  }
+  initMetaFromScript(); buildMetaEditPanel('meta-panel'); setStep(8);
+}
+
+// ============================================================
+// メタ情報（platform_posts は選択台本由来）
+// ============================================================
+function initMetaFromScript() {
+  const sc = state.selectedScript || {};
+  const pp = sc.platform_posts || {};
+  state.metaInfo = {
+    scriptTitle: sc.script_title || '',
+    concept: sc.concept || '',
+    summaryShort: (sc.article_summary_short) || '',
+    platformPosts: JSON.parse(JSON.stringify({
+      youtube_shorts: { video_title:'', description:'', hashtags:[], ...(pp.youtube_shorts||{}) },
+      tiktok:         { video_title:'', caption:'',     hashtags:[], ...(pp.tiktok||{}) },
+      reels:          { video_title:'', caption:'',     hashtags:[], ...(pp.reels||{}) },
+    })),
+  };
+}
+function buildMetaEditPanel(containerId) {
+  const container = document.getElementById(containerId); if (!container) return;
+  container.innerHTML = ''; const m = state.metaInfo;
+  const mkField = (id, label, multiline) => {
+    const g=document.createElement('div'); g.className='form-group';
+    const l=document.createElement('label'); l.className='form-label'; l.textContent=label;
+    const el = multiline ? document.createElement('textarea') : document.createElement('input');
+    el.className = multiline ? 'form-textarea' : 'form-input'; if (!multiline) el.type='text'; el.id=`${containerId}-${id}`;
+    g.appendChild(l); g.appendChild(el); return { g, el };
+  };
+  const f1=mkField('title','スクリプトタイトル',false); const f2=mkField('concept','コンセプト',false); const f3=mkField('summary','記事要約',true);
+  f1.el.value=m.scriptTitle||''; f2.el.value=m.concept||''; f3.el.value=m.summaryShort||'';
+  f1.el.addEventListener('input',()=>{state.metaInfo.scriptTitle=f1.el.value;});
+  f2.el.addEventListener('input',()=>{state.metaInfo.concept=f2.el.value;});
+  f3.el.addEventListener('input',()=>{state.metaInfo.summaryShort=f3.el.value;});
+  container.appendChild(f1.g); container.appendChild(f2.g); container.appendChild(f3.g);
+
+  const platforms = [
+    { key:'youtube', storeKey:'youtube_shorts', label:'YouTube Shorts', titleMax:100, bodyField:'description', bodyLabel:'概要欄', bodyMax:200 },
+    { key:'tiktok',  storeKey:'tiktok',         label:'TikTok',          titleMax:60,  bodyField:'caption',     bodyLabel:'キャプション', bodyMax:100 },
+    { key:'reels',   storeKey:'reels',          label:'Reels',           titleMax:60,  bodyField:'caption',     bodyLabel:'キャプション', bodyMax:100 },
+  ];
+  const tabLabel=document.createElement('div'); tabLabel.style.cssText='font-size:12px;color:var(--text2);margin:8px 0;font-weight:500'; tabLabel.textContent='プラットフォーム別投稿情報'; container.appendChild(tabLabel);
+  const wrap=document.createElement('div'); const tabRow=document.createElement('div'); tabRow.className='meta-platform-tabs';
+  platforms.forEach((p,idx)=>{ const tab=document.createElement('button'); tab.className='meta-tab'+(idx===0?' active':''); tab.textContent=p.label;
+    tab.addEventListener('click',()=>{ wrap.querySelectorAll('.meta-tab').forEach(t=>t.classList.remove('active')); wrap.querySelectorAll('.meta-platform-panel').forEach(pl=>pl.classList.remove('active')); tab.classList.add('active'); wrap.querySelector(`#${containerId}-panel-${p.key}`).classList.add('active'); });
+    tabRow.appendChild(tab); });
+  wrap.appendChild(tabRow);
+  const pp = state.metaInfo.platformPosts;
+  platforms.forEach((p,idx)=>{
+    if (!pp[p.storeKey]) pp[p.storeKey]={ video_title:'', [p.bodyField]:'', hashtags:[] };
+    const d=pp[p.storeKey]; if (!Array.isArray(d.hashtags)) d.hashtags=[];
+    const panel=document.createElement('div'); panel.className='meta-platform-panel'+(idx===0?' active':''); panel.id=`${containerId}-panel-${p.key}`;
+    const tg=document.createElement('div'); tg.className='form-group'; const tl=document.createElement('label'); tl.className='form-label'; tl.innerHTML=`動画タイトル <span style="color:var(--text3);font-weight:400">（${p.titleMax}文字以内）</span>`;
+    const ti=document.createElement('input'); ti.className='form-input'; ti.type='text'; ti.maxLength=p.titleMax; ti.value=d.video_title||''; ti.addEventListener('input',()=>{d.video_title=ti.value;}); tg.appendChild(tl); tg.appendChild(ti); panel.appendChild(tg);
+    const bg=document.createElement('div'); bg.className='form-group'; const bl=document.createElement('label'); bl.className='form-label'; bl.innerHTML=`${p.bodyLabel} <span style="color:var(--text3);font-weight:400">（${p.bodyMax}文字以内）</span>`;
+    const bt=document.createElement('textarea'); bt.className='form-textarea'; bt.maxLength=p.bodyMax; bt.value=d[p.bodyField]||''; bt.addEventListener('input',()=>{d[p.bodyField]=bt.value;}); bg.appendChild(bl); bg.appendChild(bt); panel.appendChild(bg);
+    const hg=document.createElement('div'); hg.className='form-group'; const hl=document.createElement('label'); hl.className='form-label'; hl.textContent='ハッシュタグ';
+    const hwrap=document.createElement('div'); hwrap.className='hashtag-wrap'; const irow=document.createElement('div'); irow.className='hashtag-input-row';
+    const hin=document.createElement('input'); hin.className='form-input'; hin.type='text'; hin.placeholder='#タグを追加'; const hbtn=document.createElement('button'); hbtn.className='btn-add-tag'; hbtn.textContent='追加';
+    const renderTags=()=>{ hwrap.innerHTML=''; d.hashtags.forEach(tag=>{ const chip=document.createElement('span'); chip.className='hashtag-chip'; chip.appendChild(document.createTextNode(tag)); const del=document.createElement('span'); del.textContent='×'; del.style.cssText='cursor:pointer;opacity:0.6;margin-left:2px;'; del.addEventListener('click',()=>{ d.hashtags=d.hashtags.filter(t=>t!==tag); renderTags(); }); chip.appendChild(del); hwrap.appendChild(chip); }); };
+    const addTag=()=>{ let t=hin.value.trim(); if(!t) return; if(!t.startsWith('#')) t='#'+t; if(!d.hashtags.includes(t)){ d.hashtags.push(t); renderTags(); } hin.value=''; };
+    hbtn.addEventListener('click',addTag); hin.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addTag(); } });
+    irow.appendChild(hin); irow.appendChild(hbtn); hg.appendChild(hl); hg.appendChild(hwrap); hg.appendChild(irow); panel.appendChild(hg); renderTags();
+    wrap.appendChild(panel);
+  });
+  container.appendChild(wrap);
+  const saveRow=document.createElement('div'); saveRow.className='meta-save-row';
+  const badge=document.createElement('span'); badge.className='meta-saved-badge'; badge.textContent='✓ 保存しました';
+  const saveBtn=document.createElement('button'); saveBtn.className='btn-meta-save'; saveBtn.innerHTML='💾 保存';
+  saveBtn.addEventListener('click', async ()=>{ saveBtn.disabled=true; try { const res=await fetch(SAVE_META_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ action:'save_meta', session_id:state.sessionId, meta_info:state.metaInfo })}); if(!res.ok) throw new Error(`HTTP ${res.status}`); badge.classList.add('show'); setTimeout(()=>badge.classList.remove('show'),2000); } catch(e){ showError('メタ情報の保存に失敗しました: '+e.message); } finally { saveBtn.disabled=false; } });
+  saveRow.appendChild(badge); saveRow.appendChild(saveBtn); container.appendChild(saveRow);
+}
+
+// ============================================================
+// ライトボックス
+// ============================================================
+function openLightbox(url, type, caption) {
+  if (!url) return;
+  const ex=document.getElementById('lightbox'); if (ex) ex.remove();
+  const overlay=document.createElement('div'); overlay.className='lightbox-overlay'; overlay.id='lightbox';
+  overlay.addEventListener('click', e=>{ if (e.target===overlay) closeLightbox(); });
+  const inner=document.createElement('div'); inner.className='lightbox-inner';
+  let media; if (type==='video'){ media=document.createElement('video'); media.src=url; media.controls=true; media.playsInline=true; } else { media=document.createElement('img'); media.src=url; media.alt=caption||''; }
+  const close=document.createElement('button'); close.className='lightbox-close'; close.textContent='✕'; close.addEventListener('click', closeLightbox);
+  const cap=document.createElement('div'); cap.className='lightbox-caption'; cap.textContent=caption||'';
+  inner.appendChild(media); inner.appendChild(close); inner.appendChild(cap); overlay.appendChild(inner); document.body.appendChild(overlay); document.body.style.overflow='hidden';
+}
+function closeLightbox() { const lb=document.getElementById('lightbox'); if (lb) lb.remove(); document.body.style.overflow=''; }
+
+// ============================================================
+// 戻るボタン
+// ============================================================
+function goBackToStep1() {
+  const { userName, url, contentType, platform } = state.input;
+  document.getElementById('input-username').value=userName; document.getElementById('input-url').value=url;
+  document.getElementById('input-content-type').value=contentType; document.getElementById('input-platform').value=platform; setStep(1);
+}
+function goBackToStep2() { renderScripts(); if (state.selectedScript){ const idx=state.scriptCandidates.findIndex(s=>s.script_id===state.selectedScript?.script_id); if (idx>=0) selectScriptOption(idx); } setStep(2); }
+function goBackToStep3() { renderEditor(); setStep(3); }
+function goBackToStep5() { renderReview(); setStep(5); }
+
+// ============================================================
+// リセット
+// ============================================================
+function resetAll() {
+  if (state.loadingInterval) clearInterval(state.loadingInterval);
+  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', sceneVisualTypes:{}, selectedStyle:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], videoUrl:null, metaInfo:null, loadingInterval:null };
+  document.getElementById('input-url').value=''; document.getElementById('input-username').value=''; document.getElementById('input-content-type').value=''; document.getElementById('input-platform').value='YouTube Shorts';
+  document.getElementById('btn-download').href='#'; setStep(1);
+}
+
+// ============================================================
+// MOCK（USE_MOCK_OPTIONS=true のとき）
+// ============================================================
+const MOCK_OPTIONS = {
+  mood_profile: { primary_mood:'reassuring', secondary_mood:'trustworthy', energy:2, tone_keywords:['calm'], genre:'casestudy' },
+  voices: [
+    { id:'v1', label:'自然な女性の声', voice_name:'ja-JP-Neural2-B', ssml_gender:'FEMALE', speaking_rate:0.98, pitch:0, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.wav', reason:['reassuring','calm','warm'] },
+    { id:'v2', label:'落ち着いた男性の声', voice_name:'ja-JP-Neural2-C', ssml_gender:'MALE', speaking_rate:0.95, pitch:-1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.wav', reason:['trustworthy','serious'] },
+    { id:'v3', label:'信頼感のある男性の声', voice_name:'ja-JP-Neural2-D', ssml_gender:'MALE', speaking_rate:1.02, pitch:0, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.wav', reason:['calm','trustworthy'] },
+  ],
+  bgms: [
+    { id:'b1', name:'BGM1', label:'落ち着いた解説系', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm1.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm1.mp3', reason:['neutral','calm'] },
+    { id:'b2', name:'BGM2', label:'安心・前向き系', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm2.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm2.mp3', reason:['hopeful','reassuring'] },
+  ],
+};
+
+// ============================================================
+// ハンバーガーメニュー
+// ============================================================
+(function() {
+  const btn=document.getElementById('hamburgerBtn'), drawer=document.getElementById('drawer'), overlay=document.getElementById('drawerOverlay'), close=document.getElementById('drawerClose');
+  function open(){ drawer.classList.add('open'); overlay.classList.add('open'); btn.classList.add('open'); document.body.style.overflow='hidden'; }
+  function shut(){ drawer.classList.remove('open'); overlay.classList.remove('open'); btn.classList.remove('open'); document.body.style.overflow=''; }
+  btn.addEventListener('click', ()=> drawer.classList.contains('open')?shut():open());
+  overlay.addEventListener('click', shut); close.addEventListener('click', shut);
+  document.addEventListener('keydown', e=>{ if (e.key==='Escape') shut(); });
+})();
+</script>
+</body>
+</html>
