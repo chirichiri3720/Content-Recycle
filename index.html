@@ -1142,6 +1142,7 @@ async function proceedToVideo() {
         final_narrations: finalNarrations,
         edited_scene_count: finalNarrations.filter(s => s.edited).length,
         scene_image_urls: state.sceneImageUrls,
+        hook_type: state.selectedScript?.hook_type || '',  // ← 追加
         voice_id: state.selectedVoice?.id, voice_name: state.selectedVoice?.voice_name,
         ssml_gender: state.selectedVoice?.ssml_gender, speaking_rate: state.selectedVoice?.speaking_rate,
         pitch: state.selectedVoice?.pitch,
