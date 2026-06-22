@@ -516,6 +516,13 @@ const STYLE_KEYS  = ['realistic','cinematic','anime'];
 const STYLE_LABEL = { realistic:'実写風', cinematic:'シネマティック風', anime:'アニメーション風' };
 const VT_LABEL    = { image:'画像', video:'動画' };
 const REASON_LABELS = { hopeful:'希望', positive:'前向き', friendly:'親しみやすさ', bright:'明るさ', calm:'落ち着き', reassuring:'安心感', informative:'情報性', empathetic:'共感', curious:'興味喚起', hook:'フック感', serious:'真剣', trustworthy:'信頼感', uplifting:'前向きな高揚感', warm:'温かみ', urgent:'緊迫感', neutral:'無難', natural:'自然' };
+const HOOK_LABELS = {
+  myth_busting:   '誤解を正す',
+  fear_urgency:   '放置リスク',
+  surprise:       '意外な事実',
+  self_relevance: '自分ごと化',
+  question_gap:   '疑問で引く',
+};
 
 // ============================================================
 // ユーティリティ
@@ -638,7 +645,7 @@ function renderScripts() {
     // バッジ行
     const badgeRow = document.createElement('div');
     const b = document.createElement('span'); b.className = `script-badge ${badges[i]?.cls||'badge-blue'}`; b.textContent = badges[i]?.label || 'オプション'; badgeRow.appendChild(b);
-    if (s.hook_type) { const h = document.createElement('span'); h.className = 'hook-badge'; h.textContent = s.hook_type; badgeRow.appendChild(h); }
+    if (s.hook_type) { const h = document.createElement('span'); h.className = 'hook-badge'; h.textContent = HOOK_LABELS[s.hook_type] || s.hook_type; badgeRow.appendChild(h); }
     const title = document.createElement('div'); title.className = 'script-title'; title.textContent = s.script_title || 'タイトル未設定';
     const concept = document.createElement('div'); concept.className = 'script-body'; concept.textContent = s.concept || s.total_narration || '概要なし';
     const scoreWrap = document.createElement('div'); scoreWrap.className = 'script-score';
@@ -684,6 +691,18 @@ function proceedToEditor() {
 // ============================================================
 function renderEditor() {
   const list = document.getElementById('editor-list'); list.innerHTML = '';
+  const sc = state.selectedScript || {};
+  const infoBox = document.createElement('div');
+  infoBox.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius2);padding:14px 16px;margin-bottom:16px;';
+  infoBox.innerHTML = `
+    <div style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;letter-spacing:0.05em;margin-bottom:8px">📄 記事情報</div>
+    <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.5">${escapeHtml(sc.article_title || '—')}</div>
+    <div style="font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:8px">${escapeHtml(sc.article_summary_short || '—')}</div>
+    <div style="height:1px;background:var(--border);margin-bottom:8px"></div>
+    <div style="font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:4px">CONCEPT</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.6">${escapeHtml(sc.concept || '—')}</div>
+  `;
+  list.appendChild(infoBox);
   const body = bodyScenes();
   body.forEach((scene, i) => {
     const original = scene.narration || '';
