@@ -536,6 +536,7 @@ let state = {
   videoUrl: null,
   metaInfo: null,
   loadingInterval: null,
+  articleMeta: {},
 };
 
 // STEP → 進捗バーのバケット
@@ -640,6 +641,7 @@ async function startGeneration() {
     if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); return; }
     state.sessionId = data.session_id;
     state.scriptCandidates = data.script_candidates || [];
+    state.articleMeta = data.article_meta || {};
     renderScripts(); setStep(2);
   } catch (err) { hideLoading(); setStep(1); showError('エラー: ' + err.message); }
 }
@@ -654,7 +656,7 @@ async function regenerateScript() {
     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
     if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
-    state.sessionId = data.session_id; state.scriptCandidates = data.script_candidates || [];
+    state.sessionId = data.session_id; state.scriptCandidates = data.script_candidates || [];state.articleMeta = data.article_meta || {};
     renderScripts(); setStep(2);
   } catch (err) { hideLoading(); setStep(2); showError('再生成エラー: ' + err.message); }
 }
@@ -724,13 +726,14 @@ function renderEditor() {
 
   // ★左カラムに記事情報を表示
   const sc = state.selectedScript || {};
+  const am = state.articleMeta || {};
   const titleEl   = document.getElementById('step3-article-title');
   const urlEl     = document.getElementById('step3-article-url');
   const summaryEl = document.getElementById('step3-article-summary');
   const conceptEl = document.getElementById('step3-concept');
-  if (titleEl)   titleEl.textContent   = sc.article_title || '—';
-  if (urlEl)     { urlEl.textContent   = sc.article_url || ''; urlEl.href = sc.article_url || '#'; }
-  if (summaryEl) summaryEl.textContent = sc.article_summary_short || '—';
+  if (titleEl)   titleEl.textContent   = am.article_title || sc.article_title || '—';
+  if (urlEl)     { urlEl.textContent   = am.article_url || sc.article_url || ''; urlEl.href = am.article_url || sc.article_url || '#'; }
+  if (summaryEl) summaryEl.textContent = am.article_summary_short || sc.article_summary_short || '—';
   if (conceptEl) conceptEl.textContent = sc.concept || '—';
 
   const body = bodyScenes();
@@ -1215,7 +1218,7 @@ function goBackToStep5() { renderReview(); setStep(5); }
 // ============================================================
 function resetAll() {
   if (state.loadingInterval) clearInterval(state.loadingInterval);
-  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', sceneVisualTypes:{}, selectedStyle:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], videoUrl:null, metaInfo:null, loadingInterval:null };
+  state = { input:{userName:'',url:'',articleMeta: {},contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', sceneVisualTypes:{}, selectedStyle:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], videoUrl:null, metaInfo:null, loadingInterval:null };
   document.getElementById('input-url').value=''; document.getElementById('input-username').value=''; document.getElementById('input-content-type').value=''; document.getElementById('input-platform').value='YouTube Shorts';
   document.getElementById('btn-download').href='#'; setStep(1);
 }
