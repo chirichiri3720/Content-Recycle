@@ -533,6 +533,7 @@ let state = {
   bgmVolume: 0.3,
   subtitlePosition: 'bottom',
   sceneMedia: [],            // [{scene, type, asset_url, audio_url, audio_duration}]
+  scenePromptEdits: {},  // {sceneIndex: {image_prompt_seed, motion_direction}}
   videoUrl: null,
   metaInfo: null,
   loadingInterval: null,
@@ -826,11 +827,35 @@ async function freezeAndProceed() {
 // ============================================================
 // STEP 4 設定（options取得 → スタイル / visual_type / ボイス）
 // ============================================================
+function scoreAndSort(items, mood) {
+  const want = new Set([
+    mood.primary_mood,
+    mood.secondary_mood,
+    ...(mood.tone_keywords || [])
+  ].filter(Boolean));
+  return items.map(item => {
+    const matched    = (item.reason || []).filter(r => want.has(r));
+    const moodScore  = matched.length / Math.max((item.reason || []).length, 1);
+    const energyScore = 1 - Math.abs((item.energy ?? 3) - (mood.energy ?? 3)) / 4;
+    const genreScore = (item.genre_affinity || []).includes(mood.genre) ? 1 : 0;
+    const total = 0.5 * moodScore + 0.3 * energyScore + 0.2 * genreScore;
+    return { ...item, total, reason: matched.length > 0 ? matched : item.reason };
+  }).sort((a, b) => b.total - a.total);
+}
+
 async function loadOptionsAndRenderStep4() {
   showLoading('設定を準備中...', 'おすすめを計算しています', [{icon:'✨',text:'雰囲気を分析中'},{icon:'🎙',text:'音声候補を選定中'},{icon:'🎨',text:'スタイルを準備中'},{icon:'✅',text:'完了'}], 700);
   try {
     let data;
-    if (USE_MOCK_OPTIONS) { await new Promise(r=>setTimeout(r,900)); data = MOCK_OPTIONS; }
+    if (USE_MOCK_OPTIONS) {
+        await new Promise(r => setTimeout(r, 900));
+        const mood = state.selectedScript?.mood_profile || MOCK_OPTIONS.mood_profile;
+        data = {
+            mood_profile: mood,
+            voices: scoreAndSort(MOCK_OPTIONS.voices, mood),
+            bgms:   scoreAndSort(MOCK_OPTIONS.bgms,   mood),
+        };
+    }
     else {
       const res = await fetch(OPTIONS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'get_options', session_id: state.sessionId }) });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -873,39 +898,64 @@ function selectStyle(key) {
 function setGlobalVisualType(vt) {
   state.defaultVisualType = vt;
   document.querySelectorAll('#vt-global button').forEach(b => b.classList.toggle('active', b.dataset.vt === vt));
-  // 個別未指定のシーンは既定に追従して再描画
-  renderSettingsSceneList();
+  renderSettingsSceneList(); // 画像↔動画切り替えで表示が変わる
 }
+
 function effectiveVisualType(i) { return state.sceneVisualTypes[i] || state.defaultVisualType; }
 
 function renderSettingsSceneList() {
   const c = document.getElementById('settings-scene-list'); c.innerHTML = '';
   bodyScenes().forEach((scene, i) => {
-    const cur = effectiveVisualType(i);
-    const row = document.createElement('div'); row.className = 'review-scene'; row.style.padding = '10px';
-    const info = document.createElement('div'); info.className = 'review-info';
-    const role = document.createElement('div'); role.className = 'review-role';
-    role.innerHTML = `<span>SCENE ${scene.scene} · ${escapeHtml(scene.role||'narration')}</span>`;
-    // シーン別 visual_type ミニトグル
-    // const mini = document.createElement('div'); mini.className = 'vt-mini';
-    // ['image','video'].forEach(vt => {
-    //   const b = document.createElement('button'); b.textContent = VT_LABEL[vt]; b.dataset.vt = vt;
-    //   if (cur === vt) b.classList.add('active');
-    //   b.addEventListener('click', () => setSceneVisualType(i, vt));
-    //   mini.appendChild(b);
-    // });
-    // role.appendChild(mini);
-    const text = document.createElement('div'); text.className = 'review-narration';
-    text.textContent = state.narrationEdits[i]?.current || scene.narration || '';
-    info.appendChild(role); info.appendChild(text);
-    row.appendChild(info); c.appendChild(row);
+    const vt = state.defaultVisualType; // シーン個別は廃止したので全体設定のみ
+    const row = document.createElement('div'); 
+    row.className = 'editor-scene'; row.style.marginBottom = '12px';
+
+    // ヘッダ
+    const head = document.createElement('div'); head.className = 'editor-scene-head';
+    head.innerHTML = `<div class="editor-scene-role"><span>SCENE ${scene.scene} · ${escapeHtml(scene.role||'')}</span></div>`;
+    row.appendChild(head);
+
+    // 映像メモ(共通・読み取り専用)
+    if (scene.visual_direction) {
+      const memo = document.createElement('div'); 
+      memo.className = 'editor-hint';
+      memo.textContent = `映像メモ: ${scene.visual_direction}`;
+      row.appendChild(memo);
+    }
+
+    // 画像プロンプト(編集可能)
+    const seedLabel = document.createElement('div');
+    seedLabel.style.cssText = 'font-size:10px;color:var(--text3);margin:8px 0 4px;font-family:"Space Mono",monospace;';
+    seedLabel.textContent = vt === 'video' ? 'IMAGE PROMPT (ベース構図)' : 'IMAGE PROMPT';
+    const seedTa = document.createElement('textarea');
+    seedTa.className = 'editor-textarea'; seedTa.style.minHeight = '56px';
+    seedTa.value = state.scenePromptEdits?.[i]?.image_prompt_seed ?? scene.image_prompt_seed ?? '';
+    seedTa.addEventListener('input', () => {
+      if (!state.scenePromptEdits) state.scenePromptEdits = {};
+      if (!state.scenePromptEdits[i]) state.scenePromptEdits[i] = {};
+      state.scenePromptEdits[i].image_prompt_seed = seedTa.value;
+    });
+    row.appendChild(seedLabel); row.appendChild(seedTa);
+
+    // motion_direction(動画選択時のみ表示)
+    if (vt === 'video') {
+      const motionLabel = document.createElement('div');
+      motionLabel.style.cssText = 'font-size:10px;color:var(--accent2);margin:8px 0 4px;font-family:"Space Mono",monospace;';
+      motionLabel.textContent = 'MOTION (カメラ・被写体の動き)';
+      const motionTa = document.createElement('textarea');
+      motionTa.className = 'editor-textarea'; motionTa.style.minHeight = '48px';
+      motionTa.value = state.scenePromptEdits?.[i]?.motion_direction ?? scene.motion_direction ?? '';
+      motionTa.addEventListener('input', () => {
+        if (!state.scenePromptEdits) state.scenePromptEdits = {};
+        if (!state.scenePromptEdits[i]) state.scenePromptEdits[i] = {};
+        state.scenePromptEdits[i].motion_direction = motionTa.value;
+      });
+      row.appendChild(motionLabel); row.appendChild(motionTa);
+    }
+
+    c.appendChild(row);
   });
 }
-function setSceneVisualType(i, vt) {
-  state.sceneVisualTypes[i] = vt;
-  renderSettingsSceneList();
-}
-
 function renderVoiceList() { renderAvList('voice-list', state.options.voices, 'voice'); }
 function renderAvList(containerId, items, kind) {
   const container = document.getElementById(containerId); container.innerHTML = '';
@@ -951,6 +1001,11 @@ async function proceedToGenerate() {
   if (!state.selectedStyle) { showError('画像スタイルを選択してください'); return; }
   if (!state.selectedVoice) { showError('ナレーション音声を選択してください'); return; }
   const sceneVt = bodyScenes().map((sc, i) => ({ scene: sc.scene, visual_type: effectiveVisualType(i) }));
+  const finalScenePrompts = bodyScenes().map((sc, i) => ({
+    scene: sc.scene,
+    image_prompt_seed: state.scenePromptEdits?.[i]?.image_prompt_seed ?? sc.image_prompt_seed ?? '',
+    motion_direction:  state.scenePromptEdits?.[i]?.motion_direction  ?? sc.motion_direction  ?? '',
+  }));
   showLoading('音声と映像を生成中...', 'TTSで尺を確定し、各シーンの映像を生成しています', [{icon:'🎙',text:'TTSで音声を生成中（尺を確定）'},{icon:'🖼',text:'画像シーンを生成中'},{icon:'🎞',text:'動画シーンを生成中'},{icon:'🧩',text:'各シーンを整列中'},{icon:'✅',text:'完了'}], 9000, true);
   try {
     const res = await fetch(GENERATE_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
@@ -959,6 +1014,7 @@ async function proceedToGenerate() {
       style: state.selectedStyle,
       default_visual_type: state.defaultVisualType,
       scene_visual_types: sceneVt,
+      scene_prompts: finalScenePrompts,
       voice: { id: state.selectedVoice.id, voice_name: state.selectedVoice.voice_name, ssml_gender: state.selectedVoice.ssml_gender, speaking_rate: state.selectedVoice.speaking_rate, pitch: state.selectedVoice.pitch },
     }) });
     hideLoading();
