@@ -101,6 +101,10 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .scene-duration { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 4px; }
 
 /* ===== STEP3 台本編集（画像なし） ===== */
+@media (max-width: 760px) {
+  #step3 > div { grid-template-columns: 1fr !important; }
+  #step3 > div > div:first-child { position: static !important; }
+}
 .editor-scene { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 14px; margin-bottom: 12px; transition: border-color 0.2s; }
 .editor-scene.cta { opacity: 0.7; border-style: dashed; }
 .editor-scene-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
@@ -351,17 +355,42 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
 
   <!-- STEP 3 台本編集（本文凍結・画像なし） -->
   <div class="step" id="step3">
-    <div class="card">
-      <div class="card-title"><div class="icon">✏️</div>ナレーションを編集・確定</div>
-      <div class="info-row"><span class="icon">🕒</span>各シーンの尺はナレーションの文字数から自動で見積もります（日本語 約5.5字/秒）。実尺は音声生成後に確定します。</div>
-      <div class="total-dur-bar"><span>本編合計（見積り）</span><strong id="total-dur">— 秒</strong></div>
-      <div class="edit-summary-banner" id="edit-summary-banner"><span class="icon">✏️</span><span id="edit-summary-text"></span></div>
-      <div id="editor-list"></div>
-      <div class="btn-row">
-        <button class="btn btn-outline" onclick="goBackToStep2()">← 台本選択へ</button>
-        <button class="btn btn-primary" onclick="freezeAndProceed()" style="flex:2">この内容で設定へ →</button>
+      <div style="display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start">
+        
+        <!-- 左：記事情報 -->
+        <div style="position:sticky;top:24px">
+        <div class="card" style="margin-bottom:12px">
+            <div style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;letter-spacing:0.05em;margin-bottom:10px">📄 記事情報</div>
+            <div id="step3-article-title" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px;line-height:1.6"></div>
+            <a id="step3-article-url" href="#" target="_blank" style="font-size:11px;color:var(--accent);word-break:break-all;display:block;margin-bottom:10px;text-decoration:none;opacity:0.8"></a>
+            <div style="height:1px;background:var(--border);margin-bottom:10px"></div>
+            <div style="font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:4px">SUMMARY</div>
+            <div id="step3-article-summary" style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:10px"></div>
+            <div style="height:1px;background:var(--border);margin-bottom:10px"></div>
+            <div style="font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:4px">CONCEPT</div>
+            <div id="step3-concept" style="font-size:11px;color:var(--text2);line-height:1.7"></div>
+        </div>
+        <div class="card" style="margin-bottom:0">
+            <div class="total-dur-bar" style="margin-bottom:0;border:none;padding:0">
+            <span style="font-size:12px;color:var(--text2)">本編合計（見積り）</span>
+            <strong id="total-dur" style="font-size:14px">— 秒</strong>
+            </div>
+        </div>
+        </div>
+
+        <!-- 右：シーン編集 -->
+        <div class="card">
+        <div class="card-title"><div class="icon">✏️</div>ナレーションを編集・確定</div>
+        <div class="info-row" style="margin-bottom:14px"><span class="icon">🕒</span>テキストを編集すると右上の秒数・文字数がリアルタイムで更新されます（約5.5字/秒）</div>
+        <div class="edit-summary-banner" id="edit-summary-banner"><span class="icon">✏️</span><span id="edit-summary-text"></span></div>
+        <div id="editor-list"></div>
+        <div class="btn-row">
+            <button class="btn btn-outline" onclick="goBackToStep2()">← 台本選択へ</button>
+            <button class="btn btn-primary" onclick="freezeAndProceed()" style="flex:2">この内容で設定へ →</button>
+        </div>
+        </div>
+
       </div>
-    </div>
   </div>
 
   <!-- STEP 4 設定（スタイル / visual_type / ボイス） -->
@@ -690,19 +719,20 @@ function proceedToEditor() {
 // STEP 3 台本編集（本文凍結・画像なし）
 // ============================================================
 function renderEditor() {
-  const list = document.getElementById('editor-list'); list.innerHTML = '';
+  const list = document.getElementById('editor-list'); 
+  list.innerHTML = '';
+
+  // ★左カラムに記事情報を表示
   const sc = state.selectedScript || {};
-  const infoBox = document.createElement('div');
-  infoBox.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius2);padding:14px 16px;margin-bottom:16px;';
-  infoBox.innerHTML = `
-    <div style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;letter-spacing:0.05em;margin-bottom:8px">📄 記事情報</div>
-    <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.5">${escapeHtml(sc.article_title || '—')}</div>
-    <div style="font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:8px">${escapeHtml(sc.article_summary_short || '—')}</div>
-    <div style="height:1px;background:var(--border);margin-bottom:8px"></div>
-    <div style="font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:4px">CONCEPT</div>
-    <div style="font-size:12px;color:var(--text2);line-height:1.6">${escapeHtml(sc.concept || '—')}</div>
-  `;
-  list.appendChild(infoBox);
+  const titleEl   = document.getElementById('step3-article-title');
+  const urlEl     = document.getElementById('step3-article-url');
+  const summaryEl = document.getElementById('step3-article-summary');
+  const conceptEl = document.getElementById('step3-concept');
+  if (titleEl)   titleEl.textContent   = sc.article_title || '—';
+  if (urlEl)     { urlEl.textContent   = sc.article_url || ''; urlEl.href = sc.article_url || '#'; }
+  if (summaryEl) summaryEl.textContent = sc.article_summary_short || '—';
+  if (conceptEl) conceptEl.textContent = sc.concept || '—';
+
   const body = bodyScenes();
   body.forEach((scene, i) => {
     const original = scene.narration || '';
@@ -765,11 +795,16 @@ function updateEditSummary() {
 async function freezeAndProceed() {
   const body = bodyScenes();
   const finalScenes = body.map((sc, i) => ({
-    scene: sc.scene, role: sc.role,
-    narration: (state.narrationEdits[i]?.current || sc.narration || '').trim(),
-    duration_sec: sc.duration_sec,
-    edited: state.narrationEdits[i]?.edited || false,
-  }));
+  scene: sc.scene, role: sc.role,
+  narration: (state.narrationEdits[i]?.current || sc.narration || '').trim(),
+  duration_sec: sc.duration_sec,
+  edited: state.narrationEdits[i]?.edited || false,
+  subtitle: sc.subtitle || '',
+  image_prompt_seed: sc.image_prompt_seed || '',
+  visual_direction: sc.visual_direction || '',
+  motion_direction: sc.motion_direction || '',
+  safety_note: sc.safety_note || '',
+　}));
   if (finalScenes.some(s => !s.narration)) { showError('空のナレーションがあります。各シーンを入力してください。'); return; }
   showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 1200);
   try {
