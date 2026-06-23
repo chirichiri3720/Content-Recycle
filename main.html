@@ -890,16 +890,30 @@ async function freezeAndProceed() {
   if (finalScenes.some(s => !s.narration)) { showError('空のナレーションがあります。各シーンを入力してください。'); return; }
   showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 1200);
   try {
-    const res = await fetch(SELECT_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
-      action: 'select_and_freeze', session_id: state.sessionId,
+  const res = await fetch(SELECT_URL, { 
+    method:'POST', 
+    headers:{'Content-Type':'application/json'}, 
+    body: JSON.stringify({
+      action: 'select_and_freeze', 
+      session_id: state.sessionId,
       selected_script_id: state.selectedScript.script_id,
       hook_type: state.selectedScript.hook_type || '',
       final_scenes: finalScenes,
-    }) });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    hideLoading();
-    await loadOptionsAndRenderStep4();
-  } catch (err) { hideLoading(); setStep(3); showError('台本確定エラー: ' + err.message); }
+    }) 
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const text = await res.text();
+  if (!text || !text.trim()) throw new Error('WH2のレスポンスが空です');
+  let data = JSON.parse(text);
+  if (Array.isArray(data)) data = data[0];
+  if (data.status !== 'ok') throw new Error(data.error || 'WH2でエラーが発生しました');
+  hideLoading();
+  await loadOptionsAndRenderStep4();
+  } catch (err) { 
+    hideLoading(); 
+    setStep(3); 
+    showError('台本確定エラー: ' + err.message); 
+  }
 }
 
 // ============================================================
@@ -938,7 +952,6 @@ async function loadOptionsAndRenderStep4() {
 // STEP 4 設定
 // ============================================================
 function renderStep4() {
-  renderVisualTypeSelector();
   renderExpressionGrid();
   renderSettingsSceneList();
   renderVoiceList();
