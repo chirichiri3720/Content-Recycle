@@ -545,7 +545,7 @@ const progressMap = { 1:1, 2:2, 3:3, 4:4, 5:5, 6:5, 7:5, 8:6 };
 const STYLE_KEYS  = ['realistic','cinematic','anime'];
 const STYLE_LABEL = { realistic:'実写風', cinematic:'シネマティック風', anime:'アニメーション風' };
 const VT_LABEL    = { image:'画像', video:'動画' };
-const REASON_LABELS = { hopeful:'希望', positive:'前向き', friendly:'親しみやすさ', bright:'明るさ', calm:'落ち着き', reassuring:'安心感', informative:'情報性', empathetic:'共感', curious:'興味喚起', hook:'フック感', serious:'真剣', trustworthy:'信頼感', uplifting:'前向きな高揚感', warm:'温かみ', urgent:'緊迫感', neutral:'無難', natural:'自然' };
+const REASON_LABELS = { hopeful:'希望', positive:'前向き', friendly:'親しみやすさ', bright:'明るさ', calm:'落ち着き', reassuring:'安心感', informative:'情報性', empathetic:'共感', curious:'興味喚起', hook:'フック感', serious:'真剣さ', trustworthy:'信頼感', uplifting:'前向きな高揚感', warm:'温かみ', urgent:'緊迫感', neutral:'無難さ', natural:'自然さ' };
 const HOOK_LABELS = {
   myth_busting:   '誤解を正す',
   fear_urgency:   '放置リスク',
@@ -887,14 +887,14 @@ function renderSettingsSceneList() {
     const role = document.createElement('div'); role.className = 'review-role';
     role.innerHTML = `<span>SCENE ${scene.scene} · ${escapeHtml(scene.role||'narration')}</span>`;
     // シーン別 visual_type ミニトグル
-    const mini = document.createElement('div'); mini.className = 'vt-mini';
-    ['image','video'].forEach(vt => {
-      const b = document.createElement('button'); b.textContent = VT_LABEL[vt]; b.dataset.vt = vt;
-      if (cur === vt) b.classList.add('active');
-      b.addEventListener('click', () => setSceneVisualType(i, vt));
-      mini.appendChild(b);
-    });
-    role.appendChild(mini);
+    // const mini = document.createElement('div'); mini.className = 'vt-mini';
+    // ['image','video'].forEach(vt => {
+    //   const b = document.createElement('button'); b.textContent = VT_LABEL[vt]; b.dataset.vt = vt;
+    //   if (cur === vt) b.classList.add('active');
+    //   b.addEventListener('click', () => setSceneVisualType(i, vt));
+    //   mini.appendChild(b);
+    // });
+    // role.appendChild(mini);
     const text = document.createElement('div'); text.className = 'review-narration';
     text.textContent = state.narrationEdits[i]?.current || scene.narration || '';
     info.appendChild(role); info.appendChild(text);
@@ -1229,14 +1229,20 @@ function resetAll() {
 const MOCK_OPTIONS = {
   mood_profile: { primary_mood:'reassuring', secondary_mood:'trustworthy', energy:2, tone_keywords:['calm'], genre:'casestudy' },
   voices: [
-    { id:'v1', label:'自然な女性の声', voice_name:'ja-JP-Neural2-B', ssml_gender:'FEMALE', speaking_rate:0.98, pitch:0, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.wav', reason:['reassuring','calm','warm'] },
-    { id:'v2', label:'落ち着いた男性の声', voice_name:'ja-JP-Neural2-C', ssml_gender:'MALE', speaking_rate:0.95, pitch:-1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.wav', reason:['trustworthy','serious'] },
-    { id:'v3', label:'信頼感のある男性の声', voice_name:'ja-JP-Neural2-D', ssml_gender:'MALE', speaking_rate:1.02, pitch:0, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.wav', reason:['calm','trustworthy'] },
-  ],
+  { id:'v1', label:'自然な女性の声', voice_name:'ja-JP-Neural2-B', ssml_gender:'FEMALE', speaking_rate:1.0, pitch:0, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.wav', reason:['reassuring','calm','warm'], energy:2, genre_affinity:['faq','howto','casestudy'] },
+  { id:'v2', label:'落ち着いた男性の声', voice_name:'ja-JP-Neural2-C', ssml_gender:'MALE', speaking_rate:1.0, pitch:-1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.wav', reason:['trustworthy','serious','informative'], energy:2, genre_affinity:['faq','casestudy','compare','opinion'] },
+  { id:'v3', label:'信頼感のある男性の声', voice_name:'ja-JP-Neural2-D', ssml_gender:'MALE', speaking_rate:1.0, pitch:0, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.wav', reason:['calm','trustworthy','neutral'], energy:3, genre_affinity:['faq','howto','compare'] },
+  { id:'v4', label:'ナチュラルな女性の声', voice_name:'ja-JP-Chirp3-HD-Zephyr', ssml_gender:'FEMALE', speaking_rate:1.0, pitch:0, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts4.wav', reason:['natural','friendly','reassuring','positive'], energy:3, genre_affinity:['faq','howto','opinion'] },
+],
   bgms: [
-    { id:'b1', name:'BGM1', label:'落ち着いた解説系', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm1.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm1.mp3', reason:['neutral','calm'] },
-    { id:'b2', name:'BGM2', label:'安心・前向き系', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm2.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm2.mp3', reason:['hopeful','reassuring'] },
-  ],
+  { id:'b1', name:'BGM1', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm1.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm1.mp3', reason:['neutral','informative','positive'], energy:3, genre_affinity:['faq','howto','compare','ranking'], label:'軽快な情報解説系' },
+  { id:'b2', name:'BGM2', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm2.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm2.mp3', reason:['hopeful','reassuring','calm','positive'], energy:2, genre_affinity:['casestudy','howto','opinion','faq'], label:'穏やかな希望・安心系' },
+  { id:'b3', name:'BGM3', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm3.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm3.mp3', reason:['warm','friendly','reassuring','natural'], energy:2, genre_affinity:['faq','howto','casestudy'], label:'温かく親しみやすい安心系' },
+  { id:'b4', name:'BGM4', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm4.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm4.mp3', reason:['bright','friendly','uplifting','positive'], energy:4, genre_affinity:['ranking','howto','compare','faq'], label:'明るく前向きな高揚系' },
+  { id:'b5', name:'BGM5', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm5.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm5.mp3', reason:['serious','empathetic','urgent','curious'], energy:4, genre_affinity:['casestudy','opinion','compare'], label:'緊張感のある問題提起系' },
+  { id:'b6', name:'BGM6', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm6.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm6.mp3', reason:['calm','trustworthy','informative','serious'], energy:2, genre_affinity:['casestudy','faq','howto','compare'], label:'落ち着いた信頼・情報解説系' },
+  { id:'b7', name:'BGM7', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm7.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm7.mp3', reason:['curious','hook','bright','informative'], energy:3, genre_affinity:['ranking','compare','faq','howto'], label:'軽快なフック・興味喚起系' },
+],
 };
 
 // ============================================================
