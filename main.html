@@ -989,7 +989,7 @@ function renderExpressionGrid() {
     const energyHit = mp ? (map.energy.includes(mp.energy) ? 1 : 0) : 0;
     return { key, score: moodHit * 0.7 + energyHit * 0.3 };
   }).sort((a,b) => b.score - a.score);
-  const recommendKeys = new Set(scored.slice(0,2).map(s => s.key));
+  const recommendKeys = new Set(scored.slice(0,1).map(s => s.key));
 
   EXPRESSION_KEYS.forEach(key => {
     const div = document.createElement('div'); div.className = 'style-option'; div.dataset.key = key;
@@ -1000,7 +1000,7 @@ function renderExpressionGrid() {
       div.appendChild(badge);
     }
     const img = document.createElement('img');
-    img.src = `${BASE_IMG_URL}/expression_${key}.png`; img.alt = EXPRESSION_LABEL[key]; img.loading='lazy';
+    img.src = `${BASE_IMG_URL}/${key}.png`; img.alt = EXPRESSION_LABEL[key]; img.loading='lazy';
     img.onerror = () => { img.remove(); const ph = document.createElement('div'); ph.style.cssText='aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--surface)'; ph.textContent='🖼'; div.insertBefore(ph, div.querySelector('.style-option-cap')||null); };
     div.appendChild(img);
     const cap = document.createElement('div'); cap.className = 'style-option-cap';
