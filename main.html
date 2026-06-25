@@ -1248,11 +1248,11 @@ function renderSubtitlePresets() {
 // STEP 6 → 合成（字幕 + 動画合成）
 // ============================================================
 async function proceedToCompose() {
-  showLoading('動画を合成中...', '字幕を焼き込み、Shotstackで最終レンダリングしています', [{icon:'💬',text:'字幕を焼き付け中'},{icon:'🎵',text:'BGMをミックス中'},{icon:'🎞',text:'Shotstackで合成中'},{icon:'✅',text:'完成'}], 20000, true);
+  showLoading('動画を合成中...', 'Shotstackで最終レンダリングしています', [{icon:'💬',text:'字幕を焼き付け中'},{icon:'🎵',text:'BGMをミックス中'},{icon:'🎞',text:'Shotstackで合成中'},{icon:'✅',text:'完成'}], 20000, true);
   setTimeout(() => {
     document.getElementById('polling-progress').style.display = 'block';
     const bar = document.getElementById('polling-bar'); bar.style.width = '0%';
-    requestAnimationFrame(() => { bar.style.transition = 'width 300s linear'; bar.style.width = '100%'; });
+    requestAnimationFrame(() => { bar.style.transition = 'width 120s linear'; bar.style.width = '100%'; });
     document.getElementById('polling-status').textContent = '動画を合成中...';
   }, 100);
   const controller = new AbortController();
