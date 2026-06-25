@@ -564,7 +564,7 @@ const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-
 const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
 const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
 const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';     // メタ保存
-const BASE_IMG_URL   = 'https://chirichiri3720.github.io/Content-Recycle/Images';
+const BASE_IMG_URL   = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Image';
 
 const VIDEO_URL_WHITELIST = [
   'cdn.shotstack.io',
@@ -646,10 +646,10 @@ function validateVideoUrl(url) {
 function escapeHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 function estDuration(text) { return Math.max(2, Math.round((text || '').length / CHARS_PER_SEC)); }
 
-// 本編シーン（scene !== 7 / role !== cta）だけを返す
+// 全シーン（role/scene問わず）を返す
 function bodyScenes() {
   const sc = state.selectedScript ? (state.selectedScript.scenes || []) : [];
-  return sc.filter(s => s.role !== 'cta' && s.scene !== 7);
+  return sc;
 }
 
 function setStep(n) {
@@ -778,7 +778,7 @@ function renderScripts() {
     list.appendChild(div);
   });
 }
-function bodyScenesOf(s) { return (s.scenes || []).filter(x => x.role !== 'cta' && x.scene !== 7); }
+function bodyScenesOf(s) { return (s.scenes || []); }
 
 function selectScriptOption(index) {
   document.querySelectorAll('.script-option').forEach(el => el.classList.remove('selected'));
@@ -817,31 +817,36 @@ function renderEditor() {
 
   const body = bodyScenes();
   body.forEach((scene, i) => {
+    const isCta = scene.role === 'cta' || scene.scene === 7;
     const original = scene.narration || '';
     if (!state.narrationEdits[i]) state.narrationEdits[i] = { original, current: original, edited: false };
-    const item = document.createElement('div'); item.className = 'editor-scene'; item.id = `ed-${i}`;
+    const item = document.createElement('div');
+    item.className = isCta ? 'editor-scene cta' : 'editor-scene';
+    item.id = `ed-${i}`;
     const head = document.createElement('div'); head.className = 'editor-scene-head';
     const role = document.createElement('div'); role.className = 'editor-scene-role';
     role.innerHTML = `<span>SCENE ${scene.scene} · ${escapeHtml(scene.role||'narration')}</span>`;
-    if (state.narrationEdits[i].edited) { const b = document.createElement('span'); b.className='edited-badge'; b.textContent='✏ 編集済み'; role.appendChild(b); }
+    if (!isCta && state.narrationEdits[i].edited) { const b = document.createElement('span'); b.className='edited-badge'; b.textContent='✏ 編集済み'; role.appendChild(b); }
     const meta = document.createElement('div'); meta.className = 'editor-scene-meta';
     const dur = document.createElement('span'); dur.className = 'dur-pill'; dur.id = `ed-dur-${i}`;
     head.appendChild(role); meta.appendChild(dur); head.appendChild(meta);
     const ta = document.createElement('textarea'); ta.className = 'editor-textarea'; ta.id = `ed-ta-${i}`; ta.value = state.narrationEdits[i].current;
-    ta.addEventListener('input', () => onEditorInput(i));
-    const hint = document.createElement('div'); hint.className = 'editor-hint';
-    hint.textContent = scene.visual_direction ? `映像メモ: ${scene.visual_direction}` : '';
-    item.appendChild(head); item.appendChild(ta); if (hint.textContent) item.appendChild(hint);
+    if (isCta) {
+      // CTAは読み取り専用
+      ta.disabled = true;
+      ta.style.opacity = '0.6';
+      const note = document.createElement('div'); note.className = 'cta-note'; note.style.marginTop = '6px';
+      note.textContent = '🔒 CTAナレーション（編集不可・音声・画像/動画・字幕 生成あり）';
+      item.appendChild(head); item.appendChild(ta); item.appendChild(note);
+    } else {
+      ta.addEventListener('input', () => onEditorInput(i));
+      const hint = document.createElement('div'); hint.className = 'editor-hint';
+      hint.textContent = scene.visual_direction ? `映像メモ: ${scene.visual_direction}` : '';
+      item.appendChild(head); item.appendChild(ta); if (hint.textContent) item.appendChild(hint);
+    }
     list.appendChild(item);
     updateDurPill(i);
   });
-  // 固定CTA（読み取り専用表示）
-  const cta = (state.selectedScript.scenes || []).find(x => x.role === 'cta' || x.scene === 7);
-  if (cta) {
-    const item = document.createElement('div'); item.className = 'editor-scene cta';
-    item.innerHTML = `<div class="editor-scene-head"><div class="editor-scene-role"><span>SCENE 7 · CTA（固定）</span></div><div class="editor-scene-meta">${escapeHtml(String(cta.duration_sec||4))}秒</div></div><div class="cta-note">🔒 ${escapeHtml(cta.narration||'')}（音声のみ・字幕なし・固定画像）</div>`;
-    list.appendChild(item);
-  }
   updateEditSummary(); updateTotalDur();
 }
 function onEditorInput(i) {
@@ -1145,16 +1150,18 @@ function selectVoice(i) {
 function renderReview() {
   const list = document.getElementById('review-list'); list.innerHTML = '';
   bodyScenes().forEach((scene, i) => {
+    const isCta = scene.scene === 7 || scene.role === 'cta';
     const media = state.sceneMedia.find(m => Number(m.scene) === Number(scene.scene)) || state.sceneMedia[i] || {};
     const type = media.type || state.defaultVisualType;
     const assetUrl = media.asset_url || '';
     const audioUrl = media.audio_url || '';
     const dur = media.audio_duration;
-    // AI生成画像がない場合はtmp画像をフォールバック表示
     const tmpImgUrl = `${BASE_IMG_URL}/tmp_image${scene.scene}.png`;
     const displayUrl = assetUrl || (type !== 'video' ? tmpImgUrl : '');
+    const narrationText = state.narrationEdits[i]?.current || scene.narration || '';
+
     const row = document.createElement('div'); row.className = 'review-scene';
-    // サムネ（クリックでlightbox）
+
     const thumb = document.createElement('div'); thumb.className = 'review-thumb';
     thumb.style.cursor = displayUrl ? 'pointer' : 'default';
     thumb.addEventListener('click', () => { if (displayUrl) openLightbox(displayUrl, type, `Scene ${scene.scene} · ${(scene.role||'').toUpperCase()}`); });
@@ -1165,21 +1172,24 @@ function renderReview() {
       const im=document.createElement('img'); im.src=displayUrl;
       im.onerror=()=>{ thumb.innerHTML='<div class="loading-mini">🖼</div>'; thumb.appendChild(tag); };
       thumb.appendChild(im);
-      // tmp画像には半透明バッジで識別
       if (!assetUrl) { const tb=document.createElement('div'); tb.className='vt-tag'; tb.style.cssText='bottom:4px;left:4px;top:auto;background:rgba(108,99,255,0.7);'; tb.textContent='仮'; thumb.appendChild(tb); }
     } else {
       thumb.innerHTML = '<div class="loading-mini pulse">⏳</div>';
     }
     thumb.appendChild(tag);
-    // 情報
+
     const info = document.createElement('div'); info.className = 'review-info';
-    const role = document.createElement('div'); role.className = 'review-role';
+    const roleEl = document.createElement('div'); roleEl.className = 'review-role';
     const rs = document.createElement('span'); rs.textContent = `SCENE ${scene.scene} · ${scene.role||'narration'}`;
-    role.appendChild(rs);
-    const narr = document.createElement('div'); narr.className = 'review-narration'; narr.textContent = state.narrationEdits[i]?.current || scene.narration || '';
-    info.appendChild(role); info.appendChild(narr);
-    if (audioUrl) { const au=document.createElement('audio'); au.className='review-audio'; au.controls=true; au.preload='none'; au.src=audioUrl; au.addEventListener('play',()=>stopOtherAudios(au,'#step5')); info.appendChild(au); }
-    const d = document.createElement('div'); d.className='review-dur'; d.textContent = dur ? `実尺 ${Number(dur).toFixed(1)}秒 · ${VT_LABEL[type]}` : `${VT_LABEL[type]}`;
+    roleEl.appendChild(rs);
+    const narr = document.createElement('div'); narr.className = 'review-narration'; narr.textContent = narrationText;
+    info.appendChild(roleEl); info.appendChild(narr);
+    if (audioUrl) {
+      const au=document.createElement('audio'); au.className='review-audio'; au.controls=true; au.preload='none'; au.src=audioUrl;
+      au.addEventListener('play',()=>stopOtherAudios(au,'#step5')); info.appendChild(au);
+    }
+    const d = document.createElement('div'); d.className='review-dur';
+    d.textContent = dur ? `実尺 ${Number(dur).toFixed(1)}秒 · ${VT_LABEL[type]}` : `${VT_LABEL[type]}`;
     info.appendChild(d);
     row.appendChild(thumb); row.appendChild(info); list.appendChild(row);
   });
