@@ -499,7 +499,7 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
       <!-- 左: シーン確認 -->
       <div class="card" style="margin-bottom:0">
         <div class="card-title"><div class="icon">🔍</div>生成されたシーンを確認</div>
-        <div class="info-row"><span class="icon">ℹ</span>映像と音声を確認してください。気になるシーンは個別に再生成できます。</div>
+        <div class="info-row"><span class="icon">ℹ</span>映像と音声を確認してください。サムネイルをタップすると拡大表示できます。</div>
         <div id="review-list"></div>
       </div>
       <!-- 右: BGM + 字幕位置 -->
@@ -1150,21 +1150,32 @@ function renderReview() {
     const assetUrl = media.asset_url || '';
     const audioUrl = media.audio_url || '';
     const dur = media.audio_duration;
+    // AI生成画像がない場合はtmp画像をフォールバック表示
+    const tmpImgUrl = `${BASE_IMG_URL}/tmp_image${scene.scene}.png`;
+    const displayUrl = assetUrl || (type !== 'video' ? tmpImgUrl : '');
     const row = document.createElement('div'); row.className = 'review-scene';
-    // サムネ
+    // サムネ（クリックでlightbox）
     const thumb = document.createElement('div'); thumb.className = 'review-thumb';
-    thumb.addEventListener('click', () => openLightbox(assetUrl, type, `Scene ${scene.scene} · ${scene.role||''}`));
+    thumb.style.cursor = displayUrl ? 'pointer' : 'default';
+    thumb.addEventListener('click', () => { if (displayUrl) openLightbox(displayUrl, type, `Scene ${scene.scene} · ${(scene.role||'').toUpperCase()}`); });
     const tag = document.createElement('div'); tag.className='vt-tag'; tag.textContent = type === 'video' ? 'VIDEO' : 'IMAGE';
-    if (assetUrl && type === 'video') { const v=document.createElement('video'); v.src=assetUrl; v.muted=true; v.playsInline=true; thumb.appendChild(v); }
-    else if (assetUrl) { const im=document.createElement('img'); im.src=assetUrl; im.onerror=()=>{ thumb.innerHTML='<div class="loading-mini">🖼</div>'; thumb.appendChild(tag); }; thumb.appendChild(im); }
-    else { thumb.innerHTML = '<div class="loading-mini pulse">⏳</div>'; }
+    if (assetUrl && type === 'video') {
+      const v=document.createElement('video'); v.src=assetUrl; v.muted=true; v.playsInline=true; thumb.appendChild(v);
+    } else if (displayUrl) {
+      const im=document.createElement('img'); im.src=displayUrl;
+      im.onerror=()=>{ thumb.innerHTML='<div class="loading-mini">🖼</div>'; thumb.appendChild(tag); };
+      thumb.appendChild(im);
+      // tmp画像には半透明バッジで識別
+      if (!assetUrl) { const tb=document.createElement('div'); tb.className='vt-tag'; tb.style.cssText='bottom:4px;left:4px;top:auto;background:rgba(108,99,255,0.7);'; tb.textContent='仮'; thumb.appendChild(tb); }
+    } else {
+      thumb.innerHTML = '<div class="loading-mini pulse">⏳</div>';
+    }
     thumb.appendChild(tag);
     // 情報
     const info = document.createElement('div'); info.className = 'review-info';
     const role = document.createElement('div'); role.className = 'review-role';
     const rs = document.createElement('span'); rs.textContent = `SCENE ${scene.scene} · ${scene.role||'narration'}`;
-    const rb = document.createElement('button'); rb.className='btn-mini'; rb.textContent='🔄 このシーンを再生成'; rb.addEventListener('click', () => regenerateScene(i, scene.scene));
-    role.appendChild(rs); role.appendChild(rb);
+    role.appendChild(rs);
     const narr = document.createElement('div'); narr.className = 'review-narration'; narr.textContent = state.narrationEdits[i]?.current || scene.narration || '';
     info.appendChild(role); info.appendChild(narr);
     if (audioUrl) { const au=document.createElement('audio'); au.className='review-audio'; au.controls=true; au.preload='none'; au.src=audioUrl; au.addEventListener('play',()=>stopOtherAudios(au,'#step5')); info.appendChild(au); }
