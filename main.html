@@ -890,7 +890,7 @@ async function freezeAndProceed() {
   safety_note: sc.safety_note || '',
 　}));
   if (finalScenes.some(s => !s.narration)) { showError('空のナレーションがあります。各シーンを入力してください。'); return; }
-  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 1200);
+  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 4000);
   try {
   const res = await fetch(SELECT_URL, { 
     method:'POST', 
@@ -933,11 +933,11 @@ function scoreAndSort(items, mood) {
   }).sort((a,b) => b.total - a.total);
 }
 async function loadOptionsAndRenderStep4() {
-  showLoading('設定を準備中...', 'おすすめを計算しています', [{icon:'✨',text:'雰囲気を分析中'},{icon:'🎙',text:'音声候補を選定中'},{icon:'🎨',text:'スタイルを準備中'},{icon:'✅',text:'完了'}], 700);
+  showLoading('設定を準備中...', 'おすすめを計算しています', [{icon:'✨',text:'雰囲気を分析中'},{icon:'🎙',text:'音声候補を選定中'},{icon:'🎨',text:'スタイルを準備中'},{icon:'✅',text:'完了'}], 3000);
   try {
     let data;
     if (USE_MOCK_OPTIONS) {
-      await new Promise(r => setTimeout(r, 900));
+      await new Promise(r => setTimeout(r, 1500));
       const mood = state.selectedScript?.mood_profile || MOCK_OPTIONS.mood_profile;
       data = { mood_profile: mood, voices: scoreAndSort(MOCK_OPTIONS.voices, mood), bgms: scoreAndSort(MOCK_OPTIONS.bgms, mood) };
     } else {
@@ -1101,6 +1101,7 @@ async function proceedToGenerate() {
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
     if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
     state.sceneMedia = data.scenes || [];
+    console.log(state.sceneMedia);
     renderReview(); renderStep5(); setStep(5);
   } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
 }
