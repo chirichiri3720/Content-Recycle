@@ -572,7 +572,7 @@ const VIDEO_URL_WHITELIST = [
   'shotstack-api-stage-output.s3-ap-southeast-2.amazonaws.com',
   'storage.googleapis.com',
 ];
-const CHARS_PER_SEC = 5.5; // 日本語TTS 見積り基準（マスタークロックは実音声）
+const CHARS_PER_SEC = 5.0; // 日本語TTS 見積り基準（マスタークロックは実音声）
 const USE_MOCK_OPTIONS = true;
 
 // ============================================================
@@ -644,8 +644,10 @@ function validateVideoUrl(url) {
   console.error('validateVideoUrl: rejected', url); return null;
 }
 function escapeHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-function estDuration(text) { return Math.max(2, Math.round((text || '').length / CHARS_PER_SEC)); }
-
+function estDuration(text) {
+  const len = (text || '').replace(/\s/g, '').length;
+  return Math.max(2, Math.round(len / CHARS_PER_SEC) + 1);
+}
 // 全シーン（role/scene問わず）を返す
 function bodyScenes() {
   const sc = state.selectedScript ? (state.selectedScript.scenes || []) : [];
@@ -831,19 +833,14 @@ function renderEditor() {
     const dur = document.createElement('span'); dur.className = 'dur-pill'; dur.id = `ed-dur-${i}`;
     head.appendChild(role); meta.appendChild(dur); head.appendChild(meta);
     const ta = document.createElement('textarea'); ta.className = 'editor-textarea'; ta.id = `ed-ta-${i}`; ta.value = state.narrationEdits[i].current;
+    ta.addEventListener('input', () => onEditorInput(i));
+    const hint = document.createElement('div'); hint.className = 'editor-hint';
     if (isCta) {
-      // CTAは読み取り専用
-      ta.disabled = true;
-      ta.style.opacity = '0.6';
-      const note = document.createElement('div'); note.className = 'cta-note'; note.style.marginTop = '6px';
-      note.textContent = '🔒 CTAナレーション（編集不可・音声・画像/動画・字幕 生成あり）';
-      item.appendChild(head); item.appendChild(ta); item.appendChild(note);
+      hint.textContent = '🎬 CTAシーン（コメント欄誘導・音声・画像/動画・字幕 生成あり）';
     } else {
-      ta.addEventListener('input', () => onEditorInput(i));
-      const hint = document.createElement('div'); hint.className = 'editor-hint';
       hint.textContent = scene.visual_direction ? `映像メモ: ${scene.visual_direction}` : '';
-      item.appendChild(head); item.appendChild(ta); if (hint.textContent) item.appendChild(hint);
     }
+    item.appendChild(head); item.appendChild(ta); if (hint.textContent) item.appendChild(hint);
     list.appendChild(item);
     updateDurPill(i);
   });
@@ -1005,7 +1002,8 @@ function renderExpressionGrid() {
       div.appendChild(badge);
     }
     const img = document.createElement('img');
-    img.src = `${BASE_IMG_URL}/${key}.png`; img.alt = EXPRESSION_LABEL[key]; img.loading='lazy';
+    img.src = `https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Images/${key}.png`;
+    img.alt = EXPRESSION_LABEL[key]; img.loading='lazy';
     img.onerror = () => { img.remove(); const ph = document.createElement('div'); ph.style.cssText='aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--surface)'; ph.textContent='🖼'; div.insertBefore(ph, div.querySelector('.style-option-cap')||null); };
     div.appendChild(img);
     const cap = document.createElement('div'); cap.className = 'style-option-cap';
@@ -1249,7 +1247,7 @@ function renderSubtitlePresets() {
 // STEP 6 → 合成（字幕 + 動画合成）
 // ============================================================
 async function proceedToCompose() {
-  showLoading('動画を合成中...', '字幕を焼き込み、Shotstackで最終レンダリングしています', [{icon:'💬',text:'字幕を生成中'},{icon:'🎵',text:'BGMをミックス中'},{icon:'🎞',text:'Shotstackで合成中'},{icon:'✅',text:'完成'}], 20000, true);
+  showLoading('動画を合成中...', '字幕を焼き込み、Shotstackで最終レンダリングしています', [{icon:'💬',text:'字幕を焼き付け中'},{icon:'🎵',text:'BGMをミックス中'},{icon:'🎞',text:'Shotstackで合成中'},{icon:'✅',text:'完成'}], 20000, true);
   setTimeout(() => {
     document.getElementById('polling-progress').style.display = 'block';
     const bar = document.getElementById('polling-bar'); bar.style.width = '0%';
