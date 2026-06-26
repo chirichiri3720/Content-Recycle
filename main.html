@@ -558,18 +558,18 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
 // ============================================================
 // 定数 / Webhook
 // ============================================================
-const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
-const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
-const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
-const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
-const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
+// const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
+// const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
+// const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
+// const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
+// const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
 // const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
-// const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
-// const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
-// const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
-// const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
-// const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
-// const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';     // メタ保存
+const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
+const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
+const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
+const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
+const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
+const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';     // メタ保存
 const BASE_IMG_URL   = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Image';
 
 const VIDEO_URL_WHITELIST = [
@@ -720,12 +720,13 @@ async function startGeneration() {
   try {
     const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform }) });
     hideLoading();
-    if (res.status === 429) { showError('台本生成の実行回数が上限に達しました。'); return; }
+    if (res.status === 429) { setStep(1); showError('台本生成の実行回数が上限に達しました。'); return; }
     const text = await res.text();
     if (!text || !text.trim()) throw new Error('n8n からのレスポンスが空です');
     let data = JSON.parse(text);
     if (Array.isArray(data)) data = data[0];
-    if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); return; }
+    if (data.error === 'limit_exceeded') { setStep(1); showError('台本生成の実行回数が上限に達しました。'); return; }
+    if (data.error) { setStep(1); showError(data.message || '処理中にエラーが発生しました'); return; }
     state.sessionId = data.session_id;
     state.scriptCandidates = data.script_candidates || [];
     state.articleMeta = data.article_meta || {};

@@ -74,7 +74,7 @@ export const SELECTORS = {
   META_CONCEPT_INPUT: '#meta-panel-concept',
 
   // 共通
-  ERROR_MESSAGE: '.error-message',
+  ERROR_MESSAGE: '#errorToast',
   STEP_INDICATOR: '.progress-step',
 };
 

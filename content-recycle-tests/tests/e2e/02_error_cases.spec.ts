@@ -117,24 +117,28 @@ test.describe('WH2エラー: 台本選択失敗 @error', () => {
   test('WH2が500エラーを返すとエラーメッセージが表示される', async ({ page }) => {
     await mockWH2(page, { error: 'internal_server_error' }, 500);
     await selectScript(page, 0);
+    await page.click(SELECTORS.EDIT_NEXT_BTN);
     await waitForLoadingComplete(page, 15_000);
     await expectErrorMessage(page);
-    await expect(page.locator(SELECTORS.STEP3_CONTAINER)).not.toBeVisible();
+    await expect(page.locator(SELECTORS.STEP4_CONTAINER)).not.toBeVisible();
   });
 
   test('WH2エラー後にSTEP2で別の台本を選択できる', async ({ page }) => {
     // 1回目: エラー
     await mockWH2(page, { error: 'error' }, 500);
     await selectScript(page, 0);
+    await page.click(SELECTORS.EDIT_NEXT_BTN);
     await waitForLoadingComplete(page, 15_000);
     await expectErrorMessage(page);
 
-    // リトライ
+    // STEP2に戻ってリトライ
+    await page.click('button[onclick="goBackToStep2()"]');
     await page.unroute('**/webhook/content-recycle-wh2**');
     await mockWH2(page);
     await selectScript(page, 1);
+    await page.click(SELECTORS.EDIT_NEXT_BTN);
     await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
-    await waitForStep(page, 3);
+    await waitForStep(page, 4);
   });
 });
 
@@ -151,7 +155,9 @@ test.describe('WH3エラー: アセット生成失敗 @error', () => {
     await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
     await waitForStep(page, 3);
     await page.click(SELECTORS.EDIT_NEXT_BTN);
+    await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
     await waitForStep(page, 4);
+    await page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first().click();
   }
 
   test('WH3が500エラーを返すとエラーが表示される', async ({ page }) => {
@@ -194,7 +200,9 @@ test.describe('WH4エラー: 動画合成失敗 @error', () => {
     await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
     await waitForStep(page, 3);
     await page.click(SELECTORS.EDIT_NEXT_BTN);
+    await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
     await waitForStep(page, 4);
+    await page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first().click();
     await page.click(SELECTORS.SETTINGS_NEXT_BTN);
     await waitForLoadingComplete(page, TIMEOUTS.WH3_ASSET_GEN);
     await waitForStep(page, 5);

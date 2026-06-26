@@ -6,7 +6,7 @@
 //   - 長時間操作後のUI状態維持
 
 import { test, expect } from '@playwright/test';
-import { URLS, SELECTORS, TEST_ARTICLES, TIMEOUTS } from '../fixtures/constants';
+import { URLS, SELECTORS, TEST_ARTICLES, TIMEOUTS, MOCK_RESPONSES } from '../fixtures/constants';
 import {
   mockAllWebhooks,
   fillUrlAndSubmit,
@@ -56,7 +56,9 @@ test.describe('耐久テスト: 繰り返し実行 @endurance', () => {
 
       // STEP3→4
       await page.click(SELECTORS.EDIT_NEXT_BTN);
+      await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
       await waitForStep(page, 4);
+      await page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first().click();
 
       // STEP4→5
       await page.click(SELECTORS.SETTINGS_NEXT_BTN);
@@ -160,33 +162,22 @@ test.describe('耐久テスト: エラーからのリカバリ繰り返し @endu
 
     for (let i = 0; i < 3; i++) {
       // エラーケース
-      await page.route('**/webhook/content-recycle-wh1**', route => {
-        route.fulfill({ status: 500, body: JSON.stringify({ error: 'server_error' }) });
+      await page.route(URLS.WH1, route => {
+        route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ error: 'server_error' }) });
       });
 
       await fillUrlAndSubmit(page, TEST_ARTICLES.VALID_1);
       await page.waitForSelector(SELECTORS.ERROR_MESSAGE, { timeout: 15_000 });
 
       // ルートをリセットして成功に変更
-      await page.unroute('**/webhook/content-recycle-wh1**');
-      await page.route('**/webhook/content-recycle-wh1**', route => {
+      await page.unroute(URLS.WH1);
+      await page.route(URLS.WH1, route => {
         route.fulfill({
           status: 200,
+          contentType: 'application/json',
           body: JSON.stringify({
             session_id: `session-${i}`,
-            script_candidates: [
-              {
-                id: 'sc-a', title: 'テスト台本',
-                scenes: Array.from({ length: 7 }, (_, j) => ({
-                  scene_no: j + 1,
-                  narration: 'テスト',
-                  subtitle_text: 'テスト',
-                  duration_sec: 5,
-                })),
-                mood_profile: 'serious',
-                hook_type: 'question',
-              },
-            ],
+            script_candidates: [MOCK_RESPONSES.WH1_SUCCESS.script_candidates[0]],
           }),
         });
       });
