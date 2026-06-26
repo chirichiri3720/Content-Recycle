@@ -890,7 +890,7 @@ async function freezeAndProceed() {
   safety_note: sc.safety_note || '',
 　}));
   if (finalScenes.some(s => !s.narration)) { showError('空のナレーションがあります。各シーンを入力してください。'); return; }
-  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 4000);
+  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 1000);
   try {
   const res = await fetch(SELECT_URL, { 
     method:'POST', 
@@ -933,7 +933,7 @@ function scoreAndSort(items, mood) {
   }).sort((a,b) => b.total - a.total);
 }
 async function loadOptionsAndRenderStep4() {
-  showLoading('設定を準備中...', 'おすすめを計算しています', [{icon:'✨',text:'雰囲気を分析中'},{icon:'🎙',text:'音声候補を選定中'},{icon:'🎨',text:'スタイルを準備中'},{icon:'✅',text:'完了'}], 3000);
+  showLoading('設定を準備中...', 'おすすめを計算しています', [{icon:'✨',text:'雰囲気を分析中'},{icon:'🎙',text:'音声候補を選定中'},{icon:'🎨',text:'スタイルを準備中'},{icon:'✅',text:'完了'}], 1000);
   try {
     let data;
     if (USE_MOCK_OPTIONS) {
@@ -1153,7 +1153,7 @@ function renderReview() {
     const media = state.sceneMedia.find(m => Number(m.scene) === Number(scene.scene)) || state.sceneMedia[i] || {};
     const type = media.type || state.defaultVisualType;
     const assetUrl = media.asset_url || '';
-    const audioUrl = media.audio_url || '';
+    const audioUrl = media.audio_url || media.tts_audio_url || '';
     const dur = media.audio_duration;
     const tmpImgUrl = `${BASE_IMG_URL}/tmp_image${scene.scene}.png`;
     const displayUrl = assetUrl || (type !== 'video' ? tmpImgUrl : '');
@@ -1248,11 +1248,11 @@ function renderSubtitlePresets() {
 // STEP 6 → 合成（字幕 + 動画合成）
 // ============================================================
 async function proceedToCompose() {
-  showLoading('動画を合成中...', 'Shotstackで最終レンダリングしています', [{icon:'💬',text:'字幕を焼き付け中'},{icon:'🎵',text:'BGMをミックス中'},{icon:'🎞',text:'Shotstackで合成中'},{icon:'✅',text:'完成'}], 20000, true);
+  showLoading('動画を合成中...', 'Shotstackで最終レンダリングしています', [{icon:'💬',text:'字幕を焼き付け中'},{icon:'🎵',text:'BGMをミックス中'},{icon:'🎞',text:'Shotstackで合成中'},{icon:'✅',text:'完成'}], 35000, true);
   setTimeout(() => {
     document.getElementById('polling-progress').style.display = 'block';
     const bar = document.getElementById('polling-bar'); bar.style.width = '0%';
-    requestAnimationFrame(() => { bar.style.transition = 'width 120s linear'; bar.style.width = '100%'; });
+    requestAnimationFrame(() => { bar.style.transition = 'width 150s linear'; bar.style.width = '100%'; });
     document.getElementById('polling-status').textContent = '動画を合成中...';
   }, 100);
   const controller = new AbortController();
@@ -1272,7 +1272,7 @@ async function proceedToCompose() {
     if (data.status === 'failed' || data.error) throw new Error(data.error || '動画合成に失敗しました');
     const videoUrl = validateVideoUrl(data.video_url);
     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
-    state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(7);
+    state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
   } catch (err) {
     clearTimeout(fetchTimeout); clearTimeout(failsafe); hideLoading(); setStep(5);
     showError(err.name === 'AbortError' ? 'タイムアウト: 動画合成に5分以上かかっています。' : '合成エラー: ' + err.message);
@@ -1294,16 +1294,24 @@ function renderVideo(data) {
 }
 function rejectVideo() { setStep(5); }
 async function approveVideo() {
+  // メタ初期化
+  initMetaFromScript();
+
+  // STEP7の動画セット
   const fc = document.getElementById('final-video-container'); fc.innerHTML = '';
   if (state.videoUrl) {
     const wrap = document.createElement('div'); wrap.className='video-container'; wrap.style.cssText='margin-bottom:0;aspect-ratio:9/16;max-width:280px;';
     const video = document.createElement('video'); video.controls=true; video.playsInline=true; video.style.cssText='width:100%;height:100%;object-fit:contain;';
     video.addEventListener('loadedmetadata', function(){ if (video.videoWidth>0 && video.videoHeight>0){ if (video.videoWidth>video.videoHeight){ wrap.style.aspectRatio='16/9'; wrap.style.maxWidth='100%'; } else { wrap.style.aspectRatio='9/16'; wrap.style.maxWidth='280px'; } } });
-    const src = document.createElement('source'); src.src=state.videoUrl; src.type='video/mp4'; video.appendChild(src); wrap.appendChild(video); fc.appendChild(wrap);
+    const src = document.createElement('source'); src.src=state.videoUrl; src.type='video/mp4';
+    video.appendChild(src); wrap.appendChild(video); fc.appendChild(wrap);
     const dl = document.getElementById('btn-download'); dl.href=state.videoUrl; dl.style.display='flex';
     dl.onclick = async e => { e.preventDefault(); try { const r=await fetch(state.videoUrl); const b=await r.blob(); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=`video-${state.sessionId||Date.now()}.mp4`; a.click(); URL.revokeObjectURL(u); } catch(_){ window.open(state.videoUrl,'_blank'); } };
   }
-  initMetaFromScript(); buildMetaEditPanel('meta-panel'); setStep(7);
+
+  // メタ編集パネル
+  buildMetaEditPanel('meta-panel');
+  setStep(7);
 }
 
 // ============================================================

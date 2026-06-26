@@ -278,26 +278,25 @@ async function sbFetch(path, qs) {
 async function fetchGallery() {
   const videos = await sbFetch(
     'videos',
-    'select=session_id,video_url,video_status,script_title,platform_posts,created_at&video_url=not.is.null&order=created_at.desc&limit=200'
+    'select=*&video_url=not.is.null&order=created_at.desc&limit=200'
   );
-  if (!videos.length) return [];
 
+  // sessionsからplatformとcontent_urlだけ取得
   const sessionIds = [...new Set(videos.map(v => v.session_id))];
   const sessions = await sbFetch(
     'sessions',
-    `select=id,user_name,platform,content_url,created_at&id=in.(${sessionIds.join(',')})`
+    `select=id,user_name,platform,content_url&id=in.(${sessionIds.join(',')})`
   );
-
   const sessionMap = Object.fromEntries(sessions.map(s => [s.id, s]));
 
   return videos.map(v => ({
-  id: v.session_id,
-  user_name: sessionMap[v.session_id]?.user_name || '',
-  platform: sessionMap[v.session_id]?.platform || 'YouTube Shorts',
-  content_url: sessionMap[v.session_id]?.content_url || '',
-  created_at: sessionMap[v.session_id]?.created_at || v.created_at,
-  video: v,
-}));
+    id:          v.session_id,
+    user_name:   sessionMap[v.session_id]?.user_name || '',
+    platform:    sessionMap[v.session_id]?.platform  || 'YouTube Shorts',
+    content_url: sessionMap[v.session_id]?.content_url || '',
+    created_at:  v.created_at,
+    video:       v,   // script_title, concept, platform_posts など全部入り
+  }));
 }
 
 // ============================================================
