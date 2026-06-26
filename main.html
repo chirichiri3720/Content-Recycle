@@ -194,25 +194,18 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .btn-mini { background: transparent; border: 1px solid var(--border2); border-radius: 6px; color: var(--text3); font-size: 10px; padding: 3px 8px; cursor: pointer; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; white-space: nowrap; }
 .btn-mini:hover { border-color: var(--accent); color: var(--accent); }
 
-/* メタ編集 */
+/* コンテンツ提案 */
 .meta-platform-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
 .meta-tab { padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border2); color: var(--text3); background: transparent; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
 .meta-tab:hover { border-color: var(--accent); color: var(--accent); }
 .meta-tab.active { background: rgba(108,99,255,0.15); border-color: var(--accent); color: var(--accent); }
 .meta-platform-panel { display: none; }
 .meta-platform-panel.active { display: block; }
-.hashtag-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-.hashtag-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.25); border-radius: 100px; font-size: 11px; color: var(--accent); padding: 3px 10px; font-family: 'Space Mono', monospace; }
-.hashtag-input-row { display: flex; gap: 8px; margin-top: 8px; }
-.hashtag-input-row .form-input { font-size: 12px; padding: 7px 10px; }
-.btn-add-tag { background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.3); border-radius: var(--radius2); color: var(--accent); font-size: 12px; padding: 7px 14px; cursor: pointer; white-space: nowrap; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; }
-.btn-add-tag:hover { background: rgba(108,99,255,0.25); }
-.meta-save-row { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 16px; }
-.btn-meta-save { background: var(--accent); color: #fff; border: none; border-radius: var(--radius2); font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 20px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; gap: 6px; }
-.btn-meta-save:hover { background: #5a52e0; }
-.btn-meta-save:disabled { background: var(--text3); cursor: not-allowed; }
-.meta-saved-badge { display: none; align-items: center; gap: 4px; font-size: 11px; color: var(--accent3); font-family: 'Space Mono', monospace; }
-.meta-saved-badge.show { display: flex; }
+.copy-field-row { margin-bottom: 14px; }
+.copy-field-label { font-size: 10px; color: var(--text3); font-weight: 500; margin-bottom: 4px; font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: .05em; }
+.copy-field-value { font-size: 13px; color: var(--text); background: var(--surface2); border-radius: var(--radius2); padding: 10px 12px; margin-bottom: 6px; white-space: pre-wrap; word-break: break-word; min-height: 36px; line-height: 1.6; }
+.btn-copy-field { font-size: 11px; color: var(--accent); background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.3); border-radius: 100px; padding: 3px 12px; cursor: pointer; font-family: 'Space Mono', monospace; transition: all .15s; }
+.btn-copy-field:hover { background: rgba(108,99,255,0.2); }
 
 /* レイアウト */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
@@ -533,23 +526,21 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
     </div>
   </div>
 
-  <!-- STEP 7 完成 + メタ編集 -->
+  <!-- STEP 7 完成 -->
   <div class="step" id="step7">
-    <div class="two-col">
-      <div class="card" style="text-align:center;margin-bottom:0">
-        <div class="success-icon">✓</div>
-        <div style="font-size:20px;font-weight:700;margin-bottom:8px">動画が完成しました！</div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:24px">動画のダウンロードまたは共有ができます</div>
-        <div id="final-video-container" style="margin-bottom:20px"></div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <a id="btn-download" href="#" class="btn-download-main" download="video.mp4">⬇ 動画をダウンロード</a>
-          <button class="btn btn-outline" onclick="resetAll()">＋ 新しい動画を生成する</button>
-        </div>
+    <div class="card" style="text-align:center;margin-bottom:20px">
+      <div class="success-icon">✓</div>
+      <div style="font-size:20px;font-weight:700;margin-bottom:8px">動画が完成しました！</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:24px">動画のダウンロードまたは共有ができます</div>
+      <div id="final-video-container" style="margin-bottom:20px"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto">
+        <a id="btn-download" href="#" class="btn-download-main" download="video.mp4">⬇ 動画をダウンロード</a>
+        <button class="btn btn-outline" onclick="resetAll()">＋ 次の動画を生成する</button>
       </div>
-      <div class="card" style="margin-bottom:0">
-        <div class="card-title"><div class="icon">📋</div>投稿メタ情報を編集</div>
-        <div id="meta-panel"></div>
-      </div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title"><div class="icon">📋</div>コンテンツ提案</div>
+      <div id="meta-panel"></div>
     </div>
   </div>
 </div>
@@ -1316,9 +1307,11 @@ async function approveVideo() {
     dl.onclick = async e => { e.preventDefault(); try { const r=await fetch(state.videoUrl); const b=await r.blob(); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=`video-${state.sessionId||Date.now()}.mp4`; a.click(); URL.revokeObjectURL(u); } catch(_){ window.open(state.videoUrl,'_blank'); } };
   }
 
-  // メタ編集パネル
-  buildMetaEditPanel('meta-panel');
+  // コンテンツ提案パネル
+  buildMetaCopyPanel('meta-panel');
   setStep(7);
+  // メタ情報をバックグラウンドで自動保存
+  fetch(SAVE_META_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'save_meta', session_id: state.sessionId, meta_info: state.metaInfo }) }).catch(()=>{});
 }
 
 // ============================================================
@@ -1338,58 +1331,59 @@ function initMetaFromScript() {
     })),
   };
 }
-function buildMetaEditPanel(containerId) {
+function buildMetaCopyPanel(containerId) {
   const container = document.getElementById(containerId); if (!container) return;
-  container.innerHTML = ''; const m = state.metaInfo;
-  const mkField = (id, label, multiline) => {
-    const g=document.createElement('div'); g.className='form-group';
-    const l=document.createElement('label'); l.className='form-label'; l.textContent=label;
-    const el = multiline ? document.createElement('textarea') : document.createElement('input');
-    el.className = multiline ? 'form-textarea' : 'form-input'; if (!multiline) el.type='text'; el.id=`${containerId}-${id}`;
-    g.appendChild(l); g.appendChild(el); return { g, el };
-  };
-  const f1=mkField('title','スクリプトタイトル',false); const f2=mkField('concept','コンセプト',false); const f3=mkField('summary','記事要約',true);
-  f1.el.value=m.scriptTitle||''; f2.el.value=m.concept||''; f3.el.value=m.summaryShort||'';
-  f1.el.addEventListener('input',()=>{state.metaInfo.scriptTitle=f1.el.value;});
-  f2.el.addEventListener('input',()=>{state.metaInfo.concept=f2.el.value;});
-  f3.el.addEventListener('input',()=>{state.metaInfo.summaryShort=f3.el.value;});
-  container.appendChild(f1.g); container.appendChild(f2.g); container.appendChild(f3.g);
-
+  container.innerHTML = '';
+  const m = state.metaInfo;
   const platforms = [
-    { key:'youtube', storeKey:'youtube_shorts', label:'YouTube Shorts', titleMax:100, bodyField:'description', bodyLabel:'概要欄', bodyMax:200 },
-    { key:'tiktok',  storeKey:'tiktok',         label:'TikTok',          titleMax:60,  bodyField:'caption',     bodyLabel:'キャプション', bodyMax:100 },
-    { key:'reels',   storeKey:'reels',          label:'Reels',           titleMax:60,  bodyField:'caption',     bodyLabel:'キャプション', bodyMax:100 },
+    { key:'youtube', storeKey:'youtube_shorts', label:'YouTube Shorts', bodyField:'description', bodyLabel:'概要欄' },
+    { key:'tiktok',  storeKey:'tiktok',         label:'TikTok',          bodyField:'caption',     bodyLabel:'キャプション' },
+    { key:'reels',   storeKey:'reels',          label:'Reels',           bodyField:'caption',     bodyLabel:'キャプション' },
   ];
-  const tabLabel=document.createElement('div'); tabLabel.style.cssText='font-size:12px;color:var(--text2);margin:8px 0;font-weight:500'; tabLabel.textContent='プラットフォーム別投稿情報'; container.appendChild(tabLabel);
-  const wrap=document.createElement('div'); const tabRow=document.createElement('div'); tabRow.className='meta-platform-tabs';
-  platforms.forEach((p,idx)=>{ const tab=document.createElement('button'); tab.className='meta-tab'+(idx===0?' active':''); tab.textContent=p.label;
-    tab.addEventListener('click',()=>{ wrap.querySelectorAll('.meta-tab').forEach(t=>t.classList.remove('active')); wrap.querySelectorAll('.meta-platform-panel').forEach(pl=>pl.classList.remove('active')); tab.classList.add('active'); wrap.querySelector(`#${containerId}-panel-${p.key}`).classList.add('active'); });
-    tabRow.appendChild(tab); });
+  const copy = async (text, btn) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      const orig = btn.textContent; btn.textContent = '✓ コピー済み';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    } catch(e) { showError('コピーに失敗しました'); }
+  };
+  const wrap = document.createElement('div');
+  const tabRow = document.createElement('div'); tabRow.className = 'meta-platform-tabs';
+  platforms.forEach((p, idx) => {
+    const tab = document.createElement('button'); tab.className = 'meta-tab' + (idx === 0 ? ' active' : ''); tab.textContent = p.label;
+    tab.addEventListener('click', () => {
+      wrap.querySelectorAll('.meta-tab').forEach(t => t.classList.remove('active'));
+      wrap.querySelectorAll('.meta-platform-panel').forEach(pl => pl.classList.remove('active'));
+      tab.classList.add('active'); wrap.querySelector(`#${containerId}-panel-${p.key}`).classList.add('active');
+    });
+    tabRow.appendChild(tab);
+  });
   wrap.appendChild(tabRow);
-  const pp = state.metaInfo.platformPosts;
-  platforms.forEach((p,idx)=>{
-    if (!pp[p.storeKey]) pp[p.storeKey]={ video_title:'', [p.bodyField]:'', hashtags:[] };
-    const d=pp[p.storeKey]; if (!Array.isArray(d.hashtags)) d.hashtags=[];
-    const panel=document.createElement('div'); panel.className='meta-platform-panel'+(idx===0?' active':''); panel.id=`${containerId}-panel-${p.key}`;
-    const tg=document.createElement('div'); tg.className='form-group'; const tl=document.createElement('label'); tl.className='form-label'; tl.innerHTML=`動画タイトル <span style="color:var(--text3);font-weight:400">（${p.titleMax}文字以内）</span>`;
-    const ti=document.createElement('input'); ti.className='form-input'; ti.type='text'; ti.maxLength=p.titleMax; ti.value=d.video_title||''; ti.addEventListener('input',()=>{d.video_title=ti.value;}); tg.appendChild(tl); tg.appendChild(ti); panel.appendChild(tg);
-    const bg=document.createElement('div'); bg.className='form-group'; const bl=document.createElement('label'); bl.className='form-label'; bl.innerHTML=`${p.bodyLabel} <span style="color:var(--text3);font-weight:400">（${p.bodyMax}文字以内）</span>`;
-    const bt=document.createElement('textarea'); bt.className='form-textarea'; bt.maxLength=p.bodyMax; bt.value=d[p.bodyField]||''; bt.addEventListener('input',()=>{d[p.bodyField]=bt.value;}); bg.appendChild(bl); bg.appendChild(bt); panel.appendChild(bg);
-    const hg=document.createElement('div'); hg.className='form-group'; const hl=document.createElement('label'); hl.className='form-label'; hl.textContent='ハッシュタグ';
-    const hwrap=document.createElement('div'); hwrap.className='hashtag-wrap'; const irow=document.createElement('div'); irow.className='hashtag-input-row';
-    const hin=document.createElement('input'); hin.className='form-input'; hin.type='text'; hin.placeholder='#タグを追加'; const hbtn=document.createElement('button'); hbtn.className='btn-add-tag'; hbtn.textContent='追加';
-    const renderTags=()=>{ hwrap.innerHTML=''; d.hashtags.forEach(tag=>{ const chip=document.createElement('span'); chip.className='hashtag-chip'; chip.appendChild(document.createTextNode(tag)); const del=document.createElement('span'); del.textContent='×'; del.style.cssText='cursor:pointer;opacity:0.6;margin-left:2px;'; del.addEventListener('click',()=>{ d.hashtags=d.hashtags.filter(t=>t!==tag); renderTags(); }); chip.appendChild(del); hwrap.appendChild(chip); }); };
-    const addTag=()=>{ let t=hin.value.trim(); if(!t) return; if(!t.startsWith('#')) t='#'+t; if(!d.hashtags.includes(t)){ d.hashtags.push(t); renderTags(); } hin.value=''; };
-    hbtn.addEventListener('click',addTag); hin.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addTag(); } });
-    irow.appendChild(hin); irow.appendChild(hbtn); hg.appendChild(hl); hg.appendChild(hwrap); hg.appendChild(irow); panel.appendChild(hg); renderTags();
+  const pp = m.platformPosts;
+  platforms.forEach((p, idx) => {
+    const d = pp[p.storeKey] || {};
+    const panel = document.createElement('div'); panel.className = 'meta-platform-panel' + (idx === 0 ? ' active' : ''); panel.id = `${containerId}-panel-${p.key}`;
+    const mkRow = (label, text) => {
+      const row = document.createElement('div'); row.className = 'copy-field-row';
+      const lbl = document.createElement('div'); lbl.className = 'copy-field-label'; lbl.textContent = label;
+      const val = document.createElement('div'); val.className = 'copy-field-value'; val.textContent = text || '—';
+      const btn = document.createElement('button'); btn.className = 'btn-copy-field'; btn.textContent = 'コピー';
+      btn.addEventListener('click', () => copy(text || '', btn));
+      row.appendChild(lbl); row.appendChild(val); row.appendChild(btn);
+      return row;
+    };
+    panel.appendChild(mkRow('動画タイトル', d.video_title || ''));
+    panel.appendChild(mkRow(p.bodyLabel, d[p.bodyField] || ''));
+    const tags = Array.isArray(d.hashtags) ? d.hashtags.join(' ') : '';
+    if (tags) panel.appendChild(mkRow('ハッシュタグ', tags));
+    const allText = [d.video_title, d[p.bodyField], tags].filter(Boolean).join('\n\n');
+    const allBtn = document.createElement('button'); allBtn.className = 'btn btn-outline'; allBtn.style.cssText = 'width:100%;margin-top:4px;font-size:13px;';
+    allBtn.textContent = '📋 すべてコピー';
+    allBtn.addEventListener('click', () => copy(allText, allBtn));
+    panel.appendChild(allBtn);
     wrap.appendChild(panel);
   });
   container.appendChild(wrap);
-  const saveRow=document.createElement('div'); saveRow.className='meta-save-row';
-  const badge=document.createElement('span'); badge.className='meta-saved-badge'; badge.textContent='✓ 保存しました';
-  const saveBtn=document.createElement('button'); saveBtn.className='btn-meta-save'; saveBtn.innerHTML='💾 保存';
-  saveBtn.addEventListener('click', async ()=>{ saveBtn.disabled=true; try { const res=await fetch(SAVE_META_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ action:'save_meta', session_id:state.sessionId, meta_info:state.metaInfo })}); if(!res.ok) throw new Error(`HTTP ${res.status}`); badge.classList.add('show'); setTimeout(()=>badge.classList.remove('show'),2000); } catch(e){ showError('メタ情報の保存に失敗しました: '+e.message); } finally { saveBtn.disabled=false; } });
-  saveRow.appendChild(badge); saveRow.appendChild(saveBtn); container.appendChild(saveRow);
 }
 
 // ============================================================
