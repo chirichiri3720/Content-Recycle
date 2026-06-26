@@ -1,0 +1,21 @@
+{
+  "name": "content-recycle-e2e",
+  "version": "1.0.0",
+  "description": "Content-Recycle パイプライン E2Eテスト（Playwright）",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:happy": "playwright test --grep @happy",
+    "test:error": "playwright test --grep @error",
+    "test:endurance": "playwright test --grep @endurance",
+    "test:integration": "playwright test --grep @integration",
+    "test:report": "playwright show-report",
+    "test:coverage": "playwright test && node scripts/coverage-report.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,0 +1,559 @@
+{
+  "config": {
+    "argv": [
+      "/home/kusukawa/.nvm/versions/node/v22.22.3/bin/node",
+      "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/node_modules/.bin/playwright",
+      "test",
+      "--grep",
+      "@smoke"
+    ],
+    "configFile": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/playwright.config.ts",
+    "rootDir": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "line",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "01_happy_path.spec.ts",
+      "file": "01_happy_path.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "ハッピーパス: STEP1〜STEP7 正常フロー @happy @smoke",
+          "file": "01_happy_path.spec.ts",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "STEP1: ページが正常に表示され、入力フォームが存在する @smoke",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1485,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:12:20.199Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-aa8ec5e8243e944b95e5",
+              "file": "01_happy_path.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "STEP1→2: 有効なURLを入力して送信するとSTEP2に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6940,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:12:21.983Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-92b2c5680a342378bfc9",
+              "file": "01_happy_path.spec.ts",
+              "line": 44,
+              "column": 7
+            },
+            {
+              "title": "STEP2→3: 台本カードを選択するとSTEP3（編集）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12205,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:12:28.973Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-5e7bdd05030e4c59037f",
+              "file": "01_happy_path.spec.ts",
+              "line": 70,
+              "column": 7
+            },
+            {
+              "title": "STEP2→3: 2枚目の台本カードも選択できる @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12613,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:12:41.213Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-ee338852467feb5a6227",
+              "file": "01_happy_path.spec.ts",
+              "line": 89,
+              "column": 7
+            },
+            {
+              "title": "STEP3→4: 編集画面で次へを押すとSTEP4（設定）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14185,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:12:53.891Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-77b7bf5d92cbe5b2e964",
+              "file": "01_happy_path.spec.ts",
+              "line": 102,
+              "column": 7
+            },
+            {
+              "title": "STEP3: シーンのナレーションテキストを編集できる @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12466,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:13:08.112Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-e760dafb9185a85109b2",
+              "file": "01_happy_path.spec.ts",
+              "line": 118,
+              "column": 7
+            },
+            {
+              "title": "STEP4→5: 設定完了後にSTEP5（確認）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 19709,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:13:20.618Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-ae300c2bb4cf055e581d",
+              "file": "01_happy_path.spec.ts",
+              "line": 136,
+              "column": 7
+            },
+            {
+              "title": "STEP4: BGMを変更できる @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 19513,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:13:40.370Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-ad3a5265112cd9aa5caa",
+              "file": "01_happy_path.spec.ts",
+              "line": 159,
+              "column": 7
+            },
+            {
+              "title": "STEP5→6: 合成ボタンを押すとSTEP6（動画プレビュー）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24337,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:13:59.947Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-303a7c708c3a54940493",
+              "file": "01_happy_path.spec.ts",
+              "line": 185,
+              "column": 7
+            },
+            {
+              "title": "STEP6→7: 承認ボタンを押すとSTEP7（完成）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24585,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:14:24.315Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-efbf40aef0711b0eeec0",
+              "file": "01_happy_path.spec.ts",
+              "line": 215,
+              "column": 7
+            },
+            {
+              "title": "STEP7: メタデータを編集できる @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20167,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:14:48.956Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-4223a59c7b5719708d02",
+              "file": "01_happy_path.spec.ts",
+              "line": 241,
+              "column": 7
+            },
+            {
+              "title": "STEP6: 却下ボタンを押すとSTEP5に戻る @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24798,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-26T06:15:09.157Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-6a3d4f431973a103bf11",
+              "file": "01_happy_path.spec.ts",
+              "line": 269,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-06-26T06:12:18.472Z",
+    "duration": 195645.60100000002,
+    "expected": 12,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
