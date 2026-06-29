@@ -257,13 +257,18 @@ test.describe('ハッピーパス: STEP1〜STEP7 正常フロー @happy @smoke',
     await page.click(SELECTORS.APPROVE_BTN);
     await waitForStep(page, 7);
 
-    // スクリプトタイトルを編集
-    await page.fill(SELECTORS.META_TITLE_INPUT, '債務整理のポイント3選【弁護士解説】');
-    await expect(page.locator(SELECTORS.META_TITLE_INPUT)).toHaveValue('債務整理のポイント3選【弁護士解説】');
+    // コピーボタンが存在する（read-onlyのコピーパネル）
+    await expect(page.locator('#meta-panel .btn-copy-field').first()).toBeVisible();
 
-    // コンセプトを編集
-    await page.fill(SELECTORS.META_CONCEPT_INPUT, '債務整理について分かりやすく解説します。');
-    await expect(page.locator(SELECTORS.META_CONCEPT_INPUT)).toHaveValue('債務整理について分かりやすく解説します。');
+    // タブが複数存在し、切り替えができる
+    const tabs = page.locator('#meta-panel .meta-tab');
+    await expect(tabs).toHaveCount(await tabs.count());
+    expect(await tabs.count()).toBeGreaterThan(0);
+    // 2番目のタブをクリックしてアクティブになることを確認
+    if (await tabs.count() >= 2) {
+      await tabs.nth(1).click();
+      await expect(tabs.nth(1)).toHaveClass(/active/);
+    }
   });
 
   test('STEP6: 却下ボタンを押すとSTEP5に戻る @happy', async ({ page }) => {

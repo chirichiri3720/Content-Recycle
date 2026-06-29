@@ -9,6 +9,7 @@ import {
   mockAllWebhooks,
   fillUrlAndSubmit,
   selectScript,
+  proceedThroughStep4,
   waitForStep,
   waitForLoadingComplete,
 } from '../fixtures/helpers';
@@ -106,7 +107,7 @@ test.describe('人間テスト: 視覚的確認（スクリーンショット撮
     await waitForStep(page, 3);
     await page.click(SELECTORS.EDIT_NEXT_BTN);
     await waitForStep(page, 4);
-    await page.click(SELECTORS.SETTINGS_NEXT_BTN);
+    await proceedThroughStep4(page);
     await waitForLoadingComplete(page, TIMEOUTS.WH3_ASSET_GEN);
     await waitForStep(page, 5);
     await page.screenshot({
@@ -130,7 +131,7 @@ test.describe('人間テスト: 視覚的確認（スクリーンショット撮
     await waitForStep(page, 3);
     await page.click(SELECTORS.EDIT_NEXT_BTN);
     await waitForStep(page, 4);
-    await page.click(SELECTORS.SETTINGS_NEXT_BTN);
+    await proceedThroughStep4(page);
     await waitForLoadingComplete(page, TIMEOUTS.WH3_ASSET_GEN);
     await waitForStep(page, 5);
     await page.click(SELECTORS.COMPOSE_BTN);
@@ -157,7 +158,7 @@ test.describe('人間テスト: 視覚的確認（スクリーンショット撮
     await waitForStep(page, 3);
     await page.click(SELECTORS.EDIT_NEXT_BTN);
     await waitForStep(page, 4);
-    await page.click(SELECTORS.SETTINGS_NEXT_BTN);
+    await proceedThroughStep4(page);
     await waitForLoadingComplete(page, TIMEOUTS.WH3_ASSET_GEN);
     await waitForStep(page, 5);
     await page.click(SELECTORS.COMPOSE_BTN);
