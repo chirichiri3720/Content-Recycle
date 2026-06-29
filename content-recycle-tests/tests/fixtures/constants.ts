@@ -72,6 +72,28 @@ export const SELECTORS = {
   META_PANEL: '#meta-panel',
   META_TITLE_INPUT: '#meta-panel-title',
   META_CONCEPT_INPUT: '#meta-panel-concept',
+  RESET_BTN: 'button[onclick="resetAll()"]',
+
+  // STEP2 追加
+  BACK_TO_STEP1_BTN: 'button[onclick="goBackToStep1()"]',
+  REGEN_SCRIPT_BTN: 'button[onclick="regenerateScript()"]',
+
+  // STEP3 追加
+  BACK_TO_STEP2_BTN: 'button[onclick="goBackToStep2()"]',
+  EDIT_SUMMARY_BANNER: '#edit-summary-banner',
+  TOTAL_DUR: '#total-dur',
+
+  // STEP4 追加
+  VT_IMAGE_OPTION: '#vt-option-image',
+  VT_VIDEO_OPTION: '#vt-option-video',
+  BACK_TO_STEP3_BTN: 'button[onclick="goBackToStep3()"]',
+
+  // STEP5 追加
+  BACK_TO_STEP4_BTN: 'button[onclick="goBackToStep4()"]',
+
+  // ナビゲーション / UI
+  HAMBURGER_BTN: '#hamburgerBtn',
+  DRAWER: '#drawer',
 
   // 共通
   ERROR_MESSAGE: '#errorToast',

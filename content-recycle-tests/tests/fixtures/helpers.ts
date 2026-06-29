@@ -2,7 +2,7 @@
 // Content-Recycle E2Eテスト 共通ヘルパー
 
 import { Page, Route, expect } from '@playwright/test';
-import { SELECTORS, TIMEOUTS, MOCK_RESPONSES, URLS } from './constants';
+import { SELECTORS, TIMEOUTS, MOCK_RESPONSES, URLS, TEST_ARTICLES } from './constants';
 
 /**
  * ステップ遷移を確認するヘルパー
@@ -163,6 +163,84 @@ export function setupConsoleErrorCapture(page: Page): string[] {
     errors.push(`[PageError] ${err.message}`);
   });
   return errors;
+}
+
+/**
+ * STEP3まで進む（WH1のみモック。WH2は呼ばれない）
+ */
+export async function goToStep3(page: Page) {
+  await mockWH1(page);
+  await page.goto(URLS.MAIN);
+  await fillUrlAndSubmit(page, TEST_ARTICLES.VALID_1);
+  await waitForLoadingComplete(page, TIMEOUTS.WH1_SCRIPT_GEN);
+  await waitForStep(page, 2);
+  await selectScript(page, 0);
+  await waitForStep(page, 3);
+}
+
+/**
+ * STEP4まで進む（WH1 + WH2をモック）
+ */
+export async function goToStep4(page: Page) {
+  await mockWH1(page);
+  await mockWH2(page);
+  await page.goto(URLS.MAIN);
+  await fillUrlAndSubmit(page, TEST_ARTICLES.VALID_1);
+  await waitForLoadingComplete(page, TIMEOUTS.WH1_SCRIPT_GEN);
+  await waitForStep(page, 2);
+  await selectScript(page, 0);
+  await waitForStep(page, 3);
+  await page.click(SELECTORS.EDIT_NEXT_BTN);
+  await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
+  await waitForStep(page, 4);
+}
+
+/**
+ * STEP5まで進む（WH1 + WH2 + WH3をモック）
+ */
+export async function goToStep5(page: Page) {
+  await mockWH1(page);
+  await mockWH2(page);
+  await mockWH3(page);
+  await page.goto(URLS.MAIN);
+  await fillUrlAndSubmit(page, TEST_ARTICLES.VALID_1);
+  await waitForLoadingComplete(page, TIMEOUTS.WH1_SCRIPT_GEN);
+  await waitForStep(page, 2);
+  await selectScript(page, 0);
+  await waitForStep(page, 3);
+  await page.click(SELECTORS.EDIT_NEXT_BTN);
+  await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
+  await waitForStep(page, 4);
+  await proceedThroughStep4(page);
+  await waitForLoadingComplete(page, TIMEOUTS.WH3_ASSET_GEN);
+  await waitForStep(page, 5);
+}
+
+/**
+ * STEP7まで進む（全Webhookをモック）
+ */
+export async function goToStep7(page: Page) {
+  await mockWH1(page);
+  await mockWH2(page);
+  await mockWH3(page);
+  await mockWH4(page);
+  await page.goto(URLS.MAIN);
+  await fillUrlAndSubmit(page, TEST_ARTICLES.VALID_1);
+  await waitForLoadingComplete(page, TIMEOUTS.WH1_SCRIPT_GEN);
+  await waitForStep(page, 2);
+  await selectScript(page, 0);
+  await waitForStep(page, 3);
+  await page.click(SELECTORS.EDIT_NEXT_BTN);
+  await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
+  await waitForStep(page, 4);
+  await proceedThroughStep4(page);
+  await waitForLoadingComplete(page, TIMEOUTS.WH3_ASSET_GEN);
+  await waitForStep(page, 5);
+  await page.click(SELECTORS.COMPOSE_BTN);
+  await waitForLoadingComplete(page, TIMEOUTS.WH4_COMPOSE);
+  await waitForStep(page, 6);
+  await page.click(SELECTORS.APPROVE_BTN);
+  await waitForStep(page, 7);
 }
 
 /**
