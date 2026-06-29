@@ -1098,6 +1098,9 @@ async function proceedToGenerate() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
+    console.log('data:', data);           // ← 追加
+    console.log('data.scenes:', data.scenes); // ← 追加
+    console.log('isArray:', Array.isArray(data.scenes)); // ← 追加
     if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
     // state.sceneMedia = data.scenes || [];
     const rawScenes = data.scenes || [];
