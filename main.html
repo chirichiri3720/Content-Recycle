@@ -1099,7 +1099,9 @@ async function proceedToGenerate() {
     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
     if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
-    state.sceneMedia = data.scenes || [];
+    // state.sceneMedia = data.scenes || [];
+    const rawScenes = data.scenes || [];
+    state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
     console.log(state.sceneMedia);
     renderReview(); renderStep5(); setStep(5);
   } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
