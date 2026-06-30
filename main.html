@@ -1049,6 +1049,70 @@ function validateStep4() {
 // ============================================================
 // STEP 4 → 生成
 // ============================================================
+// async function proceedToGenerate() {
+//   if (!state.selectedExpression) { showError('スタイルを選択してください'); return; }
+//   if (!state.selectedVoice)      { showError('ナレーション音声を選択してください'); return; }
+
+//   const isVideo = state.defaultVisualType === 'video';
+//   const mediaStep = isVideo
+//     ? { icon:'🎞', text:'動画クリップを生成中(Kling)' }
+//     : { icon:'🖼', text:'画像を生成中(gpt-image-2)' };
+
+//   showLoading(
+//     isVideo ? '動画を準備しています...' : '画像を準備しています...',
+//     'AIが各シーンの設計を最適化しています',
+//     [
+//       { icon:'📝', text:'シーンの台本を確認中' },
+//       { icon:'✨', text:'シーンの雰囲気を確認中' },
+//       { icon:'🎨', text:'プロンプトを設計中' },
+//       mediaStep,
+//       { icon:'✅', text:'完了' },
+//     ],
+//     12000, true
+//   );
+
+//   const finalScenePrompts = bodyScenes().map((sc, i) => ({
+//     scene: sc.scene,
+//     image_prompt_seed: state.scenePromptEdits?.[i]?.image_prompt_seed ?? sc.image_prompt_seed ?? '',
+//     motion_direction:  state.scenePromptEdits?.[i]?.motion_direction  ?? sc.motion_direction  ?? '',
+//   }));
+
+//   try {
+//     const res = await fetch(GENERATE_URL, {
+//       method:'POST', headers:{'Content-Type':'application/json'},
+//       body: JSON.stringify({
+//         action: 'generate_scenes',
+//         session_id: state.sessionId,
+//         selected_script_id: state.selectedScript.script_id,
+//         default_visual_type: state.defaultVisualType,
+//         expression_style: state.selectedExpression,
+//         direction_style: state.selectedDirection,
+//         scene_prompts: finalScenePrompts,
+//         voice: {
+//           id: state.selectedVoice.id,
+//           voice_name: state.selectedVoice.voice_name,
+//           ssml_gender: state.selectedVoice.ssml_gender,
+//           speaking_rate: state.selectedVoice.speaking_rate,
+//           pitch: state.selectedVoice.pitch,
+//         },
+//       })
+//     });
+//     hideLoading();
+//     if (res.status === 429) { showError('生成の実行回数が上限に達しました。'); setStep(4); return; }
+//     if (!res.ok) throw new Error(`HTTP ${res.status}`);
+//     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
+//     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
+//     console.log('data:', data);           // ← 追加
+//     console.log('data.scenes:', data.scenes); // ← 追加
+//     console.log('isArray:', Array.isArray(data.scenes)); // ← 追加
+//     if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
+//     // state.sceneMedia = data.scenes || [];
+//     const rawScenes = data.scenes || [];
+//     state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
+//     console.log(state.sceneMedia);
+//     renderReview(); renderStep5(); setStep(5);
+//   } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
+// }
 async function proceedToGenerate() {
   if (!state.selectedExpression) { showError('スタイルを選択してください'); return; }
   if (!state.selectedVoice)      { showError('ナレーション音声を選択してください'); return; }
@@ -1097,23 +1161,51 @@ async function proceedToGenerate() {
         },
       })
     });
-    hideLoading();
-    if (res.status === 429) { showError('生成の実行回数が上限に達しました。'); setStep(4); return; }
+    if (res.status === 429) { hideLoading(); showError('生成の実行回数が上限に達しました。'); setStep(4); return; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
-    console.log('data:', data);           // ← 追加
-    console.log('data.scenes:', data.scenes); // ← 追加
-    console.log('isArray:', Array.isArray(data.scenes)); // ← 追加
     if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
-    // state.sceneMedia = data.scenes || [];
-    const rawScenes = data.scenes || [];
-    state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
-    console.log(state.sceneMedia);
-    renderReview(); renderStep5(); setStep(5);
+
+    // ここでは完成を待たず、受付確認だけ
+    await pollGenerationStatus();
+
   } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
 }
 
+async function pollGenerationStatus() {
+  const STATUS_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-status'; // 新規WH5の本番URL
+  const POLL_INTERVAL = 5000;
+  const MAX_ATTEMPTS = 60; // 5分
+
+  let attempts = 0;
+  while (attempts < MAX_ATTEMPTS) {
+    await new Promise(r => setTimeout(r, POLL_INTERVAL));
+    attempts++;
+    try {
+      const res = await fetch(STATUS_URL, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ session_id: state.sessionId })
+      });
+      if (!res.ok) continue;
+      const text = await res.text(); if (!text.trim()) continue;
+      let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
+
+      if (data.status === 'done') {
+        hideLoading();
+        const rawScenes = data.scenes || [];
+        state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
+        renderReview(); renderStep5(); setStep(5);
+        return;
+      }
+      // 'processing' なら続行
+    } catch (e) {
+      // 一時的な失敗は無視してリトライ
+    }
+  }
+  hideLoading(); setStep(4);
+  showError('生成がタイムアウトしました。しばらく後に再度お試しください。');
+}
 // ============================================================
 // 音声/BGM 共通 (STEP4・STEP5 共用)
 // ============================================================
