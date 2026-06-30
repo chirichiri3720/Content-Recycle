@@ -1163,10 +1163,12 @@ function renderReview() {
     const assetUrl = media.asset_url || '';
     const audioUrl = media.audio_url || media.tts_audio_url || '';
     const dur = media.audio_duration;
-    const isVideo = scene.direction_type === 'video' && scene.scene !== 7;
-    const tmpUrl = isVideo
-    ? `${BASE_IMG_URL}/tmp_movie${scene.scene}.mp4`
-    : `${BASE_IMG_URL}/tmp_movie${scene.scene}.png`; // scene7用、必要なら tmp_image に変更    const displayUrl = assetUrl || (type !== 'video' ? tmpImgUrl : '');
+    const tmpUrl = scene.scene === 7
+      ? `${BASE_IMG_URL}/tmp_movie7.png`
+      : `${BASE_IMG_URL}/tmp_movie${scene.scene}.mp4`;
+    const displayUrl = assetUrl || tmpUrl;
+    const isFallback = !assetUrl;
+    const displayIsVideo = /\.mp4($|\?)/i.test(displayUrl);
     const narrationText = state.narrationEdits[i]?.current || scene.narration || '';
 
     const row = document.createElement('div'); row.className = 'review-scene';
@@ -1175,13 +1177,14 @@ function renderReview() {
     thumb.style.cursor = displayUrl ? 'pointer' : 'default';
     thumb.addEventListener('click', () => { if (displayUrl) openLightbox(displayUrl, type, `Scene ${scene.scene} · ${(scene.role||'').toUpperCase()}`); });
     const tag = document.createElement('div'); tag.className='vt-tag'; tag.textContent = type === 'video' ? 'VIDEO' : 'IMAGE';
-    if (assetUrl && type === 'video') {
-      const v=document.createElement('video'); v.src=assetUrl; v.muted=true; v.playsInline=true; thumb.appendChild(v);
+    if (displayUrl && displayIsVideo) {
+      const v=document.createElement('video'); v.src=displayUrl; v.muted=true; v.playsInline=true; thumb.appendChild(v);
+      if (isFallback) { const tb=document.createElement('div'); tb.className='vt-tag'; tb.style.cssText='bottom:4px;left:4px;top:auto;background:rgba(108,99,255,0.7);'; tb.textContent='仮'; thumb.appendChild(tb); }
     } else if (displayUrl) {
       const im=document.createElement('img'); im.src=displayUrl;
       im.onerror=()=>{ thumb.innerHTML='<div class="loading-mini">🖼</div>'; thumb.appendChild(tag); };
       thumb.appendChild(im);
-      if (!assetUrl) { const tb=document.createElement('div'); tb.className='vt-tag'; tb.style.cssText='bottom:4px;left:4px;top:auto;background:rgba(108,99,255,0.7);'; tb.textContent='仮'; thumb.appendChild(tb); }
+      if (isFallback) { const tb=document.createElement('div'); tb.className='vt-tag'; tb.style.cssText='bottom:4px;left:4px;top:auto;background:rgba(108,99,255,0.7);'; tb.textContent='仮'; thumb.appendChild(tb); }
     } else {
       thumb.innerHTML = '<div class="loading-mini pulse">⏳</div>';
     }
@@ -1203,6 +1206,7 @@ function renderReview() {
     row.appendChild(thumb); row.appendChild(info); list.appendChild(row);
   });
 }
+
 async function regenerateScene(i, sceneNo) {
   showLoading('シーンを再生成中...', '対象シーンのみ作り直しています', [{icon:'🎙',text:'音声を再生成中'},{icon:'🖼',text:'映像を再生成中'},{icon:'✅',text:'完了'}], 4000);
   try {
