@@ -553,20 +553,20 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
 // ============================================================
 // 定数 / Webhook
 // ============================================================
-// const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
-// const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
-// const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
-// const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
-// const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
-// const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
-// const STATUS_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-status'; // 新規WH5の本番URL
-const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
-const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
-const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
-const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
-const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
-const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';   
-const STATUS_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-status'; // 新規WH5の本番URL  // メタ保存
+const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
+const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
+const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
+const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
+const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
+const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
+const STATUS_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-status'; // 新規WH5の本番URL
+// const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
+// const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
+// const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
+// const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
+// const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
+// const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';   
+// const STATUS_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-status'; // 新規WH5の本番URL  // メタ保存
 const BASE_IMG_URL   = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Tmp_Movie';
 
 const VIDEO_URL_WHITELIST = [
@@ -1169,8 +1169,27 @@ async function proceedToGenerate() {
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
     if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
 
-    // ここでは完成を待たず、受付確認だけ
-    await pollGenerationStatus();
+    // Webhook2の早期応答に含まれる scenes をそのまま使う
+    const rawScenes = data.scenes || [];
+    state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
+
+    if (data.has_video) {
+      // 動画(Kling)が必要 → 専用ローディングに切り替えてポーリング
+      showLoading(
+        '動画を生成しています...',
+        'Klingが各シーンの動画を作成しています。数分かかる場合があります',
+        [
+          { icon:'🎞', text:'動画クリップを生成中(Kling)' },
+          { icon:'✅', text:'完了' },
+        ],
+        8000, true
+      );
+      await pollGenerationStatus();
+    } else {
+      // 画像のみで完結 → その場で確認画面へ
+      hideLoading();
+      renderReview(); renderStep5(); setStep(5);
+    }
 
   } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
 }
