@@ -559,12 +559,14 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
 // const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
 // const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
 // const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
+// const STATUS_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-status'; // 新規WH5の本番URL
 const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
 const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
 const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
 const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
 const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
-const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';     // メタ保存
+const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';   
+const STATUS_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-status'; // 新規WH5の本番URL  // メタ保存
 const BASE_IMG_URL   = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Tmp_Movie';
 
 const VIDEO_URL_WHITELIST = [
@@ -1174,7 +1176,6 @@ async function proceedToGenerate() {
 }
 
 async function pollGenerationStatus() {
-  const STATUS_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-status'; // 新規WH5の本番URL
   const POLL_INTERVAL = 5000;
   const MAX_ATTEMPTS = 60; // 5分
 
