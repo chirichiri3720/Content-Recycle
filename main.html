@@ -1006,19 +1006,6 @@ function renderStep4() {
   validateStep4();
 }
 
-// 映像タイプ選択
-function selectVisualType(vt) {
-  state.defaultVisualType = vt;
-  document.querySelectorAll('.media-type-option').forEach(el => {
-    el.classList.toggle('selected', el.dataset.vt === vt);
-  });
-  const btn = document.getElementById('btn-to-generate');
-  if (btn) {
-    const expr = state.selectedExpression ? EXPRESSION_LABEL[state.selectedExpression] : '画像';
-    btn.textContent = vt === 'video' ? '音声と動画を生成する →' : '音声と画像を生成する →';
-  }
-  validateStep4();
-}
 
 // 表現形式グリッド(3択・レコメンド2件)
 function renderExpressionGrid() {
