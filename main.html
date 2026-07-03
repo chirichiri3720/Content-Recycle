@@ -598,6 +598,7 @@ let state = {
   metaInfo: null,
   loadingInterval: null,
   articleMeta: {},
+  klingTasks: [],
 };
 
 // STEP → 進捗バーのバケット
@@ -928,7 +929,7 @@ async function freezeAndProceed() {
   safety_note: sc.safety_note || '',
 　}));
   if (finalScenes.some(s => !s.narration)) { showError('空のナレーションがあります。各シーンを入力してください。'); return; }
-  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 700);
+  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 1200);
   try {
   const res = await fetch(SELECT_URL, { 
     method:'POST', 
@@ -1081,73 +1082,6 @@ function validateStep4() {
   if (btn) btn.disabled = !ok;
 }
 
-// ============================================================
-// STEP 4 → 生成
-// ============================================================
-// async function proceedToGenerate() {
-//   if (!state.selectedExpression) { showError('スタイルを選択してください'); return; }
-//   if (!state.selectedVoice)      { showError('ナレーション音声を選択してください'); return; }
-
-//   const isVideo = state.defaultVisualType === 'video';
-//   const mediaStep = isVideo
-//     ? { icon:'🎞', text:'動画クリップを生成中(Kling)' }
-//     : { icon:'🖼', text:'画像を生成中(gpt-image-2)' };
-
-//   showLoading(
-//     isVideo ? '動画を準備しています...' : '画像を準備しています...',
-//     'AIが各シーンの設計を最適化しています',
-//     [
-//       { icon:'📝', text:'シーンの台本を確認中' },
-//       { icon:'✨', text:'シーンの雰囲気を確認中' },
-//       { icon:'🎨', text:'プロンプトを設計中' },
-//       mediaStep,
-//       { icon:'✅', text:'完了' },
-//     ],
-//     12000, true
-//   );
-
-//   const finalScenePrompts = bodyScenes().map((sc, i) => ({
-//     scene: sc.scene,
-//     image_prompt_seed: state.scenePromptEdits?.[i]?.image_prompt_seed ?? sc.image_prompt_seed ?? '',
-//     motion_direction:  state.scenePromptEdits?.[i]?.motion_direction  ?? sc.motion_direction  ?? '',
-//   }));
-
-//   try {
-//     const res = await fetch(GENERATE_URL, {
-//       method:'POST', headers:{'Content-Type':'application/json'},
-//       body: JSON.stringify({
-//         action: 'generate_scenes',
-//         session_id: state.sessionId,
-//         selected_script_id: state.selectedScript.script_id,
-//         default_visual_type: state.defaultVisualType,
-//         expression_style: state.selectedExpression,
-//         direction_style: state.selectedDirection,
-//         scene_prompts: finalScenePrompts,
-//         voice: {
-//           id: state.selectedVoice.id,
-//           voice_name: state.selectedVoice.voice_name,
-//           ssml_gender: state.selectedVoice.ssml_gender,
-//           speaking_rate: state.selectedVoice.speaking_rate,
-//           pitch: state.selectedVoice.pitch,
-//         },
-//       })
-//     });
-//     hideLoading();
-//     if (res.status === 429) { showError('生成の実行回数が上限に達しました。'); setStep(4); return; }
-//     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-//     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
-//     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
-//     console.log('data:', data);           // ← 追加
-//     console.log('data.scenes:', data.scenes); // ← 追加
-//     console.log('isArray:', Array.isArray(data.scenes)); // ← 追加
-//     if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
-//     // state.sceneMedia = data.scenes || [];
-//     const rawScenes = data.scenes || [];
-//     state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
-//     console.log(state.sceneMedia);
-//     renderReview(); renderStep5(); setStep(5);
-//   } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
-// }
 async function proceedToGenerate() {
   if (!state.selectedExpression) { showError('スタイルを選択してください'); return; }
   if (!state.selectedVoice)      { showError('ナレーション音声を選択してください'); return; }
@@ -1202,27 +1136,13 @@ async function proceedToGenerate() {
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
     if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
 
-    // Webhook2の早期応答に含まれる scenes をそのまま使う
     const rawScenes = data.scenes || [];
     state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
+    state.klingTasks = Array.isArray(data.kling_tasks) ? data.kling_tasks : [];
 
-    if (data.has_video) {
-      // 動画(Kling)が必要 → 専用ローディングに切り替えてポーリング
-      showLoading(
-        '動画を生成しています...',
-        'Klingが各シーンの動画を作成しています。数分かかる場合があります',
-        [
-          { icon:'🎞', text:'動画クリップを生成中(Kling)' },
-          { icon:'✅', text:'完了' },
-        ],
-        8000, true
-      );
-      await pollGenerationStatus();
-    } else {
-      // 画像のみで完結 → その場で確認画面へ
-      hideLoading();
-      renderReview(); renderStep5(); setStep(5);
-    }
+    // 画像/動画いずれも、次はWH3(音声・字幕生成)へ進む
+    hideLoading();
+    renderReview(); renderStep5(); setStep(5);
 
   } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
 }
