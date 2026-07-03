@@ -359,10 +359,36 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
         <div class="form-group"><label class="form-label">コンテンツ種別 <span style="color:var(--accent2)">*</span></label><select class="form-select" id="input-content-type"><option value="">選択してください</option><option value="解説系">解説系</option></select></div>
         <div class="form-group"><label class="form-label">プラットフォーム</label><select class="form-select" id="input-platform"><option value="YouTube Shorts">YouTube Shorts</option><option value="TikTok">TikTok</option><option value="Instagram Reels">Instagram Reels</option></select></div>
       </div>
-      <div class="info-row"><span class="icon">⏱</span>台本生成には数十秒かかります。完了まで画面を開いたままにしてください。</div>
-      <button class="btn btn-primary" onclick="startGeneration()">▶ 台本生成を開始する</button>
+
+      <div class="form-group">
+        <label class="form-label">映像タイプ <span style="color:var(--accent2)">*</span></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="media-type-option" id="vt-option-image" data-vt="image" onclick="selectVisualType('image')">
+            <div class="media-type-preview">
+              <img src="https://chirichiri3720.github.io/Content-Recycle/Select_Type/select_image.png" style="width:100%;height:100%;object-fit:cover;display:block" alt="画像">
+            </div>
+            <div class="media-type-label">🖼 画像</div>
+            <div class="media-type-desc">gpt-image-2で生成</div>
+          </div>
+          <div class="media-type-option" id="vt-option-video" data-vt="video" onclick="selectVisualType('video')">
+            <div class="media-type-preview">
+              <video src="https://chirichiri3720.github.io/Content-Recycle/Select_Type/select_movie.mp4" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video>
+            </div>
+            <div class="media-type-label">🎞 動画</div>
+            <div class="media-type-desc">Kling APIで生成</div>
+          </div>
+        </div>
+      </div>
+
+    <div class="form-group">
+      <label class="form-label">スタイル <span style="color:var(--accent2)">*</span></label>
+      <div class="style-grid-3" id="expression-grid-step1"></div>
     </div>
+
+    <div class="info-row"><span class="icon">⏱</span>台本生成には数十秒かかります。完了まで画面を開いたままにしてください。</div>
+    <button class="btn btn-primary" id="btn-start-generation" onclick="startGeneration()" disabled>▶ 台本生成を開始する</button>
   </div>
+</div>
 
   <!-- loading -->
   <div class="step" id="step-loading">
@@ -704,6 +730,39 @@ function showError(msg) {
 // ============================================================
 // STEP 1 → 台本生成
 // ============================================================
+function renderExpressionGridStep1() {
+  const grid = document.getElementById('expression-grid-step1');
+  if (!grid) return;
+  grid.innerHTML = '';
+  EXPRESSION_KEYS.forEach(key => {
+    const div = document.createElement('div'); div.className = 'style-option'; div.dataset.key = key;
+    if (state.selectedExpression === key) div.classList.add('selected');
+    div.addEventListener('click', () => selectExpressionStep1(key));
+    const img = document.createElement('img');
+    img.src = `https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Images/${key}.png`;
+    img.alt = EXPRESSION_LABEL[key]; img.loading = 'lazy';
+    div.appendChild(img);
+    const cap = document.createElement('div'); cap.className = 'style-option-cap';
+    cap.innerHTML = `<div style="font-weight:500">${escapeHtml(EXPRESSION_LABEL[key])}</div><div style="color:var(--text3);font-size:9px">${escapeHtml(EXPRESSION_DESC[key])}</div>`;
+    div.appendChild(cap); grid.appendChild(div);
+  });
+}
+function selectExpressionStep1(key) {
+  state.selectedExpression = key;
+  document.querySelectorAll('#expression-grid-step1 .style-option').forEach(el => el.classList.toggle('selected', el.dataset.key === key));
+  validateStep1();
+}
+function selectVisualType(vt) {
+  state.defaultVisualType = vt;
+  document.querySelectorAll('.media-type-option').forEach(el => el.classList.toggle('selected', el.dataset.vt === vt));
+  validateStep1();
+}
+function validateStep1() {
+  const ok = !!state.defaultVisualType && !!state.selectedExpression;
+  const btn = document.getElementById('btn-start-generation');
+  if (btn) btn.disabled = !ok;
+}
+
 async function startGeneration() {
   const url = document.getElementById('input-url').value.trim();
   const contentType = document.getElementById('input-content-type').value;
@@ -711,11 +770,14 @@ async function startGeneration() {
   const userName = document.getElementById('input-username').value.trim();
   if (!url) { showError('コンテンツ URL を入力してください'); return; }
   if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
+  if (!state.defaultVisualType) { showError('映像タイプを選択してください'); return; }
+  if (!state.selectedExpression) { showError('スタイルを選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
   state.input = { userName, url, contentType, platform };
   showLoading('AIが処理中...', 'しばらくお待ちください');
   try {
-    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform }) });
+    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform, default_visual_type: state.defaultVisualType,
+         expression_style: state.selectedExpression,}) });
     hideLoading();
     if (res.status === 429) { setStep(1); showError('台本生成の実行回数が上限に達しました。'); return; }
     const text = await res.text();
@@ -727,6 +789,9 @@ async function startGeneration() {
     state.sessionId = data.session_id;
     state.scriptCandidates = data.script_candidates || [];
     state.articleMeta = data.article_meta || {};
+    // WH1側の判断を単一の正として採用(バックエンドが上書きした場合もこれで反映される)
+    state.defaultVisualType = data.default_visual_type || state.defaultVisualType;
+    state.selectedExpression = data.expression_style || state.selectedExpression;
     renderScripts(); setStep(2);
   } catch (err) { hideLoading(); setStep(1); showError('エラー: ' + err.message); }
 }
