@@ -950,6 +950,9 @@ async function freezeAndProceed() {
   let data = JSON.parse(text);
   if (Array.isArray(data)) data = data[0];
   if (data.status !== 'ok') throw new Error(data.error || 'WH2でエラーが発生しました');
+  const rawScenes = data.scenes || [];
+  state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
+  state.klingTasks = Array.isArray(data.kling_tasks) ? data.kling_tasks : [];
   hideLoading();
   await loadOptionsAndRenderStep4();
   } catch (err) { 
@@ -1070,25 +1073,19 @@ function validateStep4() {
 }
 
 async function proceedToGenerate() {
-  if (!state.selectedExpression) { showError('スタイルを選択してください'); return; }
-  if (!state.selectedVoice)      { showError('ナレーション音声を選択してください'); return; }
+  if (!state.selectedVoice) { showError('ナレーション音声を選択してください'); return; }
 
   const isVideo = state.defaultVisualType === 'video';
-  const mediaStep = isVideo
-    ? { icon:'🎞', text:'動画クリップを生成中(Kling)' }
-    : { icon:'🖼', text:'画像を生成中(gpt-image-2)' };
-
   showLoading(
-    isVideo ? '動画を準備しています...' : '画像を準備しています...',
-    'AIが各シーンの設計を最適化しています',
+    isVideo ? '動画を生成しています...' : '画像を仕上げています...',
+    '音声・字幕を生成し、必要に応じて動画も作成しています',
     [
-      { icon:'📝', text:'シーンの台本を確認中' },
-      { icon:'✨', text:'シーンの雰囲気を確認中' },
-      { icon:'🎨', text:'プロンプトを設計中' },
-      mediaStep,
+      { icon:'🎙', text:'ナレーション音声を生成中' },
+      { icon:'💬', text:'字幕を焼き込み中' },
+      { icon: isVideo ? '🎞' : '🖼', text: isVideo ? '動画クリップを生成中(Kling)' : '画像の仕上がりを確認中' },
       { icon:'✅', text:'完了' },
     ],
-    12000, true
+    8000, true
   );
 
   const finalScenePrompts = bodyScenes().map((sc, i) => ({
@@ -1101,13 +1098,12 @@ async function proceedToGenerate() {
     const res = await fetch(GENERATE_URL, {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        action: 'generate_scenes',
         session_id: state.sessionId,
         selected_script_id: state.selectedScript.script_id,
         default_visual_type: state.defaultVisualType,
         expression_style: state.selectedExpression,
-        direction_style: state.selectedDirection,
         scene_prompts: finalScenePrompts,
+        kling_tasks: state.klingTasks,
         voice: {
           id: state.selectedVoice.id,
           voice_name: state.selectedVoice.voice_name,
@@ -1119,15 +1115,13 @@ async function proceedToGenerate() {
     });
     if (res.status === 429) { hideLoading(); showError('生成の実行回数が上限に達しました。'); setStep(4); return; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
+    const text = await res.text(); if (!text.trim()) throw new Error('レスポンスが空です');
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
     if (data.status === 'failed' || data.error) throw new Error(data.error || '生成に失敗しました');
 
     const rawScenes = data.scenes || [];
     state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
-    state.klingTasks = Array.isArray(data.kling_tasks) ? data.kling_tasks : [];
 
-    // 画像/動画いずれも、次はWH3(音声・字幕生成)へ進む
     hideLoading();
     renderReview(); renderStep5(); setStep(5);
 
