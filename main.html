@@ -356,7 +356,7 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
       <div class="form-group"><label class="form-label">作成者名</label><input class="form-input" id="input-username" type="text" placeholder="例：田中 太郎"></div>
       <div class="form-group"><label class="form-label">コンテンツ URL <span style="color:var(--accent2)">*</span></label><input class="form-input" id="input-url" type="url" placeholder="https://example.com/article/..."></div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">コンテンツ種別 <span style="color:var(--accent2)">*</span></label><select class="form-select" id="input-content-type"><option value="">選択してください</option><option value="解説系">解説系</option></select></div>
+        <div class="form-group"><label class="form-label">コンテンツ種別 <span style="color:var(--accent2)">*</span></label><select class="form-select" id="input-content-type"><option value="">選択してください</option><option value="解説系" selected>解説系</option></select></div>
         <div class="form-group"><label class="form-label">プラットフォーム</label><select class="form-select" id="input-platform"><option value="YouTube Shorts">YouTube Shorts</option><option value="TikTok">TikTok</option><option value="Instagram Reels">Instagram Reels</option></select></div>
       </div>
 
@@ -583,8 +583,8 @@ let state = {
   scriptCandidates: [],
   selectedScript: null,
   narrationEdits: {},
-  defaultVisualType: 'image',
-  selectedExpression: null,  // 'realistic'|'anime'|'illustration'
+  defaultVisualType: 'video',
+  selectedExpression: 'realistic',  // 'realistic'|'anime'|'illustration'
   selectedDirection: null,   // 'documentary'|'cinematic'|'news'
   selectedStyle: null,       // 後方互換のため残す(expression+directionの組み合わせ)
   options: { voices: [], bgms: [], moodProfile: null },
@@ -739,15 +739,14 @@ async function startGeneration() {
   const platform = document.getElementById('input-platform').value;
   const userName = document.getElementById('input-username').value.trim();
   if (!url) { showError('コンテンツ URL を入力してください'); return; }
-  if (!contentType) { showError('コンテンツ種別を選択してください'); return; }
   if (!state.defaultVisualType) { showError('映像タイプを選択してください'); return; }
   if (!state.selectedExpression) { showError('スタイルを選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
   state.input = { userName, url, contentType, platform };
   showLoading('AIが処理中...', 'しばらくお待ちください');
   try {
-    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform, default_visual_type: state.defaultVisualType,
-         expression_style: state.selectedExpression,}) });
+    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform, default_visual_type:state.defaultVisualType,
+         expression_style: state.selectedExpression}) });
     hideLoading();
     if (res.status === 429) { setStep(1); showError('台本生成の実行回数が上限に達しました。'); return; }
     const text = await res.text();
@@ -939,7 +938,8 @@ async function freezeAndProceed() {
       session_id: state.sessionId,
       selected_script_id: state.selectedScript.script_id,
       hook_type: state.selectedScript.hook_type || '',
-      character_description: state.selectedScript.character_description || '',  
+      default_visual_type:state.defaultVisualType,
+      expression_style: state.selectedExpression,
       final_scenes: finalScenes,
     }) 
   });
