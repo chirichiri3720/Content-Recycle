@@ -469,36 +469,6 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
       <div class="panel">
         <div class="panel-title">⚙️ 生成設定</div>
         <div class="mood-info-bar" id="mood-info"><span class="icon">✨</span><span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span></div>
-
-        <!-- 1. 映像タイプ選択 -->
-        <div class="settings-section">
-          <div class="settings-section-label">🎞 映像タイプ</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="media-type-option" id="vt-option-video" data-vt="video" onclick="selectVisualType('video')">
-              <div class="media-type-preview">
-                <video src="https://chirichiri3720.github.io/Content-Recycle/Select_Type/select_movie.mp4"
-                  autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video>
-              </div>
-              <div class="media-type-label">🎞 動画</div>
-              <div class="media-type-desc">Kling APIで生成<br><span style="color:var(--accent2);font-size:9px">※ 順次対応予定</span></div>
-            </div>
-            <div class="media-type-option selected" id="vt-option-image" data-vt="image" onclick="selectVisualType('image')">
-              <div class="media-type-preview">
-                <img src="https://chirichiri3720.github.io/Content-Recycle/Select_Type/select_image.png"
-                  style="width:100%;height:100%;object-fit:cover;display:block" alt="画像">
-              </div>
-              <div class="media-type-label">🖼 画像</div>
-              <div class="media-type-desc">gpt-image-2で生成</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. 表現形式 -->
-        <div class="settings-section">
-          <div class="settings-section-label">🎨 スタイル <span style="font-size:10px;color:var(--text3);font-weight:400">— 映像の見た目</span></div>
-          <div class="style-grid-3" id="expression-grid"></div>
-        </div>
-
         <!-- 4. ナレーション音声 -->
         <div class="settings-section" style="border-bottom:none;padding-bottom:0;margin-bottom:0">
           <div class="settings-section-label">🎙 ナレーション音声</div>
@@ -1024,7 +994,6 @@ async function loadOptionsAndRenderStep4() {
 // STEP 4 設定
 // ============================================================
 function renderStep4() {
-  renderExpressionGrid();
   renderSettingsSceneList();
   renderVoiceList();
   const mp = state.options.moodProfile;
@@ -1032,7 +1001,6 @@ function renderStep4() {
     const tags = [mp.primary_mood, mp.secondary_mood].filter(Boolean).map(m => REASON_LABELS[m]||m).join(' × ');
     document.getElementById('mood-info-text').textContent = `この動画の雰囲気: ${tags} → おすすめ順`;
   }
-  selectVisualType(state.defaultVisualType);
   if (state.options.voices[0]) selectVoice(0);
   validateStep4();
 }
@@ -1108,7 +1076,7 @@ function renderSettingsSceneList() {
 }
 
 function validateStep4() {
-  const ok = !!state.selectedExpression && !!state.selectedVoice;
+  const ok = !!state.selectedVoice;
   const btn = document.getElementById('btn-to-generate');
   if (btn) btn.disabled = !ok;
 }
@@ -1651,6 +1619,7 @@ const MOCK_OPTIONS = {
   overlay.addEventListener('click', shut); close.addEventListener('click', shut);
   document.addEventListener('keydown', e=>{ if (e.key==='Escape') shut(); });
 })();
+renderExpressionGridStep1();
 </script>
 </body>
 </html>
