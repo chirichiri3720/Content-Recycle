@@ -90,6 +90,19 @@ export async function mockWH4(page: Page, response = MOCK_RESPONSES.WH4_SUCCESS,
 }
 
 /**
+ * メタ情報保存（fire-and-forget, approveVideo() 実行時に必ず叩かれる）をモックする
+ */
+export async function mockSaveMeta(page: Page, response: any = { status: 'ok' }, status = 200) {
+  await page.route(URLS.SAVE_META, (route: Route) => {
+    route.fulfill({
+      status,
+      contentType: 'application/json',
+      body: JSON.stringify(response),
+    });
+  });
+}
+
+/**
  * 全Webhookをモックする（ハッピーパス用）
  */
 export async function mockAllWebhooks(page: Page) {
@@ -97,6 +110,7 @@ export async function mockAllWebhooks(page: Page) {
   await mockWH2(page);
   await mockWH3(page);
   await mockWH4(page);
+  await mockSaveMeta(page);
 }
 
 /**
@@ -124,10 +138,14 @@ export async function mockWH1NetworkError(page: Page) {
 
 /**
  * STEP1: URL入力してWH1を呼び出すまでの共通操作
+ * 送信ボタンは表現スタイル/映像タイプのカードをクリックして validateStep1() が
+ * 発火するまで disabled のままなので、送信前に一度カードをクリックしておく
+ * （state自体は初期値を持つが、disabled解除はDOMクリック経由でしか起きない）
  */
 export async function fillUrlAndSubmit(page: Page, url: string) {
   await page.fill(SELECTORS.URL_INPUT, url);
   await page.selectOption(SELECTORS.CONTENT_TYPE_SELECT, { index: 1 });
+  await page.locator(`${SELECTORS.EXPRESSION_GRID_STEP1} .style-option`).first().click();
   await page.click(SELECTORS.SUBMIT_BTN);
 }
 
@@ -142,10 +160,14 @@ export async function selectScript(page: Page, index = 0) {
 }
 
 /**
- * STEP4: 表現スタイルを選択して生成ボタンをクリックする
+ * STEP4: 音声を選択して生成ボタンをクリックする
+ * renderStep4() が1番目の音声を自動選択するため、ボタンは通常すでに有効になっている。
+ * voiceIndex を指定すると別の音声を明示的に選び直せる。
  */
-export async function proceedThroughStep4(page: Page) {
-  await page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first().click();
+export async function proceedThroughStep4(page: Page, voiceIndex?: number) {
+  if (voiceIndex !== undefined) {
+    await page.locator(`${SELECTORS.VOICE_LIST} .av-option`).nth(voiceIndex).click();
+  }
   await page.click(SELECTORS.SETTINGS_NEXT_BTN);
 }
 
@@ -218,12 +240,18 @@ export async function goToStep5(page: Page) {
 
 /**
  * STEP7まで進む（全Webhookをモック）
+ * saveMetaStatus/saveMetaResponse でメタ保存(fire-and-forget)の応答を上書きできる
+ * （メタ保存失敗時でもSTEP7表示がブロックされないことの検証用）
  */
-export async function goToStep7(page: Page) {
+export async function goToStep7(
+  page: Page,
+  options?: { saveMetaStatus?: number; saveMetaResponse?: any }
+) {
   await mockWH1(page);
   await mockWH2(page);
   await mockWH3(page);
   await mockWH4(page);
+  await mockSaveMeta(page, options?.saveMetaResponse ?? { status: 'ok' }, options?.saveMetaStatus ?? 200);
   await page.goto(URLS.MAIN);
   await fillUrlAndSubmit(page, TEST_ARTICLES.VALID_1);
   await waitForLoadingComplete(page, TIMEOUTS.WH1_SCRIPT_GEN);

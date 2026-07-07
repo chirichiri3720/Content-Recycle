@@ -58,7 +58,6 @@ test.describe('耐久テスト: 繰り返し実行 @endurance', () => {
       await page.click(SELECTORS.EDIT_NEXT_BTN);
       await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
       await waitForStep(page, 4);
-      await page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first().click();
 
       // STEP4→5
       await page.click(SELECTORS.SETTINGS_NEXT_BTN);

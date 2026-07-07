@@ -4,6 +4,15 @@
 //   - 実Webhookとのエンドツーエンド疎通確認（モックなし）
 //   - Supabaseへのデータ保存確認
 //   - セッション管理
+//
+// 現行の main.html における実際のWebhook対応:
+//   WH1 = Content-Recycle          (script gen, URLS.WH1)
+//   WH2 = Content-Recycle-select   (台本選択+凍結, URLS.WH2)
+//   WH3 = Content-Recycle-generate (音声/画像/動画生成, URLS.WH3。旧称WH3のままだが実体はgenerateエンドポイント)
+//   WH4 = Content-Recycle-compose  (字幕+動画合成, URLS.WH4)
+// 以下は現状 main.html から到達不能・未使用のため本ファイルの対象外:
+//   Content-Recycle-options (USE_MOCK_OPTIONS=true のためclient側モックのみで実際には呼ばれない)
+//   Content-Recycle-status  (pollGenerationStatus はどのボタン/フローからも呼び出されないデッドコード)
 
 import { test, expect } from '@playwright/test';
 import { URLS, SELECTORS, TEST_ARTICLES, TIMEOUTS } from '../fixtures/constants';
@@ -74,15 +83,21 @@ test.describe('統合テスト: 実Webhook疎通 @integration', () => {
   test('セッションIDがWH1〜WH4を通じて一貫して使われる', async ({ page }) => {
     const requests: { wh: string; sessionId: string }[] = [];
 
-    // 各Webhookリクエストのbodyをキャプチャ
-    await page.route('**/webhook/content-recycle-**', async (route) => {
+    // 各Webhookリクエストのbodyをキャプチャ（実URLは "Content-Recycle" 表記のため大文字小文字を無視して照合）
+    await page.route('**/webhook/*ontent-*ecycle*', async (route) => {
       const request = route.request();
       const url = request.url();
       try {
         const body = JSON.parse(await request.postData() || '{}');
-        const whMatch = url.match(/content-recycle-(wh\d+)/i);
-        if (whMatch) {
-          requests.push({ wh: whMatch[1], sessionId: body.session_id });
+        const path = new URL(url).pathname;
+        const suffix = path.split('/').pop() || '';
+        const wh =
+          suffix.toLowerCase() === 'content-recycle' ? 'wh1' :
+          suffix.toLowerCase() === 'content-recycle-select' ? 'wh2' :
+          suffix.toLowerCase() === 'content-recycle-generate' ? 'wh3' :
+          suffix.toLowerCase() === 'content-recycle-compose' ? 'wh4' : null;
+        if (wh) {
+          requests.push({ wh, sessionId: body.session_id });
         }
       } catch {}
       await route.continue();

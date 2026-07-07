@@ -4,6 +4,9 @@ export const URLS = {
   WH2: process.env.WH2_URL || 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select',
   WH3: process.env.WH3_URL || 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate',
   WH4: process.env.WH4_URL || 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose',
+  // メタ情報保存（fire-and-forget）。approveVideo() 実行時に必ず叩かれるため、
+  // STEP7に到達するテストではモックしないと実運用のn8n Webhookに実リクエストが飛んでしまう。
+  SAVE_META: process.env.SAVE_META_URL || 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta',
 };
 
 export const TEST_ARTICLES = {
@@ -32,6 +35,9 @@ export const SELECTORS = {
   PLATFORM_SELECT: '#input-platform',
   SUBMIT_BTN: 'button[onclick="startGeneration()"]',
   STEP1_CONTAINER: '#step1',
+  EXPRESSION_GRID_STEP1: '#expression-grid-step1',
+  VT_IMAGE_OPTION: '#vt-option-image',
+  VT_VIDEO_OPTION: '#vt-option-video',
 
   // ローディング
   LOADING_INDICATOR: '#step-loading',
@@ -49,7 +55,6 @@ export const SELECTORS = {
 
   // STEP4: 設定
   STEP4_CONTAINER: '#step4',
-  EXPRESSION_GRID: '#expression-grid',
   VOICE_LIST: '#voice-list',
   SETTINGS_NEXT_BTN: '#btn-to-generate',
 
@@ -84,12 +89,17 @@ export const SELECTORS = {
   TOTAL_DUR: '#total-dur',
 
   // STEP4 追加
-  VT_IMAGE_OPTION: '#vt-option-image',
-  VT_VIDEO_OPTION: '#vt-option-video',
   BACK_TO_STEP3_BTN: 'button[onclick="goBackToStep3()"]',
 
   // STEP5 追加
   BACK_TO_STEP4_BTN: 'button[onclick="goBackToStep4()"]',
+  REVIEW_THUMB: '.review-thumb',
+  LIGHTBOX: '#lightbox',
+  LIGHTBOX_CLOSE: '.lightbox-close',
+
+  // STEP7 追加
+  COPY_FIELD_BTN: '.btn-copy-field',
+  COPY_ALL_BTN: '.meta-platform-panel.active .btn-outline',
 
   // ナビゲーション / UI
   HAMBURGER_BTN: '#hamburgerBtn',
@@ -166,5 +176,20 @@ export const MOCK_RESPONSES = {
     session_id: 'test-session-001',
     video_url: 'https://cdn.shotstack.io/test/final-video.mp4',
     video_id: 'video-001',
+  },
+  WH4_UNTRUSTED_DOMAIN: {
+    session_id: 'test-session-001',
+    video_url: 'https://evil-not-whitelisted.example.com/final-video.mp4',
+    video_id: 'video-001',
+  },
+  WH3_EMPTY_SCENES: {
+    session_id: 'test-session-001',
+    scenes: [],
+  },
+  WH2_MALFORMED: {
+    status: 'ok',
+    session_id: 'test-session-001',
+    selected_script_id: 'script-a',
+    // scenes フィールドが欠落している不正なレスポンス
   },
 };

@@ -110,8 +110,8 @@ test.describe('ハッピーパス: STEP1〜STEP7 正常フロー @happy @smoke',
     await page.click(SELECTORS.EDIT_NEXT_BTN);
     await waitForStep(page, 4);
 
-    // 表現スタイル選択グリッドと音声リストが表示される
-    await expect(page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first()).toBeVisible();
+    // シーン確認パネルと音声リストが表示される
+    await expect(page.locator('#settings-scene-list').first()).toBeVisible();
     await expect(page.locator(`${SELECTORS.VOICE_LIST} .av-option`).first()).toBeVisible();
   });
 

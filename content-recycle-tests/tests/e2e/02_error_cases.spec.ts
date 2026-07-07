@@ -157,7 +157,6 @@ test.describe('WH3エラー: アセット生成失敗 @error', () => {
     await page.click(SELECTORS.EDIT_NEXT_BTN);
     await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
     await waitForStep(page, 4);
-    await page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first().click();
   }
 
   test('WH3が500エラーを返すとエラーが表示される', async ({ page }) => {
@@ -202,7 +201,6 @@ test.describe('WH4エラー: 動画合成失敗 @error', () => {
     await page.click(SELECTORS.EDIT_NEXT_BTN);
     await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
     await waitForStep(page, 4);
-    await page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first().click();
     await page.click(SELECTORS.SETTINGS_NEXT_BTN);
     await waitForLoadingComplete(page, TIMEOUTS.WH3_ASSET_GEN);
     await waitForStep(page, 5);
@@ -292,5 +290,68 @@ test.describe('n8nノード系エラー @error', () => {
     await waitForLoadingComplete(page, TIMEOUTS.WH1_SCRIPT_GEN);
     // 空の台本リストでも適切なメッセージ表示
     await expect(page.locator('body')).not.toContainText('Uncaught');
+  });
+
+  test('WH2(select)がscenes欠落の不正レスポンスを返してもクラッシュしない', async ({ page }) => {
+    await mockWH1(page);
+    await page.goto(URLS.MAIN);
+    await fillUrlAndSubmit(page, TEST_ARTICLES.VALID_1);
+    await waitForLoadingComplete(page, TIMEOUTS.WH1_SCRIPT_GEN);
+    await waitForStep(page, 2);
+
+    const errors = setupConsoleErrorCapture(page);
+    await mockWH2(page, MOCK_RESPONSES.WH2_MALFORMED);
+    await selectScript(page, 0);
+    await page.click(SELECTORS.EDIT_NEXT_BTN);
+    await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
+
+    // STEP4に遷移し、シーン確認パネルが空のままでもエラーにならないこと
+    await waitForStep(page, 4);
+    const pageErrors = errors.filter(e => e.includes('TypeError') || e.includes('ReferenceError'));
+    expect(pageErrors).toHaveLength(0);
+  });
+
+  test('generate(旧WH3表記)がscenes空配列を返してもSTEP5がクラッシュせず表示される', async ({ page }) => {
+    await mockWH1(page);
+    await mockWH2(page);
+    await page.goto(URLS.MAIN);
+    await fillUrlAndSubmit(page, TEST_ARTICLES.VALID_1);
+    await waitForLoadingComplete(page, TIMEOUTS.WH1_SCRIPT_GEN);
+    await waitForStep(page, 2);
+    await selectScript(page, 0);
+    await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
+    await waitForStep(page, 3);
+    await page.click(SELECTORS.EDIT_NEXT_BTN);
+    await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
+    await waitForStep(page, 4);
+
+    await mockWH3(page, MOCK_RESPONSES.WH3_EMPTY_SCENES);
+    await page.click(SELECTORS.SETTINGS_NEXT_BTN);
+    await waitForLoadingComplete(page, TIMEOUTS.WH3_ASSET_GEN);
+    await waitForStep(page, 5);
+    await expect(page.locator('body')).not.toContainText('Uncaught');
+  });
+
+  test('映像タイプ「動画」選択時、kling_tasksが空でもSTEP4に遷移しクラッシュしない', async ({ page }) => {
+    await mockWH1(page);
+    await mockWH2(page, { ...MOCK_RESPONSES.WH2_SUCCESS, scenes: [], kling_tasks: [] });
+    await page.goto(URLS.MAIN);
+    await page.fill(SELECTORS.URL_INPUT, TEST_ARTICLES.VALID_1);
+    await page.selectOption(SELECTORS.CONTENT_TYPE_SELECT, { index: 1 });
+    await page.click(SELECTORS.VT_VIDEO_OPTION);
+    await page.click(SELECTORS.SUBMIT_BTN);
+    await waitForLoadingComplete(page, TIMEOUTS.WH1_SCRIPT_GEN);
+    await waitForStep(page, 2);
+
+    const errors = setupConsoleErrorCapture(page);
+    await selectScript(page, 0);
+    await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
+    await waitForStep(page, 3);
+    await page.click(SELECTORS.EDIT_NEXT_BTN);
+    await waitForLoadingComplete(page, TIMEOUTS.WH2_PROCESSING);
+    await waitForStep(page, 4);
+
+    const pageErrors = errors.filter(e => e.includes('TypeError') || e.includes('ReferenceError'));
+    expect(pageErrors).toHaveLength(0);
   });
 });

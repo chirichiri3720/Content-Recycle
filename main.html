@@ -191,8 +191,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .review-narration { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 8px; word-break: break-all; }
 .review-audio { width: 100%; height: 30px; }
 .review-dur { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 4px; }
-.btn-mini { background: transparent; border: 1px solid var(--border2); border-radius: 6px; color: var(--text3); font-size: 10px; padding: 3px 8px; cursor: pointer; transition: all 0.15s; font-family: 'Noto Sans JP', sans-serif; white-space: nowrap; }
-.btn-mini:hover { border-color: var(--accent); color: var(--accent); }
 
 /* コンテンツ提案 */
 .meta-platform-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
@@ -286,12 +284,6 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
 .style-option img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
 .style-option-cap { padding: 4px 6px 6px; font-size: 10px; color: var(--text2); text-align: center; line-height: 1.3; }
 .style-option.selected .style-option-cap { color: var(--accent); }
-.style-recommend-badge {
-  position: absolute; top: 4px; left: 4px;
-  background: rgba(67,233,123,0.9); color: #0a0a0f;
-  font-size: 8px; font-weight: 700; padding: 1px 5px;
-  border-radius: 100px; font-family: 'Space Mono', monospace; z-index: 3;
-}
 
 .hamburger-btn { position: fixed; top: 16px; right: 16px; z-index: 1100; width: 40px; height: 40px; border-radius: var(--radius2); background: var(--surface); border: 1px solid var(--border2); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 5px; padding: 10px; transition: border-color 0.2s; }
 .hamburger-btn:hover { border-color: var(--accent); }
@@ -549,20 +541,18 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
 // ============================================================
 // 定数 / Webhook
 // ============================================================
-// const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
-// const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
-// const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
-// const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
-// const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
-// const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
-// const STATUS_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-status'; // 新規WH5の本番URL
-const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
-const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
-const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
-const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
-const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
-const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';   
-const STATUS_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-status'; // 新規WH5の本番URL  // メタ保存
+const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
+const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
+const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
+const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
+const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
+const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
+// const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
+// const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
+// const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
+// const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
+// const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
+// const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';
 const BASE_IMG_URL   = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Tmp_Movie';
 
 const VIDEO_URL_WHITELIST = [
@@ -585,8 +575,6 @@ let state = {
   narrationEdits: {},
   defaultVisualType: 'video',
   selectedExpression: 'realistic',  // 'realistic'|'anime'|'illustration'
-  selectedDirection: null,   // 'documentary'|'cinematic'|'news'
-  selectedStyle: null,       // 後方互換のため残す(expression+directionの組み合わせ)
   options: { voices: [], bgms: [], moodProfile: null },
   selectedVoice: null,
   selectedBgm: null,
@@ -616,13 +604,6 @@ const EXPRESSION_DESC = {
   anime:        '親しみやすさ・若年層向け',
   illustration: 'シンプルで説明しやすい',
 };
-// mood → expression/direction のスコアマップ
-const EXPRESSION_MOOD_MAP = {
-  realistic:    { moods:['trustworthy','serious','informative','calm'],   energy:[1,2,3] },
-  anime:        { moods:['friendly','bright','positive','hopeful'],       energy:[3,4,5] },
-  illustration: { moods:['warm','reassuring','friendly','neutral'],       energy:[1,2,3] },
-};
-
 const VT_LABEL    = { image:'画像', video:'動画' };
 const REASON_LABELS = { hopeful:'希望', positive:'前向き', friendly:'親しみやすさ', bright:'明るさ', calm:'落ち着き', reassuring:'安心感', informative:'情報性', empathetic:'共感', curious:'興味喚起', hook:'フック感', serious:'真剣さ', trustworthy:'信頼感', uplifting:'前向きな高揚感', warm:'温かみ', urgent:'緊迫感', neutral:'無難さ', natural:'自然さ' };
 const HOOK_LABELS = {
@@ -1010,45 +991,6 @@ function renderStep4() {
 }
 
 
-// 表現形式グリッド(3択・レコメンド2件)
-function renderExpressionGrid() {
-  const grid = document.getElementById('expression-grid'); grid.innerHTML = '';
-  const mp = state.options.moodProfile || state.selectedScript?.mood_profile;
-  const scored = EXPRESSION_KEYS.map(key => {
-    const map = EXPRESSION_MOOD_MAP[key];
-    const moodHit = mp ? map.moods.filter(m => [mp.primary_mood, mp.secondary_mood, ...(mp.tone_keywords||[])].includes(m)).length : 0;
-    const energyHit = mp ? (map.energy.includes(mp.energy) ? 1 : 0) : 0;
-    return { key, score: moodHit * 0.7 + energyHit * 0.3 };
-  }).sort((a,b) => b.score - a.score);
-  const recommendKeys = new Set(scored.slice(0,1).map(s => s.key));
-
-  EXPRESSION_KEYS.forEach(key => {
-    const div = document.createElement('div'); div.className = 'style-option'; div.dataset.key = key;
-    if (state.selectedExpression === key) div.classList.add('selected');
-    div.addEventListener('click', () => selectExpression(key));
-    if (recommendKeys.has(key)) {
-      const badge = document.createElement('div'); badge.className = 'style-recommend-badge'; badge.textContent = '★ おすすめ';
-      div.appendChild(badge);
-    }
-    const img = document.createElement('img');
-    img.src = `https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Images/${key}.png`;
-    img.alt = EXPRESSION_LABEL[key]; img.loading='lazy';
-    img.onerror = () => { img.remove(); const ph = document.createElement('div'); ph.style.cssText='aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--surface)'; ph.textContent='🖼'; div.insertBefore(ph, div.querySelector('.style-option-cap')||null); };
-    div.appendChild(img);
-    const cap = document.createElement('div'); cap.className = 'style-option-cap';
-    cap.innerHTML = `<div style="font-weight:500">${escapeHtml(EXPRESSION_LABEL[key])}</div><div style="color:var(--text3);font-size:9px">${escapeHtml(EXPRESSION_DESC[key])}</div>`;
-    div.appendChild(cap); grid.appendChild(div);
-  });
-}
-function selectExpression(key) {
-  state.selectedExpression = key;
-  document.querySelectorAll('#expression-grid .style-option').forEach(el => el.classList.toggle('selected', el.dataset.key === key));
-  state.selectedStyle = `${key}_${state.selectedDirection||'documentary'}`; // 後方互換
-  validateStep4();
-}
-
-// 演出形式グリッド(3択・レコメンド2件)
-
 // シーン確認(左パネル・読み取り専用)
 function renderSettingsSceneList() {
   const c = document.getElementById('settings-scene-list'); c.innerHTML = '';
@@ -1128,38 +1070,6 @@ async function proceedToGenerate() {
   } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
 }
 
-async function pollGenerationStatus() {
-  const POLL_INTERVAL = 5000;
-  const MAX_ATTEMPTS = 60; // 5分
-
-  let attempts = 0;
-  while (attempts < MAX_ATTEMPTS) {
-    await new Promise(r => setTimeout(r, POLL_INTERVAL));
-    attempts++;
-    try {
-      const res = await fetch(STATUS_URL, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ session_id: state.sessionId })
-      });
-      if (!res.ok) continue;
-      const text = await res.text(); if (!text.trim()) continue;
-      let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
-
-      if (data.status === 'done') {
-        hideLoading();
-        const rawScenes = data.scenes || [];
-        state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
-        renderReview(); renderStep5(); setStep(5);
-        return;
-      }
-      // 'processing' なら続行
-    } catch (e) {
-      // 一時的な失敗は無視してリトライ
-    }
-  }
-  hideLoading(); setStep(4);
-  showError('生成がタイムアウトしました。しばらく後に再度お試しください。');
-}
 // ============================================================
 // 音声/BGM 共通 (STEP4・STEP5 共用)
 // ============================================================
@@ -1251,24 +1161,6 @@ function renderReview() {
     info.appendChild(d);
     row.appendChild(thumb); row.appendChild(info); list.appendChild(row);
   });
-}
-
-async function regenerateScene(i, sceneNo) {
-  showLoading('シーンを再生成中...', '対象シーンのみ作り直しています', [{icon:'🎙',text:'音声を再生成中'},{icon:'🖼',text:'映像を再生成中'},{icon:'✅',text:'完了'}], 4000);
-  try {
-    const res = await fetch(GENERATE_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
-      action: 'regenerate_scene', session_id: state.sessionId, scene: sceneNo,
-      expression_style: state.selectedExpression, direction_style: state.selectedDirection,
-      visual_type: state.defaultVisualType,
-      voice: { id: state.selectedVoice?.id, voice_name: state.selectedVoice?.voice_name, ssml_gender: state.selectedVoice?.ssml_gender, speaking_rate: state.selectedVoice?.speaking_rate, pitch: state.selectedVoice?.pitch },
-    }) });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    let data = await res.json(); if (Array.isArray(data)) data = data[0];
-    const updated = (data.scenes && data.scenes[0]) || data;
-    const idx = state.sceneMedia.findIndex(m => Number(m.scene) === Number(sceneNo));
-    if (idx >= 0) state.sceneMedia[idx] = updated; else state.sceneMedia.push(updated);
-    hideLoading(); renderReview(); setStep(5);
-  } catch (err) { hideLoading(); setStep(5); showError('再生成エラー: ' + err.message); }
 }
 
 // ============================================================
@@ -1475,14 +1367,13 @@ function goBackToStep1() {
 function goBackToStep2() { renderScripts(); if (state.selectedScript){ const idx=state.scriptCandidates.findIndex(s=>s.script_id===state.selectedScript?.script_id); if (idx>=0) selectScriptOption(idx); } setStep(2); }
 function goBackToStep3() { renderEditor(); setStep(3); }
 function goBackToStep4() { renderStep4(); setStep(4); }
-function goBackToStep5() { renderStep5(); setStep(5); }
 
 // ============================================================
 // リセット
 // ============================================================
 function resetAll() {
   if (state.loadingInterval) clearInterval(state.loadingInterval);
-  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, selectedDirection:null, selectedStyle:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{} };
+  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{} };
   document.getElementById('input-url').value=''; document.getElementById('input-username').value=''; document.getElementById('input-content-type').value=''; document.getElementById('input-platform').value='YouTube Shorts';
   document.getElementById('btn-download').href='#'; setStep(1);
 }

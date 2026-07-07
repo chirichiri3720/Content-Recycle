@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const RESULTS_FILE = path.join(process.cwd(), 'test-results', 'results.json');
-const COVERAGE_TARGET = 80; // カバレッジ目標 80%
+const COVERAGE_TARGET = 90; // カバレッジ目標 90%（node設計完了に伴い引き上げ）
 
 // テストカバレッジマップ
 // 各項目に対してどのテストがカバーしているかを定義
@@ -25,6 +25,11 @@ const COVERAGE_MAP = {
       { id: 'UI-10', desc: 'STEP6→7 承認→完成', tests: ['STEP6→7: 承認ボタンを押す'] },
       { id: 'UI-11', desc: 'STEP7 メタデータ編集', tests: ['STEP7: メタデータを編集できる'] },
       { id: 'UI-12', desc: 'STEP6 却下→STEP5戻り', tests: ['STEP6: 却下ボタンを押す'] },
+      { id: 'UI-13', desc: 'STEP1 スタイル選択で送信ボタン有効化', tests: ['スタイルカードを選択すると送信ボタンが有効になる'] },
+      { id: 'UI-14', desc: 'STEP1 映像タイプ切替（画像/動画・排他選択）', tests: ['映像タイプを画像に切り替えられる'] },
+      { id: 'UI-15', desc: 'STEP4 音声自動選択で次へボタンが初期状態で有効', tests: ['音声が自動選択されるため初期状態で次へボタンが有効'] },
+      { id: 'UI-16', desc: 'STEP5 ライトボックス開閉（サムネイル/×/オーバーレイ）', tests: ['サムネイルをクリックするとライトボックスが開く'] },
+      { id: 'UI-17', desc: 'STEP7 コピー機能でボタン表示が一時的に切り替わる', tests: ['コピー ボタンを押すと一時的に'] },
     ],
   },
   '入力バリデーション': {
@@ -68,6 +73,15 @@ const COVERAGE_MAP = {
       { id: 'NODE-02', desc: 'Supabase書き込みエラー', tests: ['Supabase書き込みエラー'] },
       { id: 'NODE-03', desc: 'session_id欠落', tests: ['session_idが返ってこない'] },
       { id: 'NODE-04', desc: '空script_candidates', tests: ['script_candidatesが空配列'] },
+      { id: 'NODE-05', desc: 'WH2(select) scenes欠落の不正レスポンス', tests: ['WH2(select)がscenes欠落'] },
+      { id: 'NODE-06', desc: 'generate(旧WH3表記) scenes空配列', tests: ['generate(旧WH3表記)がscenes空配列'] },
+      { id: 'NODE-07', desc: '映像タイプ動画時のkling_tasks空対応', tests: ['映像タイプ「動画」選択時、kling_tasksが空'] },
+    ],
+  },
+  '動画URL検証・メタ保存耐性': {
+    items: [
+      { id: 'MEDIA-01', desc: '許可リスト外ドメインのvideo_urlを拒否', tests: ['許可リスト外ドメインのvideo_urlが返るとエラー'] },
+      { id: 'MEDIA-02', desc: 'メタ保存(fire-and-forget)失敗時もSTEP7表示継続', tests: ['メタ保存(fire-and-forget)が500を返しても'] },
     ],
   },
   '耐久テスト': {
@@ -107,13 +121,22 @@ function loadResults() {
   return JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf-8'));
 }
 
+// Playwrightのjsonレポーターは test.describe() ごとにネストした suite.suites を作るため、
+// 再帰的に辿らないと describe でラップされたテスト（=このリポジトリの全スペック）が一切拾えない。
+function collectSpecs(suite, out) {
+  for (const spec of suite.specs || []) out.push(spec);
+  for (const child of suite.suites || []) collectSpecs(child, out);
+}
+
 function generateReport(results) {
   const passedTests = new Set();
   const failedTests = new Set();
 
   if (results) {
     for (const suite of results.suites || []) {
-      for (const spec of (suite.specs || [])) {
+      const specs = [];
+      collectSpecs(suite, specs);
+      for (const spec of specs) {
         for (const test of (spec.tests || [])) {
           const title = spec.title;
           const passed = test.results?.every(r => r.status === 'passed');

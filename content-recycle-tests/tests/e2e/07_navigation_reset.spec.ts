@@ -136,7 +136,6 @@ test.describe('WH3/WH4 429エラー @error', () => {
   test('WH3が429を返すとSTEP4に戻りエラーが表示される', async ({ page }) => {
     await goToStep4(page);
     await mockWH3(page, { error: 'limit_exceeded' }, 429);
-    await page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first().click();
     await page.click(SELECTORS.SETTINGS_NEXT_BTN);
     await waitForLoadingComplete(page, 30_000);
     await expect(page.locator(SELECTORS.ERROR_MESSAGE)).toBeVisible({ timeout: TIMEOUTS.UI_TRANSITION });

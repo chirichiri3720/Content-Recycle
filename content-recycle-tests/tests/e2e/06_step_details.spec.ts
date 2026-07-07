@@ -1,19 +1,17 @@
 // tests/e2e/06_step_details.spec.ts
 // Content-Recycle 各ステップ詳細動作テスト
 // カバレッジ対象:
-//   - STEP1: コンテンツ種別未選択バリデーション
+//   - STEP1: 表現スタイル・映像タイプ選択(送信ボタンのdisabled/enabled制御を含む)
 //   - STEP2: 確定ボタン有効/無効・カード表示・戻るボタン
 //   - STEP3: 空ナレーション検証・編集バッジ・文字カウンター・戻るボタン
-//   - STEP4: スタイル詳細選択・映像タイプ切替・音声選択・戻るボタン
+//   - STEP4: 音声自動選択・シーン確認パネルへの反映・音声選択・戻るボタン
 //   - STEP5: 字幕位置選択・戻るボタン
 
 import { test, expect } from '@playwright/test';
 import { URLS, SELECTORS, TEST_ARTICLES, TIMEOUTS } from '../fixtures/constants';
 import {
   mockWH1,
-  mockAllWebhooks,
   fillUrlAndSubmit,
-  selectScript,
   waitForStep,
   waitForLoadingComplete,
   goToStep3,
@@ -22,19 +20,48 @@ import {
 } from '../fixtures/helpers';
 
 // ────────────────────────────────────────────────
-// STEP1: コンテンツ種別バリデーション
+// STEP1: 表現スタイル・映像タイプ選択
 // ────────────────────────────────────────────────
-test.describe('STEP1: コンテンツ種別バリデーション @smoke', () => {
+test.describe('STEP1: 表現スタイル・映像タイプ選択 @smoke', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(URLS.MAIN);
   });
 
-  test('コンテンツ種別を選択しないとエラーが表示される', async ({ page }) => {
+  test('URLのみ入力した状態ではスタイル未選択のため送信ボタンがdisabled', async ({ page }) => {
     await page.fill(SELECTORS.URL_INPUT, TEST_ARTICLES.VALID_1);
-    // content-typeは選択しない（デフォルト空値）
-    await page.click(SELECTORS.SUBMIT_BTN);
-    await expect(page.locator(SELECTORS.ERROR_MESSAGE)).toBeVisible({ timeout: TIMEOUTS.UI_TRANSITION });
-    await expect(page.locator(SELECTORS.STEP2_CONTAINER)).not.toBeVisible();
+    await expect(page.locator(SELECTORS.SUBMIT_BTN)).toBeDisabled();
+  });
+
+  test('スタイルカードを選択すると送信ボタンが有効になる', async ({ page }) => {
+    await page.fill(SELECTORS.URL_INPUT, TEST_ARTICLES.VALID_1);
+    await page.locator(`${SELECTORS.EXPRESSION_GRID_STEP1} .style-option`).first().click();
+    await expect(page.locator(SELECTORS.SUBMIT_BTN)).not.toBeDisabled();
+  });
+
+  test('2番目のスタイルを選択できる（排他選択）', async ({ page }) => {
+    const styles = page.locator(`${SELECTORS.EXPRESSION_GRID_STEP1} .style-option`);
+    await styles.nth(1).click();
+    await expect(styles.nth(1)).toHaveClass(/selected/);
+    await expect(styles.nth(0)).not.toHaveClass(/selected/);
+  });
+
+  test('3番目のスタイルを選択できる', async ({ page }) => {
+    const styles = page.locator(`${SELECTORS.EXPRESSION_GRID_STEP1} .style-option`);
+    await styles.nth(2).click();
+    await expect(styles.nth(2)).toHaveClass(/selected/);
+  });
+
+  test('映像タイプを画像に切り替えられる', async ({ page }) => {
+    await page.click(SELECTORS.VT_IMAGE_OPTION);
+    await expect(page.locator(SELECTORS.VT_IMAGE_OPTION)).toHaveClass(/selected/);
+    await expect(page.locator(SELECTORS.VT_VIDEO_OPTION)).not.toHaveClass(/selected/);
+  });
+
+  test('映像タイプを画像から動画へ切り替えられる（排他選択）', async ({ page }) => {
+    await page.click(SELECTORS.VT_IMAGE_OPTION);
+    await page.click(SELECTORS.VT_VIDEO_OPTION);
+    await expect(page.locator(SELECTORS.VT_VIDEO_OPTION)).toHaveClass(/selected/);
+    await expect(page.locator(SELECTORS.VT_IMAGE_OPTION)).not.toHaveClass(/selected/);
   });
 });
 
@@ -123,46 +150,22 @@ test.describe('STEP3: 編集機能詳細 @happy', () => {
 });
 
 // ────────────────────────────────────────────────
-// STEP4: 設定詳細
+// STEP4: 設定詳細（シーン確認 + ナレーション音声）
 // ────────────────────────────────────────────────
 test.describe('STEP4: 設定詳細 @happy', () => {
   test.beforeEach(async ({ page }) => {
     await goToStep4(page);
   });
 
-  test('表現スタイル未選択状態でボタンがdisabled', async ({ page }) => {
-    // renderStep4で音声は自動選択されるが表現スタイルは未選択
-    await expect(page.locator(SELECTORS.SETTINGS_NEXT_BTN)).toBeDisabled();
-  });
-
-  test('2番目の表現スタイルを選択できる', async ({ page }) => {
-    const styles = page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`);
-    await styles.nth(1).click();
-    await expect(styles.nth(1)).toHaveClass(/selected/);
-    await expect(styles.nth(0)).not.toHaveClass(/selected/);
-  });
-
-  test('3番目の表現スタイルを選択できる', async ({ page }) => {
-    const styles = page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`);
-    await styles.nth(2).click();
-    await expect(styles.nth(2)).toHaveClass(/selected/);
-  });
-
-  test('表現スタイル選択後にボタンが有効になる', async ({ page }) => {
-    await page.locator(`${SELECTORS.EXPRESSION_GRID} .style-option`).first().click();
+  test('音声が自動選択されるため初期状態で次へボタンが有効', async ({ page }) => {
     await expect(page.locator(SELECTORS.SETTINGS_NEXT_BTN)).not.toBeDisabled();
+    await expect(page.locator(`${SELECTORS.VOICE_LIST} .av-option`).first()).toHaveClass(/selected/);
   });
 
-  test('映像タイプを動画に切り替えられる', async ({ page }) => {
-    await page.click(SELECTORS.VT_VIDEO_OPTION);
-    await expect(page.locator(SELECTORS.VT_VIDEO_OPTION)).toHaveClass(/selected/);
-    await expect(page.locator(SELECTORS.VT_IMAGE_OPTION)).not.toHaveClass(/selected/);
-  });
-
-  test('映像タイプを動画から画像に戻せる', async ({ page }) => {
-    await page.click(SELECTORS.VT_VIDEO_OPTION);
-    await page.click(SELECTORS.VT_IMAGE_OPTION);
-    await expect(page.locator(SELECTORS.VT_IMAGE_OPTION)).toHaveClass(/selected/);
+  test('シーン確認パネルにSTEP3で確定したナレーションが反映される', async ({ page }) => {
+    const sceneList = page.locator('#settings-scene-list');
+    await expect(sceneList).toBeVisible();
+    await expect(sceneList).toContainText('シーン1のナレーションテキストです。');
   });
 
   test('2番目の音声を選択できる', async ({ page }) => {

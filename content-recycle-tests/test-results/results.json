@@ -3,7 +3,9 @@
     "argv": [
       "/home/kusukawa/.nvm/versions/node/v22.22.3/bin/node",
       "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/node_modules/.bin/playwright",
-      "test"
+      "test",
+      "--grep-invert",
+      "@endurance"
     ],
     "configFile": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/playwright.config.ts",
     "rootDir": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e",
@@ -104,12 +106,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1741,
+                      "duration": 1861,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:02:39.616Z",
+                      "startTime": "2026-07-07T04:12:17.896Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -142,12 +144,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7100,
+                      "duration": 6961,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:02:41.565Z",
+                      "startTime": "2026-07-07T04:12:20.461Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -180,12 +182,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12002,
+                      "duration": 12271,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:02:48.690Z",
+                      "startTime": "2026-07-07T04:12:27.454Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -218,12 +220,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 11970,
+                      "duration": 12492,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:03:00.722Z",
+                      "startTime": "2026-07-07T04:12:39.752Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -256,12 +258,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 13938,
+                      "duration": 13616,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:03:12.720Z",
+                      "startTime": "2026-07-07T04:12:52.269Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -294,12 +296,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12083,
+                      "duration": 12382,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:03:26.681Z",
+                      "startTime": "2026-07-07T04:13:05.913Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -332,12 +334,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 19220,
+                      "duration": 19164,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:03:38.796Z",
+                      "startTime": "2026-07-07T04:13:18.328Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -370,12 +372,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 19238,
+                      "duration": 20023,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:03:58.042Z",
+                      "startTime": "2026-07-07T04:13:37.526Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -408,12 +410,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 24035,
+                      "duration": 24238,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:04:17.305Z",
+                      "startTime": "2026-07-07T04:13:57.574Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -446,12 +448,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 24231,
+                      "duration": 25192,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:04:41.364Z",
+                      "startTime": "2026-07-07T04:14:21.838Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -484,12 +486,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 24278,
+                      "duration": 24753,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:05:05.620Z",
+                      "startTime": "2026-07-07T04:14:47.065Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -522,12 +524,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 24226,
+                      "duration": 24499,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:05:29.923Z",
+                      "startTime": "2026-07-07T04:15:11.849Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -575,12 +577,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1540,
+                      "duration": 2576,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:05:54.195Z",
+                      "startTime": "2026-07-07T04:15:36.395Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -611,12 +613,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1413,
+                      "duration": 2380,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:05:55.756Z",
+                      "startTime": "2026-07-07T04:15:39.008Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -647,12 +649,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1568,
+                      "duration": 3472,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:05:57.197Z",
+                      "startTime": "2026-07-07T04:15:41.416Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -691,12 +693,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6798,
+                      "duration": 7202,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:05:58.788Z",
+                      "startTime": "2026-07-07T04:15:44.920Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -727,12 +729,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6951,
+                      "duration": 6560,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:06:05.610Z",
+                      "startTime": "2026-07-07T04:15:52.152Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -763,12 +765,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1470,
+                      "duration": 3104,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:06:12.588Z",
+                      "startTime": "2026-07-07T04:15:58.745Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -799,12 +801,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7113,
+                      "duration": 7756,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:06:14.083Z",
+                      "startTime": "2026-07-07T04:16:01.879Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -835,12 +837,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12017,
+                      "duration": 12508,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:06:21.219Z",
+                      "startTime": "2026-07-07T04:16:09.662Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -879,12 +881,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 13010,
+                      "duration": 15204,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:06:33.259Z",
+                      "startTime": "2026-07-07T04:16:22.198Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -915,12 +917,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 16808,
+                      "duration": 16068,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:06:46.292Z",
+                      "startTime": "2026-07-07T04:16:37.439Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -959,12 +961,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 18772,
+                      "duration": 26204,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:07:03.121Z",
+                      "startTime": "2026-07-07T04:16:53.541Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -974,7 +976,7 @@
               ],
               "id": "f48f5b071a00448c4487-7f35639bc7a4f2ab5636",
               "file": "02_error_cases.spec.ts",
-              "line": 163,
+              "line": 162,
               "column": 7
             },
             {
@@ -995,12 +997,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 19176,
+                      "duration": 19757,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:07:21.916Z",
+                      "startTime": "2026-07-07T04:17:19.780Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1010,7 +1012,7 @@
               ],
               "id": "f48f5b071a00448c4487-ec5c228fb54106fa6cda",
               "file": "02_error_cases.spec.ts",
-              "line": 172,
+              "line": 171,
               "column": 7
             }
           ]
@@ -1018,7 +1020,7 @@
         {
           "title": "WH4エラー: 動画合成失敗 @error",
           "file": "02_error_cases.spec.ts",
-          "line": 189,
+          "line": 188,
           "column": 6,
           "specs": [
             {
@@ -1039,12 +1041,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 24073,
+                      "duration": 24757,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:07:41.114Z",
+                      "startTime": "2026-07-07T04:17:39.558Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1054,7 +1056,7 @@
               ],
               "id": "f48f5b071a00448c4487-90e3b74f62647409dc24",
               "file": "02_error_cases.spec.ts",
-              "line": 211,
+              "line": 209,
               "column": 7
             },
             {
@@ -1075,12 +1077,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 24275,
+                      "duration": 24033,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:08:05.206Z",
+                      "startTime": "2026-07-07T04:18:04.338Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1090,7 +1092,7 @@
               ],
               "id": "f48f5b071a00448c4487-297a42458573bb97fa7e",
               "file": "02_error_cases.spec.ts",
-              "line": 220,
+              "line": 218,
               "column": 7
             },
             {
@@ -1111,12 +1113,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 29214,
+                      "duration": 29840,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:08:29.499Z",
+                      "startTime": "2026-07-07T04:18:28.392Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1126,7 +1128,7 @@
               ],
               "id": "f48f5b071a00448c4487-a1c0d24abb2a03ca31c1",
               "file": "02_error_cases.spec.ts",
-              "line": 228,
+              "line": 226,
               "column": 7
             }
           ]
@@ -1134,7 +1136,7 @@
         {
           "title": "n8nノード系エラー @error",
           "file": "02_error_cases.spec.ts",
-          "line": 245,
+          "line": 243,
           "column": 6,
           "specs": [
             {
@@ -1155,12 +1157,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7001,
+                      "duration": 7810,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:08:58.736Z",
+                      "startTime": "2026-07-07T04:18:58.254Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1170,7 +1172,7 @@
               ],
               "id": "f48f5b071a00448c4487-2858cae3ea5b6eafbdb8",
               "file": "02_error_cases.spec.ts",
-              "line": 251,
+              "line": 249,
               "column": 7
             },
             {
@@ -1191,12 +1193,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6709,
+                      "duration": 7143,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:09:05.759Z",
+                      "startTime": "2026-07-07T04:19:06.094Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1206,7 +1208,7 @@
               ],
               "id": "f48f5b071a00448c4487-3f6acc6b8e29a234cb9c",
               "file": "02_error_cases.spec.ts",
-              "line": 261,
+              "line": 259,
               "column": 7
             },
             {
@@ -1227,12 +1229,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6842,
+                      "duration": 8561,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:09:12.494Z",
+                      "startTime": "2026-07-07T04:19:13.261Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1242,7 +1244,7 @@
               ],
               "id": "f48f5b071a00448c4487-715ec9b09b17f5fbd50b",
               "file": "02_error_cases.spec.ts",
-              "line": 272,
+              "line": 270,
               "column": 7
             },
             {
@@ -1263,12 +1265,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8048,
+                      "duration": 8503,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:09:19.364Z",
+                      "startTime": "2026-07-07T04:19:21.845Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1278,7 +1280,115 @@
               ],
               "id": "f48f5b071a00448c4487-06ed27b885fbf1474cd0",
               "file": "02_error_cases.spec.ts",
-              "line": 286,
+              "line": 284,
+              "column": 7
+            },
+            {
+              "title": "WH2(select)がscenes欠落の不正レスポンスを返してもクラッシュしない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10939,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:19:30.371Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-90476497127a1e8bcf4a",
+              "file": "02_error_cases.spec.ts",
+              "line": 295,
+              "column": 7
+            },
+            {
+              "title": "generate(旧WH3表記)がscenes空配列を返してもSTEP5がクラッシュせず表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20704,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:19:41.333Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-2d684ca23b2a037edf17",
+              "file": "02_error_cases.spec.ts",
+              "line": 314,
+              "column": 7
+            },
+            {
+              "title": "映像タイプ「動画」選択時、kling_tasksが空でもSTEP4に遷移しクラッシュしない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11110,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:20:02.062Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-720d320204d8c75094de",
+              "file": "02_error_cases.spec.ts",
+              "line": 335,
               "column": 7
             }
           ]
@@ -1295,7 +1405,7 @@
         {
           "title": "統合テスト: 実Webhook疎通 @integration",
           "file": "03_integration.spec.ts",
-          "line": 23,
+          "line": 32,
           "column": 6,
           "specs": [
             {
@@ -1313,7 +1423,7 @@
                       "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
                       "location": {
                         "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
-                        "line": 25,
+                        "line": 34,
                         "column": 8
                       }
                     }
@@ -1331,14 +1441,14 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:09:27.438Z",
+                      "startTime": "2026-07-07T04:20:13.203Z",
                       "annotations": [
                         {
                           "type": "skip",
                           "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
                           "location": {
                             "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
-                            "line": 25,
+                            "line": 34,
                             "column": 8
                           }
                         }
@@ -1351,7 +1461,7 @@
               ],
               "id": "3e4f753e6285dd4f568c-7ca766116fdb1a359966",
               "file": "03_integration.spec.ts",
-              "line": 29,
+              "line": 38,
               "column": 7
             },
             {
@@ -1369,7 +1479,7 @@
                       "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
                       "location": {
                         "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
-                        "line": 25,
+                        "line": 34,
                         "column": 8
                       }
                     }
@@ -1387,14 +1497,14 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:09:27.438Z",
+                      "startTime": "2026-07-07T04:20:13.203Z",
                       "annotations": [
                         {
                           "type": "skip",
                           "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
                           "location": {
                             "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
-                            "line": 25,
+                            "line": 34,
                             "column": 8
                           }
                         }
@@ -1407,7 +1517,7 @@
               ],
               "id": "3e4f753e6285dd4f568c-306f229d8362ea5e22c6",
               "file": "03_integration.spec.ts",
-              "line": 53,
+              "line": 62,
               "column": 7
             },
             {
@@ -1425,7 +1535,7 @@
                       "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
                       "location": {
                         "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
-                        "line": 25,
+                        "line": 34,
                         "column": 8
                       }
                     }
@@ -1443,14 +1553,14 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:09:27.438Z",
+                      "startTime": "2026-07-07T04:20:13.204Z",
                       "annotations": [
                         {
                           "type": "skip",
                           "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
                           "location": {
                             "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
-                            "line": 25,
+                            "line": 34,
                             "column": 8
                           }
                         }
@@ -1463,7 +1573,7 @@
               ],
               "id": "3e4f753e6285dd4f568c-9144f9a66d83e2754b80",
               "file": "03_integration.spec.ts",
-              "line": 74,
+              "line": 83,
               "column": 7
             }
           ]
@@ -1471,7 +1581,7 @@
         {
           "title": "統合テスト: Supabase確認 @integration",
           "file": "03_integration.spec.ts",
-          "line": 111,
+          "line": 126,
           "column": 6,
           "specs": [
             {
@@ -1489,7 +1599,7 @@
                       "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
                       "location": {
                         "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
-                        "line": 113,
+                        "line": 128,
                         "column": 8
                       }
                     }
@@ -1507,14 +1617,14 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:09:27.438Z",
+                      "startTime": "2026-07-07T04:20:13.204Z",
                       "annotations": [
                         {
                           "type": "skip",
                           "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
                           "location": {
                             "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
-                            "line": 113,
+                            "line": 128,
                             "column": 8
                           }
                         }
@@ -1527,212 +1637,7 @@
               ],
               "id": "3e4f753e6285dd4f568c-19ba6907fad6806a46ea",
               "file": "03_integration.spec.ts",
-              "line": 116,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "04_endurance.spec.ts",
-      "file": "04_endurance.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "耐久テスト: 繰り返し実行 @endurance",
-          "file": "04_endurance.spec.ts",
-          "line": 20,
-          "column": 6,
-          "specs": [
-            {
-              "title": "ハッピーパスを3回連続で実行してもstateが汚染されない",
-              "ok": true,
-              "tags": [
-                "endurance"
-              ],
-              "tests": [
-                {
-                  "timeout": 600000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 50892,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-29T08:09:27.451Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f38525ce1befddad39d1-51f22af88159f3550f8a",
-              "file": "04_endurance.spec.ts",
-              "line": 24,
-              "column": 7
-            },
-            {
-              "title": "STEP2で台本選択をキャンセルして戻る操作を5回繰り返してもUIが崩れない",
-              "ok": true,
-              "tags": [
-                "endurance"
-              ],
-              "tests": [
-                {
-                  "timeout": 600000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 9269,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-29T08:10:18.362Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f38525ce1befddad39d1-cea76c8938c10af17dd1",
-              "file": "04_endurance.spec.ts",
-              "line": 79,
-              "column": 7
-            },
-            {
-              "title": "ページをリロードすると初期状態に戻る（stateが永続化されていない）",
-              "ok": true,
-              "tags": [
-                "endurance"
-              ],
-              "tests": [
-                {
-                  "timeout": 600000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 7178,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-29T08:10:27.653Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f38525ce1befddad39d1-825e8cec608ca1442484",
-              "file": "04_endurance.spec.ts",
-              "line": 101,
-              "column": 7
-            },
-            {
-              "title": "メモリ使用量が許容範囲内（繰り返し5回でページが重くならない）",
-              "ok": true,
-              "tags": [
-                "endurance"
-              ],
-              "tests": [
-                {
-                  "timeout": 600000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 31454,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-29T08:10:34.855Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f38525ce1befddad39d1-32caeb7873d714f7bced",
-              "file": "04_endurance.spec.ts",
-              "line": 122,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "耐久テスト: エラーからのリカバリ繰り返し @endurance",
-          "file": "04_endurance.spec.ts",
-          "line": 156,
-          "column": 6,
-          "specs": [
-            {
-              "title": "エラー→リカバリを3回繰り返してもUIが正常に機能する",
-              "ok": true,
-              "tags": [
-                "endurance"
-              ],
-              "tests": [
-                {
-                  "timeout": 300000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 20078,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-29T08:11:06.330Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "f38525ce1befddad39d1-73dbb762b2217c0fde10",
-              "file": "04_endurance.spec.ts",
-              "line": 160,
+              "line": 131,
               "column": 7
             }
           ]
@@ -1770,12 +1675,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1500,
+                      "duration": 1723,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:11:26.444Z",
+                      "startTime": "2026-07-07T04:20:13.219Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1806,12 +1711,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6956,
+                      "duration": 6897,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:11:27.989Z",
+                      "startTime": "2026-07-07T04:20:14.992Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1842,12 +1747,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 12104,
+                      "duration": 11999,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:11:34.969Z",
+                      "startTime": "2026-07-07T04:20:21.913Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1878,12 +1783,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 13982,
+                      "duration": 14200,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:11:47.100Z",
+                      "startTime": "2026-07-07T04:20:33.937Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1914,12 +1819,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 19085,
+                      "duration": 19116,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:12:01.107Z",
+                      "startTime": "2026-07-07T04:20:48.160Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1950,12 +1855,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 24249,
+                      "duration": 24103,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:12:20.214Z",
+                      "startTime": "2026-07-07T04:21:07.312Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1986,12 +1891,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 24188,
+                      "duration": 24142,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:12:44.487Z",
+                      "startTime": "2026-07-07T04:21:31.442Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2043,7 +1948,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:08.699Z",
+                      "startTime": "2026-07-07T04:21:55.605Z",
                       "annotations": [
                         {
                           "type": "skip",
@@ -2097,7 +2002,7 @@
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:08.699Z",
+                      "startTime": "2026-07-07T04:21:55.606Z",
                       "annotations": [
                         {
                           "type": "skip",
@@ -2132,13 +2037,13 @@
       "specs": [],
       "suites": [
         {
-          "title": "STEP1: コンテンツ種別バリデーション @smoke",
+          "title": "STEP1: 表現スタイル・映像タイプ選択 @smoke",
           "file": "06_step_details.spec.ts",
-          "line": 27,
+          "line": 25,
           "column": 6,
           "specs": [
             {
-              "title": "コンテンツ種別を選択しないとエラーが表示される",
+              "title": "URLのみ入力した状態ではスタイル未選択のため送信ボタンがdisabled",
               "ok": true,
               "tags": [
                 "smoke"
@@ -2155,12 +2060,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1629,
+                      "duration": 1446,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:08.711Z",
+                      "startTime": "2026-07-07T04:21:55.619Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2168,9 +2073,189 @@
                   "status": "expected"
                 }
               ],
-              "id": "de9de2158b521c9d4f08-5d24bcbe0f5ca120e518",
+              "id": "de9de2158b521c9d4f08-97d337120a5346a046f7",
               "file": "06_step_details.spec.ts",
-              "line": 32,
+              "line": 30,
+              "column": 7
+            },
+            {
+              "title": "スタイルカードを選択すると送信ボタンが有効になる",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1495,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:21:57.086Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-61e0be0ab62b251d937f",
+              "file": "06_step_details.spec.ts",
+              "line": 35,
+              "column": 7
+            },
+            {
+              "title": "2番目のスタイルを選択できる（排他選択）",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1618,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:21:58.609Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-b898e915854319ef1e1c",
+              "file": "06_step_details.spec.ts",
+              "line": 41,
+              "column": 7
+            },
+            {
+              "title": "3番目のスタイルを選択できる",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1792,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:22:00.265Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-2315435e7c4f966c1d7d",
+              "file": "06_step_details.spec.ts",
+              "line": 48,
+              "column": 7
+            },
+            {
+              "title": "映像タイプを画像に切り替えられる",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1536,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:22:02.085Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-ce9425c58bb3847557ff",
+              "file": "06_step_details.spec.ts",
+              "line": 54,
+              "column": 7
+            },
+            {
+              "title": "映像タイプを画像から動画へ切り替えられる（排他選択）",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1768,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:22:03.645Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-ad7e11dd32c3c1f0a05b",
+              "file": "06_step_details.spec.ts",
+              "line": 60,
               "column": 7
             }
           ]
@@ -2178,7 +2263,7 @@
         {
           "title": "STEP2: 台本カード詳細 @happy",
           "file": "06_step_details.spec.ts",
-          "line": 44,
+          "line": 71,
           "column": 6,
           "specs": [
             {
@@ -2199,12 +2284,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6916,
+                      "duration": 6659,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:10.363Z",
+                      "startTime": "2026-07-07T04:22:05.438Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2214,7 +2299,7 @@
               ],
               "id": "de9de2158b521c9d4f08-e9c7f0a62c26f5c25b5b",
               "file": "06_step_details.spec.ts",
-              "line": 53,
+              "line": 80,
               "column": 7
             },
             {
@@ -2235,12 +2320,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7043,
+                      "duration": 6956,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:17.301Z",
+                      "startTime": "2026-07-07T04:22:12.118Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2250,7 +2335,7 @@
               ],
               "id": "de9de2158b521c9d4f08-89769306dbe63fae6894",
               "file": "06_step_details.spec.ts",
-              "line": 57,
+              "line": 84,
               "column": 7
             },
             {
@@ -2271,12 +2356,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6788,
+                      "duration": 7775,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:24.367Z",
+                      "startTime": "2026-07-07T04:22:19.101Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2286,7 +2371,7 @@
               ],
               "id": "de9de2158b521c9d4f08-1248803088da41807f2e",
               "file": "06_step_details.spec.ts",
-              "line": 62,
+              "line": 89,
               "column": 7
             },
             {
@@ -2307,12 +2392,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6931,
+                      "duration": 6628,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:31.176Z",
+                      "startTime": "2026-07-07T04:22:26.901Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2322,7 +2407,7 @@
               ],
               "id": "de9de2158b521c9d4f08-33d2159d269b180166c2",
               "file": "06_step_details.spec.ts",
-              "line": 69,
+              "line": 96,
               "column": 7
             },
             {
@@ -2343,12 +2428,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7122,
+                      "duration": 7190,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:38.130Z",
+                      "startTime": "2026-07-07T04:22:33.550Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2358,7 +2443,7 @@
               ],
               "id": "de9de2158b521c9d4f08-01e387eccc752ddef29b",
               "file": "06_step_details.spec.ts",
-              "line": 73,
+              "line": 100,
               "column": 7
             }
           ]
@@ -2366,7 +2451,7 @@
         {
           "title": "STEP3: 編集機能詳細 @happy",
           "file": "06_step_details.spec.ts",
-          "line": 83,
+          "line": 110,
           "column": 6,
           "specs": [
             {
@@ -2387,12 +2472,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7197,
+                      "duration": 7465,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:45.275Z",
+                      "startTime": "2026-07-07T04:22:40.763Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2402,7 +2487,7 @@
               ],
               "id": "de9de2158b521c9d4f08-d7dba0fd3f581fae7e77",
               "file": "06_step_details.spec.ts",
-              "line": 88,
+              "line": 115,
               "column": 7
             },
             {
@@ -2423,12 +2508,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7550,
+                      "duration": 6893,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:13:52.494Z",
+                      "startTime": "2026-07-07T04:22:48.255Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2438,7 +2523,7 @@
               ],
               "id": "de9de2158b521c9d4f08-9dce3052820158e3af77",
               "file": "06_step_details.spec.ts",
-              "line": 96,
+              "line": 123,
               "column": 7
             },
             {
@@ -2459,12 +2544,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7252,
+                      "duration": 6849,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:14:00.068Z",
+                      "startTime": "2026-07-07T04:22:55.175Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2474,7 +2559,7 @@
               ],
               "id": "de9de2158b521c9d4f08-26a8a3d4c1bfacda0d61",
               "file": "06_step_details.spec.ts",
-              "line": 102,
+              "line": 129,
               "column": 7
             },
             {
@@ -2495,12 +2580,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7170,
+                      "duration": 7054,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:14:07.348Z",
+                      "startTime": "2026-07-07T04:23:02.050Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2510,7 +2595,7 @@
               ],
               "id": "de9de2158b521c9d4f08-6036ef8368a4be3d4aff",
               "file": "06_step_details.spec.ts",
-              "line": 113,
+              "line": 140,
               "column": 7
             },
             {
@@ -2531,12 +2616,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 7765,
+                      "duration": 7426,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:14:14.544Z",
+                      "startTime": "2026-07-07T04:23:09.128Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2546,7 +2631,7 @@
               ],
               "id": "de9de2158b521c9d4f08-11a695a91647b8d2614f",
               "file": "06_step_details.spec.ts",
-              "line": 118,
+              "line": 145,
               "column": 7
             }
           ]
@@ -2554,11 +2639,11 @@
         {
           "title": "STEP4: 設定詳細 @happy",
           "file": "06_step_details.spec.ts",
-          "line": 128,
+          "line": 155,
           "column": 6,
           "specs": [
             {
-              "title": "表現スタイル未選択状態でボタンがdisabled",
+              "title": "音声が自動選択されるため初期状態で次へボタンが有効",
               "ok": true,
               "tags": [
                 "happy"
@@ -2575,12 +2660,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 9591,
+                      "duration": 9865,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:14:22.334Z",
+                      "startTime": "2026-07-07T04:23:16.581Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2588,13 +2673,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "de9de2158b521c9d4f08-3de83fe1204e82faffd3",
+              "id": "de9de2158b521c9d4f08-a8c68d7819b4953dfbaf",
               "file": "06_step_details.spec.ts",
-              "line": 133,
+              "line": 160,
               "column": 7
             },
             {
-              "title": "2番目の表現スタイルを選択できる",
+              "title": "シーン確認パネルにSTEP3で確定したナレーションが反映される",
               "ok": true,
               "tags": [
                 "happy"
@@ -2611,12 +2696,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 9672,
+                      "duration": 9288,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:14:31.947Z",
+                      "startTime": "2026-07-07T04:23:26.478Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2624,153 +2709,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "de9de2158b521c9d4f08-af21f37d6e61cd64b523",
+              "id": "de9de2158b521c9d4f08-c6cf9ac5a01bfaf0720f",
               "file": "06_step_details.spec.ts",
-              "line": 138,
-              "column": 7
-            },
-            {
-              "title": "3番目の表現スタイルを選択できる",
-              "ok": true,
-              "tags": [
-                "happy"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 11115,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-29T08:14:41.646Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "de9de2158b521c9d4f08-336ebea6869ac663d02e",
-              "file": "06_step_details.spec.ts",
-              "line": 145,
-              "column": 7
-            },
-            {
-              "title": "表現スタイル選択後にボタンが有効になる",
-              "ok": true,
-              "tags": [
-                "happy"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 9562,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-29T08:14:52.784Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "de9de2158b521c9d4f08-d45ce3ab39195888ef60",
-              "file": "06_step_details.spec.ts",
-              "line": 151,
-              "column": 7
-            },
-            {
-              "title": "映像タイプを動画に切り替えられる",
-              "ok": true,
-              "tags": [
-                "happy"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 9710,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-29T08:15:02.367Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "de9de2158b521c9d4f08-c3732aad9f4fcc9d9612",
-              "file": "06_step_details.spec.ts",
-              "line": 156,
-              "column": 7
-            },
-            {
-              "title": "映像タイプを動画から画像に戻せる",
-              "ok": true,
-              "tags": [
-                "happy"
-              ],
-              "tests": [
-                {
-                  "timeout": 120000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 9480,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-29T08:15:12.101Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "de9de2158b521c9d4f08-2dc51dd8f8c588fd0edb",
-              "file": "06_step_details.spec.ts",
-              "line": 162,
+              "line": 165,
               "column": 7
             },
             {
@@ -2791,12 +2732,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 9658,
+                      "duration": 9156,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:15:21.606Z",
+                      "startTime": "2026-07-07T04:23:35.787Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2806,7 +2747,7 @@
               ],
               "id": "de9de2158b521c9d4f08-ebae02b97a92b2b593e3",
               "file": "06_step_details.spec.ts",
-              "line": 168,
+              "line": 171,
               "column": 7
             },
             {
@@ -2827,12 +2768,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 9902,
+                      "duration": 10518,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:15:31.293Z",
+                      "startTime": "2026-07-07T04:23:44.967Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2842,7 +2783,7 @@
               ],
               "id": "de9de2158b521c9d4f08-08874028476f83615dc8",
               "file": "06_step_details.spec.ts",
-              "line": 175,
+              "line": 178,
               "column": 7
             }
           ]
@@ -2850,7 +2791,7 @@
         {
           "title": "STEP5: 字幕位置・戻るボタン @happy",
           "file": "06_step_details.spec.ts",
-          "line": 184,
+          "line": 187,
           "column": 6,
           "specs": [
             {
@@ -2871,12 +2812,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 15063,
+                      "duration": 14404,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:15:41.220Z",
+                      "startTime": "2026-07-07T04:23:55.511Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2886,7 +2827,7 @@
               ],
               "id": "de9de2158b521c9d4f08-23179951cf9e1edfa7c1",
               "file": "06_step_details.spec.ts",
-              "line": 189,
+              "line": 192,
               "column": 7
             },
             {
@@ -2907,12 +2848,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 14726,
+                      "duration": 15606,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:15:56.308Z",
+                      "startTime": "2026-07-07T04:24:09.940Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2922,7 +2863,7 @@
               ],
               "id": "de9de2158b521c9d4f08-45c62577498618447ce6",
               "file": "06_step_details.spec.ts",
-              "line": 193,
+              "line": 196,
               "column": 7
             },
             {
@@ -2943,12 +2884,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 15103,
+                      "duration": 14511,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:16:11.055Z",
+                      "startTime": "2026-07-07T04:24:25.576Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2958,7 +2899,7 @@
               ],
               "id": "de9de2158b521c9d4f08-c979686ec5421f08b217",
               "file": "06_step_details.spec.ts",
-              "line": 200,
+              "line": 203,
               "column": 7
             },
             {
@@ -2979,12 +2920,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 15375,
+                      "duration": 14839,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:16:26.181Z",
+                      "startTime": "2026-07-07T04:24:40.109Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2994,7 +2935,7 @@
               ],
               "id": "de9de2158b521c9d4f08-9df8f678d5eb5e8817de",
               "file": "06_step_details.spec.ts",
-              "line": 206,
+              "line": 209,
               "column": 7
             }
           ]
@@ -3032,12 +2973,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1612,
+                      "duration": 1674,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:16:41.599Z",
+                      "startTime": "2026-07-07T04:24:54.988Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3068,12 +3009,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1977,
+                      "duration": 6754,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:16:43.229Z",
+                      "startTime": "2026-07-07T04:24:56.682Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3104,12 +3045,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 15177,
+                      "duration": 14855,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:16:45.236Z",
+                      "startTime": "2026-07-07T04:25:03.455Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3148,12 +3089,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 19824,
+                      "duration": 19564,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:17:00.436Z",
+                      "startTime": "2026-07-07T04:25:18.329Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3184,12 +3125,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 20072,
+                      "duration": 20008,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:17:20.288Z",
+                      "startTime": "2026-07-07T04:25:37.919Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3220,12 +3161,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 20194,
+                      "duration": 19571,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:17:40.385Z",
+                      "startTime": "2026-07-07T04:25:57.952Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3256,12 +3197,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 20295,
+                      "duration": 19586,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:18:00.605Z",
+                      "startTime": "2026-07-07T04:26:17.545Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3292,12 +3233,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 19747,
+                      "duration": 20394,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:18:20.923Z",
+                      "startTime": "2026-07-07T04:26:37.154Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3328,12 +3269,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 19711,
+                      "duration": 19965,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:18:40.694Z",
+                      "startTime": "2026-07-07T04:26:57.569Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3364,12 +3305,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 20152,
+                      "duration": 20287,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:19:00.430Z",
+                      "startTime": "2026-07-07T04:27:17.557Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3408,12 +3349,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6810,
+                      "duration": 6894,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:19:20.605Z",
+                      "startTime": "2026-07-07T04:27:37.868Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3444,12 +3385,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 11856,
+                      "duration": 12713,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:19:27.438Z",
+                      "startTime": "2026-07-07T04:27:44.784Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3488,12 +3429,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 14806,
+                      "duration": 14388,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:19:39.317Z",
+                      "startTime": "2026-07-07T04:27:57.522Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3524,12 +3465,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 20067,
+                      "duration": 19282,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:19:54.146Z",
+                      "startTime": "2026-07-07T04:28:11.930Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3539,7 +3480,7 @@
               ],
               "id": "5d367f960ce6b691e6e8-2ed7f864b669018ff722",
               "file": "07_navigation_reset.spec.ts",
-              "line": 146,
+              "line": 145,
               "column": 7
             }
           ]
@@ -3547,7 +3488,7 @@
         {
           "title": "ハンバーガーメニュー @smoke",
           "file": "07_navigation_reset.spec.ts",
-          "line": 159,
+          "line": 158,
           "column": 6,
           "specs": [
             {
@@ -3568,12 +3509,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1292,
+                      "duration": 1269,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:20:14.237Z",
+                      "startTime": "2026-07-07T04:28:31.233Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3583,7 +3524,7 @@
               ],
               "id": "5d367f960ce6b691e6e8-3b9447e4e77d7b5c1cc3",
               "file": "07_navigation_reset.spec.ts",
-              "line": 164,
+              "line": 163,
               "column": 7
             },
             {
@@ -3604,12 +3545,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1499,
+                      "duration": 1157,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:20:15.555Z",
+                      "startTime": "2026-07-07T04:28:32.531Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3619,7 +3560,7 @@
               ],
               "id": "5d367f960ce6b691e6e8-b44b335b9be57bc2a76c",
               "file": "07_navigation_reset.spec.ts",
-              "line": 169,
+              "line": 168,
               "column": 7
             },
             {
@@ -3640,12 +3581,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1496,
+                      "duration": 1137,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:20:17.079Z",
+                      "startTime": "2026-07-07T04:28:33.713Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3655,7 +3596,7 @@
               ],
               "id": "5d367f960ce6b691e6e8-334c51f3cd81aa22ee85",
               "file": "07_navigation_reset.spec.ts",
-              "line": 180,
+              "line": 179,
               "column": 7
             },
             {
@@ -3676,12 +3617,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1303,
+                      "duration": 1558,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T08:20:18.600Z",
+                      "startTime": "2026-07-07T04:28:34.877Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3691,7 +3632,264 @@
               ],
               "id": "5d367f960ce6b691e6e8-0bc937d0ae03fd2de12f",
               "file": "07_navigation_reset.spec.ts",
-              "line": 187,
+              "line": 186,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "08_media_interactions.spec.ts",
+      "file": "08_media_interactions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "STEP5: ライトボックス @happy",
+          "file": "08_media_interactions.spec.ts",
+          "line": 19,
+          "column": 6,
+          "specs": [
+            {
+              "title": "サムネイルをクリックするとライトボックスが開く",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14948,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:28:36.467Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-be0d3fa3ea46760f782b",
+              "file": "08_media_interactions.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "×ボタンでライトボックスが閉じる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14868,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:28:51.440Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-1dd4d0c6b1a6446e74db",
+              "file": "08_media_interactions.spec.ts",
+              "line": 29,
+              "column": 7
+            },
+            {
+              "title": "オーバーレイの余白クリックでライトボックスが閉じる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10437,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:29:06.331Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-be78997e030368f44871",
+              "file": "08_media_interactions.spec.ts",
+              "line": 36,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP6合成: 動画URLホワイトリスト検証 @error",
+          "file": "08_media_interactions.spec.ts",
+          "line": 46,
+          "column": 6,
+          "specs": [
+            {
+              "title": "許可リスト外ドメインのvideo_urlが返るとエラーが表示されSTEP5に留まる",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15383,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:29:16.798Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-984f49ce9dfe0b9b59fd",
+              "file": "08_media_interactions.spec.ts",
+              "line": 47,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP7: メタ保存失敗時の耐性 @error",
+          "file": "08_media_interactions.spec.ts",
+          "line": 58,
+          "column": 6,
+          "specs": [
+            {
+              "title": "メタ保存(fire-and-forget)が500を返してもSTEP7表示はブロックされない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20064,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:29:32.202Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-834510542c947673bb40",
+              "file": "08_media_interactions.spec.ts",
+              "line": 59,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP7: コピー機能 @happy",
+          "file": "08_media_interactions.spec.ts",
+          "line": 67,
+          "column": 6,
+          "specs": [
+            {
+              "title": "コピー ボタンを押すと一時的に「コピー済み」表示に切り替わる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15392,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-07T04:29:52.288Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-8c4b6e46eae92a10935a",
+              "file": "08_media_interactions.spec.ts",
+              "line": 79,
               "column": 7
             }
           ]
@@ -3701,9 +3899,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-29T08:02:38.617Z",
-    "duration": 1061413.419,
-    "expected": 84,
+    "startTime": "2026-07-07T04:12:16.827Z",
+    "duration": 1070991.154,
+    "expected": 89,
     "skipped": 6,
     "unexpected": 0,
     "flaky": 0

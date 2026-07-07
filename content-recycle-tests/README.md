@@ -14,19 +14,27 @@ content-recycle-tests/
 │   ├── fixtures/
 │   │   ├── constants.ts          # 定数（URL・セレクター・モック）
 │   │   └── helpers.ts            # 共通ヘルパー関数
-│   └── e2e/
-│       ├── 01_happy_path.spec.ts    # ハッピーパス（STEP1〜7正常フロー）
-│       ├── 02_error_cases.spec.ts   # エラー系テスト
-│       ├── 03_integration.spec.ts   # 統合テスト（実API疎通）
-│       ├── 04_endurance.spec.ts     # 耐久テスト
-│       └── 05_manual_checklist.spec.ts  # 人間テスト（スクショ生成）
+│   ├── e2e/                      # Playwright E2E（npm test で実行）
+│   │   ├── 01_happy_path.spec.ts        # ハッピーパス（STEP1〜7正常フロー）
+│   │   ├── 02_error_cases.spec.ts       # エラー系テスト（入力・WH1〜4・n8nノード系）
+│   │   ├── 03_integration.spec.ts       # 統合テスト（実API疎通、RUN_INTEGRATION=true時のみ）
+│   │   ├── 04_endurance.spec.ts         # 耐久テスト
+│   │   ├── 05_manual_checklist.spec.ts  # 人間テスト（スクショ生成）
+│   │   ├── 06_step_details.spec.ts      # 各STEPの詳細動作（STEP1スタイル選択・STEP4音声等）
+│   │   ├── 07_navigation_reset.spec.ts  # プログレスバー・リセット・ハンバーガーメニュー
+│   │   └── 08_media_interactions.spec.ts # ライトボックス・動画URL検証・メタ保存耐性・コピー機能
+│   └── unit/                     # Vitest 単体テスト（npm run test:unit で実行）
+│       └── main-logic.spec.ts    # main.htmlのインラインJSをjsdomで実行し純粋関数を直接検証
+├── vitest.config.ts               # Vitest設定（tests/unit のみを対象）
 ├── scripts/
-│   └── coverage-report.js        # カバレッジレポート生成
+│   └── coverage-report.js        # カバレッジレポート生成（Playwright E2Eのシナリオ網羅率）
 └── test-results/                 # テスト結果（自動生成）
     ├── results.json
     ├── coverage-report.txt
     └── manual-review/            # 人間確認用スクリーンショット
 ```
+
+> **単体テストとE2Eのカバレッジは別集計です。** `scripts/coverage-report.js` はPlaywright E2Eのシナリオ網羅率のみを計測します。`tests/unit/` のVitest結果は `npm run test:unit` の成否で別途確認してください（両方が揃って初めて「テスト完了」とみなします）。
 
 ---
 
@@ -59,11 +67,11 @@ BASE_URL=https://chirichiri3720.github.io/Content-Recycle/main.html
 # ローカル開発サーバーをテストする場合
 # BASE_URL=http://localhost:3000/main.html
 
-# n8n Webhook URL（統合テスト用）
-WH1_URL=https://weby.app.n8n.cloud/webhook/content-recycle-wh1
-WH2_URL=https://weby.app.n8n.cloud/webhook/content-recycle-wh2
-WH3_URL=https://weby.app.n8n.cloud/webhook/content-recycle-wh3
-WH4_URL=https://weby.app.n8n.cloud/webhook/content-recycle-wh4
+# n8n Webhook URL（統合テスト用。実際のURLは大文字始まりの "Content-Recycle" 表記）
+WH1_URL=https://weby.app.n8n.cloud/webhook/Content-Recycle
+WH2_URL=https://weby.app.n8n.cloud/webhook/Content-Recycle-select
+WH3_URL=https://weby.app.n8n.cloud/webhook/Content-Recycle-generate
+WH4_URL=https://weby.app.n8n.cloud/webhook/Content-Recycle-compose
 
 # Supabase（統合テスト・DB確認用）
 SUPABASE_URL=https://eitwhzteuhouxfmogvnf.supabase.co
@@ -121,7 +129,16 @@ npx playwright test tests/e2e/05_manual_checklist.spec.ts --headed
 # → test-results/manual-review/ にスクリーンショットが保存される
 ```
 
-### カバレッジレポート
+### 単体テスト（main.htmlのロジックを直接検証）
+
+```bash
+npm run test:unit
+```
+
+main.html は変更せず、jsdom上でインラインスクリプトをそのまま実行し、`validateVideoUrl`（動画URLホワイトリスト）、
+`escapeHtml`（XSS対策）、`estDuration`（秒数見積り）、`scoreAndSort`（レコメンドスコアリング）を直接呼び出して検証する。
+
+### カバレッジレポート（Playwright E2Eのシナリオ網羅率）
 
 ```bash
 npm run test:coverage
@@ -139,21 +156,33 @@ npm run test:report
 
 ## カバレッジ目標
 
-**目標: 80%**
+**目標: シナリオ網羅率 90%**（`scripts/coverage-report.js` で計測。単体テストは別集計）
 
-| カテゴリ | テスト数 | 自動化率 |
-|---------|---------|---------|
-| UIフロー（STEP1〜7） | 12件 | 100% |
-| 入力バリデーション | 3件 | 100% |
-| WH1エラー | 5件 | 100% |
-| WH2エラー | 2件 | 100% |
-| WH3エラー | 2件 | 100% |
-| WH4エラー | 3件 | 100% |
-| n8nノード系エラー | 4件 | 100% |
-| 耐久テスト | 4件 | 100% |
-| 統合テスト | 4件 | 要実API |
-| 人間テスト（視覚確認） | 7件 | スクショのみ |
-| **合計** | **46件** | **約85%** |
+| カテゴリ | 自動化率 |
+|---------|---------|
+| UIフロー（STEP1〜7、スタイル/映像タイプ選択・音声自動選択を含む） | 100% |
+| 入力バリデーション | 100% |
+| WH1エラー | 100% |
+| WH2エラー | 100% |
+| WH3エラー | 100% |
+| WH4エラー | 100% |
+| n8nノード系エラー（クォータ・scenes欠落・kling_tasks等） | 100% |
+| 動画URL検証・メタ保存耐性 | 100% |
+| 耐久テスト | 100% |
+| 統合テスト | 要実API（`RUN_INTEGRATION=true`、既定では未実行） |
+| 人間テスト（視覚確認） | スクショのみ |
+
+正確な件数・達成率は `npm run test:coverage` 実行後の `test-results/coverage-report.txt` を参照。
+
+### main.htmlのデッドコード削除について
+
+以下は完全に未使用（呼び出し元ゼロ）だったため main.html から削除済み:
+`renderExpressionGrid()`/`selectExpression()`/`EXPRESSION_MOOD_MAP`（表現スタイル選択はSTEP1の`#expression-grid-step1`に統合済みで対応する`#expression-grid`要素が存在しなかった）、
+`pollGenerationStatus()`/`STATUS_URL`、`regenerateScene()`、`goBackToStep5()`、`state.selectedDirection`/`state.selectedStyle`、および付随するCSS（`.style-recommend-badge`・`.btn-mini`）。
+削除後もE2E/単体テスト（本ファイル記載の全スイート）は変わらず全件成功することを確認済み。
+
+`OPTIONS_URL`（`Content-Recycle-options`）は削除していない: `USE_MOCK_OPTIONS = true` のためclient側モックのみが使われ現状fetchされないが、
+`loadOptionsAndRenderStep4()`内の実コードパス（フラグをfalseにすれば有効）であり、単なるデッドコードではなくフィーチャーフラグの範囲内のため対象外とした。
 
 ---
 
@@ -197,7 +226,13 @@ npx playwright codegen https://chirichiri3720.github.io/Content-Recycle/main.htm
 ### Webhookモックが機能しない
 
 `playwright.config.ts` の `baseURL` が正しいか確認。  
-モックのルートパターン（`**/webhook/content-recycle-**`）がn8n URLと一致しているか確認してください。
+`tests/fixtures/constants.ts` の `URLS`（`Content-Recycle` は大文字始まり）が実際のn8n URLと一致しているか確認してください。
+
+### STEP1の送信ボタンが押せない（disabledのまま）
+
+`main.html` のSTEP1は表現スタイル/映像タイプのカードをクリックして `validateStep1()` が発火するまで送信ボタンが `disabled` のまま。
+`fillUrlAndSubmit()` ヘルパーは自動でスタイルカードをクリックするが、独自にSTEP1操作を書く場合は
+`#expression-grid-step1 .style-option` のいずれかを先にクリックすること。
 
 ### GitHub Pages のSPAルーティング問題
 
