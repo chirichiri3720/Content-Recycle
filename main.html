@@ -518,18 +518,18 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
 // ============================================================
 // 定数 / Webhook
 // ============================================================
-const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
-const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
-const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
-const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
-const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
-const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
-// const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
-// const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
-// const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
-// const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
-// const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
-// const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';
+// const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
+// const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
+// const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
+// const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
+// const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
+// const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
+const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';          // WH1 台本生成
+const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
+const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
+const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
+const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
+const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';
 const BASE_IMG_URL   = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Tmp_Movie';
 
 const VIDEO_URL_WHITELIST = [
@@ -887,7 +887,7 @@ async function freezeAndProceed() {
   safety_note: sc.safety_note || '',
 　}));
   if (finalScenes.some(s => !s.narration)) { showError('空のナレーションがあります。各シーンを入力してください。'); return; }
-  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 1200);
+  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 30000);
   try {
   const res = await fetch(SELECT_URL, { 
     method:'POST', 
@@ -1004,7 +1004,7 @@ async function proceedToGenerate() {
       { icon: isVideo ? '🎞' : '🖼', text: isVideo ? '動画クリップを生成中(Kling)' : '画像の仕上がりを確認中' },
       { icon:'✅', text:'完了' },
     ],
-    8000, true
+    30000, true
   );
 
   const finalScenePrompts = bodyScenes().map((sc, i) => ({
