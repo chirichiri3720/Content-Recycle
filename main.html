@@ -109,7 +109,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
   #step3 > div > div:first-child { position: static !important; }
 }
 .editor-scene { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 14px; margin-bottom: 12px; transition: border-color 0.2s; }
-.editor-scene.cta { opacity: 0.7; border-style: dashed; }
 .editor-scene.thumb { border-color: rgba(108,99,255,0.35); background: rgba(108,99,255,0.05); }
 .editor-scene-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
 .editor-scene-role { font-size: 10px; color: var(--accent); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
@@ -833,17 +832,16 @@ function renderEditor() {
   const body = bodyScenes();
   body.forEach((scene, i) => {
     const isThumbnail = isThumbnailScene(scene);
-    const isCta = scene.role === 'cta' || scene.scene === 7;
     // 編集対象は narration ではなく subtitle（字幕・ナレーションともにこのカラムを正として編集する）
     const original = scene.subtitle || scene.narration || '';
     if (!state.narrationEdits[i]) state.narrationEdits[i] = { original, current: original, edited: false };
     const item = document.createElement('div');
-    item.className = isThumbnail ? 'editor-scene thumb' : (isCta ? 'editor-scene cta' : 'editor-scene');
+    item.className = isThumbnail ? 'editor-scene thumb' : 'editor-scene';
     item.id = `ed-${i}`;
     const head = document.createElement('div'); head.className = 'editor-scene-head';
     const role = document.createElement('div'); role.className = 'editor-scene-role';
     role.innerHTML = `<span>SCENE ${scene.scene} · ${escapeHtml(isThumbnail ? 'サムネイル' : (scene.role||'narration'))}</span>`;
-    if (!isCta && !isThumbnail && state.narrationEdits[i].edited) { const b = document.createElement('span'); b.className='edited-badge'; b.textContent='✏ 編集済み'; role.appendChild(b); }
+    if (!isThumbnail && state.narrationEdits[i].edited) { const b = document.createElement('span'); b.className='edited-badge'; b.textContent='✏ 編集済み'; role.appendChild(b); }
     const meta = document.createElement('div'); meta.className = 'editor-scene-meta';
     const dur = document.createElement('span'); dur.className = 'dur-pill'; dur.id = `ed-dur-${i}`;
     head.appendChild(role); meta.appendChild(dur); head.appendChild(meta);
@@ -852,8 +850,6 @@ function renderEditor() {
     const hint = document.createElement('div'); hint.className = 'editor-hint';
     if (isThumbnail) {
       hint.textContent = '🖼 サムネイル用の字幕テキストです。この文章はナレーション（読み上げ）されません。静止画に字幕として一瞬だけ表示されます。';
-    } else if (isCta) {
-      hint.textContent = '🎬 CTAシーン（コメント欄誘導・音声・画像/動画・字幕 生成あり）';
     }
     item.appendChild(head); item.appendChild(ta); if (hint.textContent) item.appendChild(hint);
     (isThumbnail && thumbList ? thumbList : list).appendChild(item);
@@ -1127,7 +1123,6 @@ function renderReview() {
   const list = document.getElementById('review-list'); list.innerHTML = '';
   bodyScenes().forEach((scene, i) => {
     const isThumbnail = isThumbnailScene(scene);
-    const isCta = scene.scene === 7 || scene.role === 'cta';
     const media = state.sceneMedia.find(m => Number(m.scene) === Number(scene.scene)) || state.sceneMedia[i] || {};
     const type = media.type || state.defaultVisualType;
     const assetUrl = media.asset_url || '';
