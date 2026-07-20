@@ -15,6 +15,10 @@
   3. visual_type(画像 / 動画)をシーン単位で選択可能に(全体既定 + 個別上書き)
   4. BGM/字幕位置を「確認の後(STEP6)」へ分離
   5. メタは台本生成AIが platform_posts を候補ごとに生成 → 選択候補のみ最終保存
+  6. シーン構成を SCENE0(サムネ) + SCENE1〜7 の計8シーンに変更。
+     SCENE0 は静止画+字幕のみを一瞬だけ出力するサムネイル用（ナレーションなし）。
+     SCENE0とSCENE1の間には導入動画を挿入する(SCENE0の素材を動かす形で生成)。
+     編集(STEP3)・確定送信(final_scenes)はいずれも8シーン分を扱う。
 
  Webhook 契約(n8n 側で実装する想定):
   - Content-Recycle          (WH1) 記事+台本+メタ生成 → script_candidates
@@ -106,6 +110,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 }
 .editor-scene { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 14px; margin-bottom: 12px; transition: border-color 0.2s; }
 .editor-scene.cta { opacity: 0.7; border-style: dashed; }
+.editor-scene.thumb { border-color: rgba(108,99,255,0.35); background: rgba(108,99,255,0.05); }
 .editor-scene-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
 .editor-scene-role { font-size: 10px; color: var(--accent); font-family: 'Space Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
 .editor-scene-meta { display: flex; align-items: center; gap: 8px; font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; }
@@ -388,9 +393,9 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
 
   <!-- STEP 3 台本編集（本文凍結・画像なし） -->
   <div class="step" id="step3">
-      <div style="display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start">
-        
-        <!-- 左：記事情報 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+
+        <!-- 左：記事情報 + サムネイル編集 -->
         <div style="position:sticky;top:24px">
         <div class="card" style="margin-bottom:12px">
             <div style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;letter-spacing:0.05em;margin-bottom:10px">📄 記事情報</div>
@@ -404,17 +409,19 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
             <div id="step3-concept" style="font-size:11px;color:var(--text2);line-height:1.7"></div>
         </div>
         <div class="card" style="margin-bottom:0">
-            <div class="total-dur-bar" style="margin-bottom:0;border:none;padding:0">
-            <span style="font-size:12px;color:var(--text2)">本編合計（見積り）</span>
-            <strong id="total-dur" style="font-size:14px">— 秒</strong>
-            </div>
+            <div class="card-title"><div class="icon">🖼️</div>サムネイルを編集・確定</div>
+            <div id="thumbnail-editor"></div>
         </div>
         </div>
 
-        <!-- 右：シーン編集 -->
+        <!-- 右：シーン編集（ナレーション） -->
         <div class="card">
-        <div class="card-title"><div class="icon">✏️</div>ナレーションを編集・確定</div>
-        <div class="info-row" style="margin-bottom:14px"><span class="icon">🕒</span>テキストを編集すると右上の秒数・文字数がリアルタイムで更新されます（約5.5字/秒）</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+            <div class="card-title" style="margin-bottom:0"><div class="icon">✏️</div>ナレーションを編集・確定</div>
+            <div style="font-size:12px;color:var(--text2);white-space:nowrap">本編合計 <strong id="total-dur" style="font-size:14px;color:var(--text);font-family:'Space Mono',monospace">— 秒</strong></div>
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:14px;line-height:1.5">🖼 サムネイル（SCENE 0）自体の秒数は含まれませんが、SCENE0→SCENE1間の導入動画（固定5秒）は加算されています</div>
+        <div class="info-row" style="margin-bottom:14px"><span class="icon">🕒</span>テキストを編集すると右上の秒数・文字数がリアルタイムで更新されます（目安 約7字/秒）</div>
         <div class="edit-summary-banner" id="edit-summary-banner"><span class="icon">✏️</span><span id="edit-summary-text"></span></div>
         <div id="editor-list"></div>
         <div class="btn-row">
@@ -538,7 +545,8 @@ const VIDEO_URL_WHITELIST = [
   'shotstack-api-stage-output.s3-ap-southeast-2.amazonaws.com',
   'storage.googleapis.com',
 ];
-const CHARS_PER_SEC = 5.0; // 日本語TTS 見積り基準（マスタークロックは実音声）
+const CHARS_PER_SEC = 7.0; // 日本語TTS 見積り基準（マスタークロックは実音声）
+const INTRO_VIDEO_SEC = 5; // SCENE0→SCENE1間に固定挿入される導入動画の尺
 const USE_MOCK_OPTIONS = true;
 
 // ============================================================
@@ -604,8 +612,12 @@ function validateVideoUrl(url) {
 function escapeHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 function estDuration(text) {
   const len = (text || '').replace(/\s/g, '').length;
-  return Math.max(2, Math.round(len / CHARS_PER_SEC) + 1);
+  return Math.max(2, Math.round(len / CHARS_PER_SEC));
 }
+// SCENE0(サムネ)はナレーションされない静止画+字幕のため、role/scene番号で判定
+// role名はバックエンド(WH1台本生成AI)側の値をそのまま受け取るため、旧名称(coldpen等)が来ても scene:0 で判定できるようにしている
+const THUMBNAIL_ROLE_ALIASES = ['thumbnail', 'coldpen'];
+function isThumbnailScene(scene) { return !!scene && (THUMBNAIL_ROLE_ALIASES.includes(scene.role) || scene.scene === 0); }
 // 全シーン（role/scene問わず）を返す
 function bodyScenes() {
   const sc = state.selectedScript ? (state.selectedScript.scenes || []) : [];
@@ -765,9 +777,11 @@ function renderScripts() {
       wrap.style.cssText = 'margin-top:12px;padding-top:12px;border-top:1px solid var(--border)';
       wrap.innerHTML = `<div style="font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.05em">シーン構成</div>`;
       const sceneWrap = document.createElement('div'); sceneWrap.className = 'scenes-container';
-      body.slice(0,4).forEach((sc, si) => {
+      body.slice(0,4).forEach((sc) => {
+        const scIsThumb = isThumbnailScene(sc);
+        const text = sc.subtitle || sc.narration || '';
         const row = document.createElement('div'); row.className = 'scene-item';
-        row.innerHTML = `<div class="scene-num">${si+1}</div><div class="scene-content"><div class="scene-role">${escapeHtml(sc.role||'narration')}</div><div class="scene-text">${escapeHtml((sc.narration||'').slice(0,80))}${(sc.narration||'').length>80?'...':''}</div><div class="scene-duration">${escapeHtml(String(sc.duration_sec||5))}秒</div></div>`;
+        row.innerHTML = `<div class="scene-num">${escapeHtml(String(sc.scene ?? ''))}</div><div class="scene-content"><div class="scene-role">${escapeHtml(scIsThumb ? 'サムネイル' : (sc.role||'narration'))}</div><div class="scene-text">${escapeHtml(text.slice(0,80))}${text.length>80?'...':''}</div><div class="scene-duration">${scIsThumb ? '一瞬表示・音声なし' : escapeHtml(String(sc.duration_sec||5))+'秒'}</div></div>`;
         sceneWrap.appendChild(row);
       });
       wrap.appendChild(sceneWrap);
@@ -799,8 +813,10 @@ function proceedToEditor() {
 // STEP 3 台本編集（本文凍結・画像なし）
 // ============================================================
 function renderEditor() {
-  const list = document.getElementById('editor-list'); 
+  const list = document.getElementById('editor-list');
   list.innerHTML = '';
+  const thumbList = document.getElementById('thumbnail-editor');
+  if (thumbList) thumbList.innerHTML = '';
 
   // ★左カラムに記事情報を表示
   const sc = state.selectedScript || {};
@@ -816,29 +832,31 @@ function renderEditor() {
 
   const body = bodyScenes();
   body.forEach((scene, i) => {
+    const isThumbnail = isThumbnailScene(scene);
     const isCta = scene.role === 'cta' || scene.scene === 7;
-    const original = scene.narration || '';
+    // 編集対象は narration ではなく subtitle（字幕・ナレーションともにこのカラムを正として編集する）
+    const original = scene.subtitle || scene.narration || '';
     if (!state.narrationEdits[i]) state.narrationEdits[i] = { original, current: original, edited: false };
     const item = document.createElement('div');
-    item.className = isCta ? 'editor-scene cta' : 'editor-scene';
+    item.className = isThumbnail ? 'editor-scene thumb' : (isCta ? 'editor-scene cta' : 'editor-scene');
     item.id = `ed-${i}`;
     const head = document.createElement('div'); head.className = 'editor-scene-head';
     const role = document.createElement('div'); role.className = 'editor-scene-role';
-    role.innerHTML = `<span>SCENE ${scene.scene} · ${escapeHtml(scene.role||'narration')}</span>`;
-    if (!isCta && state.narrationEdits[i].edited) { const b = document.createElement('span'); b.className='edited-badge'; b.textContent='✏ 編集済み'; role.appendChild(b); }
+    role.innerHTML = `<span>SCENE ${scene.scene} · ${escapeHtml(isThumbnail ? 'サムネイル' : (scene.role||'narration'))}</span>`;
+    if (!isCta && !isThumbnail && state.narrationEdits[i].edited) { const b = document.createElement('span'); b.className='edited-badge'; b.textContent='✏ 編集済み'; role.appendChild(b); }
     const meta = document.createElement('div'); meta.className = 'editor-scene-meta';
     const dur = document.createElement('span'); dur.className = 'dur-pill'; dur.id = `ed-dur-${i}`;
     head.appendChild(role); meta.appendChild(dur); head.appendChild(meta);
     const ta = document.createElement('textarea'); ta.className = 'editor-textarea'; ta.id = `ed-ta-${i}`; ta.value = state.narrationEdits[i].current;
     ta.addEventListener('input', () => onEditorInput(i));
     const hint = document.createElement('div'); hint.className = 'editor-hint';
-    if (isCta) {
+    if (isThumbnail) {
+      hint.textContent = '🖼 サムネイル用の字幕テキストです。この文章はナレーション（読み上げ）されません。静止画に字幕として一瞬だけ表示されます。';
+    } else if (isCta) {
       hint.textContent = '🎬 CTAシーン（コメント欄誘導・音声・画像/動画・字幕 生成あり）';
-    } else {
-      hint.textContent = scene.visual_direction ? `映像メモ: ${scene.visual_direction}` : '';
     }
     item.appendChild(head); item.appendChild(ta); if (hint.textContent) item.appendChild(hint);
-    list.appendChild(item);
+    (isThumbnail && thumbList ? thumbList : list).appendChild(item);
     updateDurPill(i);
   });
   updateEditSummary(); updateTotalDur();
@@ -857,12 +875,23 @@ function onEditorInput(i) {
 }
 function updateDurPill(i) {
   const pill = document.getElementById(`ed-dur-${i}`); if (!pill) return;
-  const txt = state.narrationEdits[i].current; const sec = estDuration(txt);
+  const txt = state.narrationEdits[i].current;
+  if (isThumbnailScene(bodyScenes()[i])) {
+    pill.textContent = `${txt.length}字 ・ ナレーションなし`;
+    pill.classList.remove('over');
+    return;
+  }
+  const sec = estDuration(txt);
   pill.textContent = `約${sec}秒 / ${txt.length}字`;
   pill.classList.toggle('over', sec > 6); // 1シーン6秒超は要注意（離脱リスク）
 }
 function updateTotalDur() {
-  let total = 0; bodyScenes().forEach((_, i) => { total += estDuration(state.narrationEdits[i]?.current || ''); });
+  // SCENE0(サムネ)自体はナレーションなし・一瞬表示のため本編合計には含めない。
+  // ただしSCENE0→SCENE1間に固定尺の導入動画が挿入されるため、その分は加算する。
+  const scenes = bodyScenes();
+  const hasThumbnail = scenes.some(isThumbnailScene);
+  let total = hasThumbnail ? INTRO_VIDEO_SEC : 0;
+  scenes.forEach((scene, i) => { if (!isThumbnailScene(scene)) total += estDuration(state.narrationEdits[i]?.current || ''); });
   const el = document.getElementById('total-dur'); if (el) el.textContent = `約 ${total} 秒`;
 }
 function updateEditSummary() {
@@ -875,18 +904,24 @@ function updateEditSummary() {
 // 凍結 → 設定へ。WH2(select) で選択確定 + narration凍結 + scenes作成 + ハイライトAIトリガ
 async function freezeAndProceed() {
   const body = bodyScenes();
-  const finalScenes = body.map((sc, i) => ({
-  scene: sc.scene, role: sc.role,
-  narration: (state.narrationEdits[i]?.current || sc.narration || '').trim(),
-  duration_sec: sc.duration_sec,
-  edited: state.narrationEdits[i]?.edited || false,
-  subtitle: sc.subtitle || '',
-  image_prompt_seed: sc.image_prompt_seed || '',
-  visual_direction: sc.visual_direction || '',
-  motion_direction: sc.motion_direction || '',
-  safety_note: sc.safety_note || '',
-　}));
-  if (finalScenes.some(s => !s.narration)) { showError('空のナレーションがあります。各シーンを入力してください。'); return; }
+  const finalScenes = body.map((sc, i) => {
+    const isThumb = isThumbnailScene(sc);
+    // 編集対象は narration ではなく subtitle が正。編集済みテキストは subtitle として送信する
+    const editedText = (state.narrationEdits[i]?.current ?? (sc.subtitle || sc.narration) ?? '').trim();
+    return {
+    scene: sc.scene, role: sc.role,
+    narration: isThumb ? '' : editedText, // SCENE0(サムネ)は読み上げされないため narration は空にする
+    narrated: !isThumb, // SCENE0(サムネ)は静止画+字幕のみでTTS生成対象外
+    duration_sec: sc.duration_sec,
+    edited: state.narrationEdits[i]?.edited || false,
+    subtitle: editedText,
+    image_prompt_seed: sc.image_prompt_seed || '',
+    visual_direction: sc.visual_direction || '',
+    motion_direction: sc.motion_direction || '',
+    safety_note: sc.safety_note || '',
+    };
+  });
+  if (finalScenes.some(s => !s.subtitle)) { showError('空の字幕・ナレーションがあります。各シーンを入力してください。'); return; }
   showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 30000);
   try {
   const res = await fetch(SELECT_URL, { 
@@ -976,10 +1011,11 @@ function renderSettingsSceneList() {
     row.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius2);padding:10px 12px;margin-bottom:8px;';
     const roleEl = document.createElement('div');
     roleEl.style.cssText = 'font-size:10px;color:var(--accent);font-family:"Space Mono",monospace;text-transform:uppercase;margin-bottom:4px;';
-    roleEl.textContent = `SCENE ${scene.scene} · ${scene.role||'narration'}`;
+    const isThumbnail = isThumbnailScene(scene);
+    roleEl.textContent = `SCENE ${scene.scene} · ${isThumbnail ? 'サムネイル' : (scene.role||'narration')}`;
     const narr = document.createElement('div');
     narr.style.cssText = 'font-size:12px;color:var(--text2);line-height:1.6;';
-    narr.textContent = state.narrationEdits[i]?.current || scene.narration || '';
+    narr.textContent = state.narrationEdits[i]?.current || scene.subtitle || scene.narration || '';
     row.appendChild(roleEl); row.appendChild(narr);
     c.appendChild(row);
   });
@@ -1090,19 +1126,21 @@ function selectVoice(i) {
 function renderReview() {
   const list = document.getElementById('review-list'); list.innerHTML = '';
   bodyScenes().forEach((scene, i) => {
+    const isThumbnail = isThumbnailScene(scene);
     const isCta = scene.scene === 7 || scene.role === 'cta';
     const media = state.sceneMedia.find(m => Number(m.scene) === Number(scene.scene)) || state.sceneMedia[i] || {};
     const type = media.type || state.defaultVisualType;
     const assetUrl = media.asset_url || '';
     const audioUrl = media.audio_url || media.tts_audio_url || '';
     const dur = media.audio_duration;
-    const tmpUrl = scene.scene === 7
-      ? `${BASE_IMG_URL}/tmp_movie7.png`
-      : `${BASE_IMG_URL}/tmp_movie${scene.scene}.mp4`;
+    // SCENE0(サムネ)用の暫定素材は未用意のため、実素材が届くまではローディング表示のままにする
+    const tmpUrl = isThumbnail
+      ? ''
+      : (scene.scene === 7 ? `${BASE_IMG_URL}/tmp_movie7.png` : `${BASE_IMG_URL}/tmp_movie${scene.scene}.mp4`);
     const displayUrl = assetUrl || tmpUrl;
     const isFallback = !assetUrl;
     const displayIsVideo = /\.mp4($|\?)/i.test(displayUrl);
-    const narrationText = state.narrationEdits[i]?.current || scene.narration || '';
+    const narrationText = state.narrationEdits[i]?.current || scene.subtitle || scene.narration || '';
 
     const row = document.createElement('div'); row.className = 'review-scene';
 
@@ -1125,7 +1163,7 @@ function renderReview() {
 
     const info = document.createElement('div'); info.className = 'review-info';
     const roleEl = document.createElement('div'); roleEl.className = 'review-role';
-    const rs = document.createElement('span'); rs.textContent = `SCENE ${scene.scene} · ${scene.role||'narration'}`;
+    const rs = document.createElement('span'); rs.textContent = `SCENE ${scene.scene} · ${isThumbnail ? 'サムネイル' : (scene.role||'narration')}`;
     roleEl.appendChild(rs);
     const narr = document.createElement('div'); narr.className = 'review-narration'; narr.textContent = narrationText;
     info.appendChild(roleEl); info.appendChild(narr);
@@ -1134,7 +1172,7 @@ function renderReview() {
       au.addEventListener('play',()=>stopOtherAudios(au,'#step5')); info.appendChild(au);
     }
     const d = document.createElement('div'); d.className='review-dur';
-    d.textContent = dur ? `実尺 ${Number(dur).toFixed(1)}秒 · ${VT_LABEL[type]}` : `${VT_LABEL[type]}`;
+    d.textContent = isThumbnail ? `静止画+字幕（一瞬表示・音声なし）` : (dur ? `実尺 ${Number(dur).toFixed(1)}秒 · ${VT_LABEL[type]}` : `${VT_LABEL[type]}`);
     info.appendChild(d);
     row.appendChild(thumb); row.appendChild(info); list.appendChild(row);
   });
