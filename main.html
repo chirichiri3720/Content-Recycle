@@ -553,7 +553,7 @@ const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-
 const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
 const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
 const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';
-const BASE_IMG_URL   = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Tmp_Movie';
+const BASE_IMG_URL   = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Tmp_Image';
 
 const VIDEO_URL_WHITELIST = [
   'cdn.shotstack.io',
@@ -847,7 +847,7 @@ function renderEditor() {
   if (urlEl)     { urlEl.textContent   = am.article_url || sc.article_url || ''; urlEl.href = am.article_url || sc.article_url || '#'; }
   if (summaryEl) summaryEl.textContent = am.article_summary_short || sc.article_summary_short || '—';
   if (conceptEl) conceptEl.textContent = sc.concept || '—';
-  const tp = sc.target_profile || state.targetProfile || {};
+  const tp = state.targetProfile || sc.target_profile || {};
   const targetRoleEl = document.getElementById('step3-target-role');
   const characterEl = document.getElementById('step3-character');
   if (targetRoleEl) targetRoleEl.textContent = tp.target_role || '—';
@@ -1174,7 +1174,7 @@ function renderReview() {
     // SCENE0(サムネ)用の暫定素材は未用意のため、実素材が届くまではローディング表示のままにする
     const tmpUrl = isThumbnail
       ? ''
-      : (scene.scene === 7 ? `${BASE_IMG_URL}/tmp_movie7.png` : `${BASE_IMG_URL}/tmp_movie${scene.scene}.mp4`);
+      : (scene.scene === 7 ? `${BASE_IMG_URL}/tmp_movie7.png` : `${BASE_IMG_URL}/tmp${scene.scene}.mp4`);
     const displayUrl = assetUrl || tmpUrl;
     const isFallback = !assetUrl;
     const displayIsVideo = /\.mp4($|\?)/i.test(displayUrl);
@@ -1439,10 +1439,10 @@ function resetAll() {
 const MOCK_OPTIONS = {
   mood_profile: { primary_mood:'reassuring', secondary_mood:'trustworthy', energy:2, tone_keywords:['calm'], genre:'casestudy' },
   voices: [
-  { id:'v1', label:'自然な女性の声', voice_name:'ja-JP-Neural2-B', ssml_gender:'FEMALE', speaking_rate:1.3, pitch:1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.wav', reason:['reassuring','calm','warm'], energy:2, genre_affinity:['faq','howto','casestudy'] },
-  { id:'v2', label:'落ち着いた男性の声', voice_name:'ja-JP-Neural2-C', ssml_gender:'MALE', speaking_rate:1.3, pitch:1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.wav', reason:['trustworthy','serious','informative'], energy:2, genre_affinity:['faq','casestudy','compare','opinion'] },
-  { id:'v3', label:'信頼感のある男性の声', voice_name:'ja-JP-Neural2-D', ssml_gender:'MALE', speaking_rate:1.3, pitch:1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.wav', reason:['calm','trustworthy','neutral'], energy:3, genre_affinity:['faq','howto','compare'] },
-  { id:'v4', label:'ナチュラルな女性の声', voice_name:'ja-JP-Chirp3-HD-Zephyr', ssml_gender:'FEMALE', speaking_rate:1.3, pitch:1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts4.wav', reason:['natural','friendly','reassuring','positive'], energy:3, genre_affinity:['faq','howto','opinion'] },
+  { id:'v1', label:'自然な女性の声', voice_name:'ja-JP-Neural2-B', ssml_gender:'FEMALE', speaking_rate:1.3, pitch:1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts1.mp3', reason:['reassuring','calm','warm'], energy:2, genre_affinity:['faq','howto','casestudy'] },
+  { id:'v2', label:'落ち着いた男性の声', voice_name:'ja-JP-Neural2-C', ssml_gender:'MALE', speaking_rate:1.3, pitch:1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts2.mp3', reason:['trustworthy','serious','informative'], energy:2, genre_affinity:['faq','casestudy','compare','opinion'] },
+  { id:'v3', label:'信頼感のある男性の声', voice_name:'ja-JP-Neural2-D', ssml_gender:'MALE', speaking_rate:1.3, pitch:1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts3.mp3', reason:['calm','trustworthy','neutral'], energy:3, genre_affinity:['faq','howto','compare'] },
+  { id:'v4', label:'ナチュラルな女性の声', voice_name:'ja-JP-Chirp3-HD-Zephyr', ssml_gender:'FEMALE', speaking_rate:1.3, pitch:1, sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Tts/sample_tts4.mp3', reason:['natural','friendly','reassuring','positive'], energy:3, genre_affinity:['faq','howto','opinion'] },
 ],
   bgms: [
   { id:'b1', name:'BGM1', storage_url:'https://eitwhzteuhouxfmogvnf.supabase.co/storage/v1/object/public/bgm/bgm1.mp3', sample_url:'https://chirichiri3720.github.io/Content-Recycle/Sample_Bgm/sample_bgm1.mp3', reason:['neutral','informative','positive'], energy:3, genre_affinity:['faq','howto','compare','ranking'], label:'軽快な情報解説系' },
