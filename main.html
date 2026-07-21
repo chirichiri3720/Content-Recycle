@@ -447,14 +447,23 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
         <div class="panel-title">🎬 シーン確認</div>
         <div class="scroll-area" id="settings-scene-list" style="max-height:600px"></div>
       </div>
-      <!-- 右：生成設定 -->
-      <div class="panel">
-        <div class="panel-title">⚙️ 生成設定</div>
-        <div class="mood-info-bar" id="mood-info"><span class="icon">✨</span><span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span></div>
-        <!-- 4. ナレーション音声 -->
-        <div class="settings-section" style="border-bottom:none;padding-bottom:0;margin-bottom:0">
-          <div class="settings-section-label">🎙 ナレーション音声</div>
-          <div id="voice-list"></div>
+      <!-- 右：ターゲット層 + 生成設定 -->
+      <div>
+        <div class="panel" style="margin-bottom:16px">
+          <div style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;letter-spacing:0.05em;margin-bottom:10px">🎯 ターゲット層</div>
+          <div id="step4-target-role" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px"></div>
+          <div style="height:1px;background:var(--border);margin-bottom:10px"></div>
+          <div style="font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:4px">主人公（出力予定）</div>
+          <div id="step4-character" style="font-size:11px;color:var(--text2);line-height:1.7"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">⚙️ 生成設定</div>
+          <div class="mood-info-bar" id="mood-info"><span class="icon">✨</span><span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span></div>
+          <!-- 4. ナレーション音声 -->
+          <div class="settings-section" style="border-bottom:none;padding-bottom:0;margin-bottom:0">
+            <div class="settings-section-label">🎙 ナレーション音声</div>
+            <div id="voice-list"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -840,8 +849,11 @@ function renderEditor() {
   const tp = sc.target_profile || state.targetProfile || {};
   const targetRoleEl = document.getElementById('step3-target-role');
   const characterEl = document.getElementById('step3-character');
-  if (targetRoleEl) targetRoleEl.textContent = [tp.target_role, tp.target_age_range].filter(Boolean).join(' ・ ') || '—';
-  if (characterEl) characterEl.textContent = sc.planned_character_summary || sc.character_description || '—';
+  if (targetRoleEl) targetRoleEl.textContent = tp.target_role || '—';
+  if (characterEl) {
+    const genderLabel = tp.target_gender === 'male' ? '男性' : tp.target_gender === 'female' ? '女性' : (tp.target_gender || '');
+    characterEl.textContent = [genderLabel, tp.target_age_range].filter(Boolean).join(' / ') || '—';
+  }
 
   const body = bodyScenes();
   body.forEach((scene, i) => {
@@ -1002,6 +1014,7 @@ async function loadOptionsAndRenderStep4() {
 // ============================================================
 function renderStep4() {
   renderSettingsSceneList();
+  renderTargetProfileStep4();
   renderVoiceList();
   const mp = state.options.moodProfile;
   if (mp) {
@@ -1012,6 +1025,19 @@ function renderStep4() {
   validateStep4();
 }
 
+
+// ターゲット層 + 主人公（出力予定）（右パネル上部・読み取り専用）
+function renderTargetProfileStep4() {
+  const sc = state.selectedScript || {};
+  const tp = sc.target_profile || state.targetProfile || {};
+  const targetRoleEl = document.getElementById('step4-target-role');
+  const characterEl = document.getElementById('step4-character');
+  if (targetRoleEl) targetRoleEl.textContent = tp.target_role || '—';
+  if (characterEl) {
+    const genderLabel = tp.target_gender === 'male' ? '男性' : tp.target_gender === 'female' ? '女性' : (tp.target_gender || '');
+    characterEl.textContent = [genderLabel, tp.target_age_range].filter(Boolean).join(' / ') || '—';
+  }
+}
 
 // シーン確認(左パネル・読み取り専用)
 function renderSettingsSceneList() {
