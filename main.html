@@ -373,6 +373,7 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
         <div class="loading-steps" id="loading-steps-container"></div>
         <div class="wait-banner" id="wait-banner" style="display:none"><span class="icon">⏱</span><span>動画の合成には最大5分かかる場合があります。<br>完了まで<strong>ページを閉じないでください。</strong></span></div>
         <div class="polling-progress" id="polling-progress" style="display:none"><div class="polling-bar-wrap"><div class="polling-bar-fill" id="polling-bar"></div></div><div class="polling-status" id="polling-status">レンダリング中...</div></div>
+        <button class="btn btn-outline" id="btn-cancel-loading" style="display:none;margin-top:20px" onclick="cancelLoading()">✕ 生成を中止する</button>
       </div>
     </div>
   </div>
@@ -588,6 +589,7 @@ let state = {
   articleMeta: {},
   targetProfile: {},
   klingTasks: [],
+  onCancelLoading: null,
 };
 
 // STEP → 進捗バーのバケット
@@ -655,7 +657,7 @@ function setStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false) {
+function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false, onCancel = null) {
   const useSteps = steps || [{icon:'🌐',text:'記事を取得中'},{icon:'🔍',text:'コンテンツを解析中'},{icon:'🧠',text:'AIが要約を生成中'},{icon:'📝',text:'台本を作成中'}];
   document.getElementById('loading-title').textContent = title || 'AIが処理中...';
   document.getElementById('loading-sub').textContent   = sub   || 'しばらくお待ちください';
@@ -670,6 +672,9 @@ function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false)
     if (idx < useSteps.length) { const c = document.getElementById(`ls-${idx+1}`); if (c) c.classList.add('active'); idx++; }
     else clearInterval(state.loadingInterval);
   }, interval);
+  state.onCancelLoading = onCancel;
+  const cancelBtn = document.getElementById('btn-cancel-loading');
+  cancelBtn.style.display = onCancel ? 'inline-flex' : 'none';
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step-loading').classList.add('active');
 }
@@ -677,6 +682,13 @@ function hideLoading() {
   if (state.loadingInterval) { clearInterval(state.loadingInterval); state.loadingInterval = null; }
   document.getElementById('wait-banner').style.display = 'none';
   document.getElementById('polling-progress').style.display = 'none';
+  document.getElementById('btn-cancel-loading').style.display = 'none';
+  state.onCancelLoading = null;
+}
+function cancelLoading() {
+  const cb = state.onCancelLoading;
+  hideLoading();
+  if (cb) cb();
 }
 function showError(msg) {
   const el = document.getElementById('errorToast');
@@ -730,9 +742,10 @@ async function startGeneration() {
   if (!state.selectedExpression) { showError('スタイルを選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
   state.input = { userName, url, contentType, platform };
-  showLoading('AIが処理中...', 'しばらくお待ちください');
+  const controller = new AbortController();
+  showLoading('AIが処理中...', 'しばらくお待ちください', null, 6000, false, () => { controller.abort(); setStep(1); });
   try {
-    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform, default_visual_type:state.defaultVisualType,
+    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, signal: controller.signal, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform, default_visual_type:state.defaultVisualType,
          expression_style: state.selectedExpression}) });
     hideLoading();
     if (res.status === 429) { setStep(1); showError('台本生成の実行回数が上限に達しました。'); return; }
@@ -750,14 +763,15 @@ async function startGeneration() {
     state.defaultVisualType = data.default_visual_type || state.defaultVisualType;
     state.selectedExpression = data.expression_style || state.selectedExpression;
     renderScripts(); setStep(2);
-  } catch (err) { hideLoading(); setStep(1); showError('エラー: ' + err.message); }
+  } catch (err) { hideLoading(); if (err.name === 'AbortError') { setStep(1); return; } setStep(1); showError('エラー: ' + err.message); }
 }
 async function regenerateScript() {
   state.selectedScript = null; state.scriptCandidates = [];
-  showLoading('台本を再生成中...', 'AIが新しい台本を作成しています');
+  const controller = new AbortController();
+  showLoading('台本を再生成中...', 'AIが新しい台本を作成しています', null, 6000, false, () => { controller.abort(); setStep(2); });
   try {
     const { userName, url, contentType, platform } = state.input;
-    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform }) });
+    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, signal: controller.signal, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform }) });
     hideLoading();
     if (res.status === 429) { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
@@ -765,7 +779,7 @@ async function regenerateScript() {
     if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
     state.sessionId = data.session_id; state.scriptCandidates = data.script_candidates || [];state.articleMeta = data.article_meta || {};state.targetProfile = data.target_profile || {};
     renderScripts(); setStep(2);
-  } catch (err) { hideLoading(); setStep(2); showError('再生成エラー: ' + err.message); }
+  } catch (err) { hideLoading(); if (err.name === 'AbortError') { setStep(2); return; } setStep(2); showError('再生成エラー: ' + err.message); }
 }
 
 // ============================================================
