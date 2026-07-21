@@ -160,6 +160,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .subtitle-preset.pos-bottom .sub-bar { bottom: 20px; }
 .subtitle-preset .sub-label { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 9px; color: var(--text2); font-family: 'Space Mono', monospace; }
 .subtitle-preset.selected .sub-label { color: var(--accent); }
+.subtitle-preset .sub-recommend { position: absolute; top: 4px; right: 4px; font-size: 8px; line-height: 1; padding: 2px 5px; border-radius: 999px; background: rgba(108,99,255,0.15); color: var(--accent); font-family: 'Space Mono', monospace; letter-spacing: 0.02em; }
 
 /* ===== STEP5 シーン確認（生成済みメディア） ===== */
 .review-scene { display: flex; gap: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 12px; margin-bottom: 12px; }
@@ -851,8 +852,9 @@ function renderEditor() {
   const characterEl = document.getElementById('step3-character');
   if (targetRoleEl) targetRoleEl.textContent = tp.target_role || '—';
   if (characterEl) {
-    const genderLabel = tp.target_gender === 'male' ? '男性' : tp.target_gender === 'female' ? '女性' : (tp.target_gender || '');
-    characterEl.textContent = [genderLabel, tp.target_age_range].filter(Boolean).join(' / ') || '—';
+    const vcr = tp.visual_character_recommendation || {};
+    const genderLabel = vcr.gender === 'male' ? '男性' : vcr.gender === 'female' ? '女性' : (vcr.gender || '');
+    characterEl.textContent = [genderLabel, vcr.role].filter(Boolean).join(' / ') || '—';
   }
 
   const body = bodyScenes();
@@ -1034,8 +1036,9 @@ function renderTargetProfileStep4() {
   const characterEl = document.getElementById('step4-character');
   if (targetRoleEl) targetRoleEl.textContent = tp.target_role || '—';
   if (characterEl) {
-    const genderLabel = tp.target_gender === 'male' ? '男性' : tp.target_gender === 'female' ? '女性' : (tp.target_gender || '');
-    characterEl.textContent = [genderLabel, tp.target_age_range].filter(Boolean).join(' / ') || '—';
+    const vcr = tp.visual_character_recommendation || {};
+    const genderLabel = vcr.gender === 'male' ? '男性' : vcr.gender === 'female' ? '女性' : (vcr.gender || '');
+    characterEl.textContent = [genderLabel, vcr.role].filter(Boolean).join(' / ') || '—';
   }
 }
 
@@ -1207,7 +1210,7 @@ function renderReview() {
       au.addEventListener('play',()=>stopOtherAudios(au,'#step5')); info.appendChild(au);
     }
     const d = document.createElement('div'); d.className='review-dur';
-    d.textContent = isThumbnail ? `静止画+字幕（一瞬表示・音声なし）` : (dur ? `実尺 ${Number(dur).toFixed(1)}秒 · ${VT_LABEL[type]}` : `${VT_LABEL[type]}`);
+    d.textContent = isThumbnail ? `静止画+字幕（一瞬表示・音声なし）` : (dur ? `${Number(dur).toFixed(1)}秒 · ${VT_LABEL[type]}` : `${VT_LABEL[type]}`);
     info.appendChild(d);
     row.appendChild(thumb); row.appendChild(info); list.appendChild(row);
   });
@@ -1234,7 +1237,7 @@ function selectBgm(i) {
   state.selectedBgm = state.options.bgms[i];
 }
 function renderSubtitlePresets() {
-  const positions = [{key:'top',label:'上'},{key:'center',label:'中央'},{key:'bottom',label:'下'}];
+  const positions = [{key:'top',label:'上'},{key:'center',label:'中央',recommended:true},{key:'bottom',label:'下',recommended:true}];
   const c = document.getElementById('subtitle-position-list'); c.innerHTML = '';
   positions.forEach(p => {
     const div = document.createElement('div'); div.className = `subtitle-preset pos-${p.key}`;
@@ -1242,7 +1245,9 @@ function renderSubtitlePresets() {
     div.addEventListener('click', () => { state.subtitlePosition = p.key; document.querySelectorAll('.subtitle-preset').forEach(el=>el.classList.remove('selected')); div.classList.add('selected'); });
     const bar = document.createElement('div'); bar.className='sub-bar';
     const lbl = document.createElement('div'); lbl.className='sub-label'; lbl.textContent=p.label;
-    div.appendChild(bar); div.appendChild(lbl); c.appendChild(div);
+    div.appendChild(bar); div.appendChild(lbl);
+    if (p.recommended) { const rec = document.createElement('div'); rec.className='sub-recommend'; rec.textContent='推奨'; div.appendChild(rec); }
+    c.appendChild(div);
   });
 }
 
