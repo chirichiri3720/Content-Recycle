@@ -407,6 +407,13 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
             <div style="font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:4px">CONCEPT</div>
             <div id="step3-concept" style="font-size:11px;color:var(--text2);line-height:1.7"></div>
         </div>
+        <div class="card" style="margin-bottom:12px">
+            <div style="font-size:10px;color:var(--accent);font-family:'Space Mono',monospace;letter-spacing:0.05em;margin-bottom:10px">🎯 ターゲット層</div>
+            <div id="step3-target-role" style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px"></div>
+            <div style="height:1px;background:var(--border);margin-bottom:10px"></div>
+            <div style="font-size:10px;color:var(--text3);font-family:'Space Mono',monospace;margin-bottom:4px">主人公（出力予定）</div>
+            <div id="step3-character" style="font-size:11px;color:var(--text2);line-height:1.7"></div>
+        </div>
         <div class="card" style="margin-bottom:0">
             <div class="card-title"><div class="icon">🖼️</div>サムネイルを編集・確定</div>
             <div id="thumbnail-editor"></div>
@@ -570,6 +577,7 @@ let state = {
   metaInfo: null,
   loadingInterval: null,
   articleMeta: {},
+  targetProfile: {},
   klingTasks: [],
 };
 
@@ -728,6 +736,7 @@ async function startGeneration() {
     state.sessionId = data.session_id;
     state.scriptCandidates = data.script_candidates || [];
     state.articleMeta = data.article_meta || {};
+    state.targetProfile = data.target_profile || {};
     // WH1側の判断を単一の正として採用(バックエンドが上書きした場合もこれで反映される)
     state.defaultVisualType = data.default_visual_type || state.defaultVisualType;
     state.selectedExpression = data.expression_style || state.selectedExpression;
@@ -745,7 +754,7 @@ async function regenerateScript() {
     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
     if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
-    state.sessionId = data.session_id; state.scriptCandidates = data.script_candidates || [];state.articleMeta = data.article_meta || {};
+    state.sessionId = data.session_id; state.scriptCandidates = data.script_candidates || [];state.articleMeta = data.article_meta || {};state.targetProfile = data.target_profile || {};
     renderScripts(); setStep(2);
   } catch (err) { hideLoading(); setStep(2); showError('再生成エラー: ' + err.message); }
 }
@@ -828,6 +837,11 @@ function renderEditor() {
   if (urlEl)     { urlEl.textContent   = am.article_url || sc.article_url || ''; urlEl.href = am.article_url || sc.article_url || '#'; }
   if (summaryEl) summaryEl.textContent = am.article_summary_short || sc.article_summary_short || '—';
   if (conceptEl) conceptEl.textContent = sc.concept || '—';
+  const tp = sc.target_profile || state.targetProfile || {};
+  const targetRoleEl = document.getElementById('step3-target-role');
+  const characterEl = document.getElementById('step3-character');
+  if (targetRoleEl) targetRoleEl.textContent = [tp.target_role, tp.target_age_range].filter(Boolean).join(' ・ ') || '—';
+  if (characterEl) characterEl.textContent = sc.planned_character_summary || sc.character_description || '—';
 
   const body = bodyScenes();
   body.forEach((scene, i) => {
@@ -914,7 +928,6 @@ async function freezeAndProceed() {
     image_prompt_seed: sc.image_prompt_seed || '',
     visual_direction: sc.visual_direction || '',
     motion_direction: sc.motion_direction || '',
-    safety_note: sc.safety_note || '',
     };
   });
   if (finalScenes.some(s => !s.subtitle)) { showError('空の字幕・ナレーションがあります。各シーンを入力してください。'); return; }
@@ -931,7 +944,8 @@ async function freezeAndProceed() {
       default_visual_type:state.defaultVisualType,
       expression_style: state.selectedExpression,
       final_scenes: finalScenes,
-    }) 
+      target_profile: state.selectedScript.target_profile || state.targetProfile || {},
+    })
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const text = await res.text();
@@ -1383,7 +1397,7 @@ function goBackToStep4() { renderStep4(); setStep(4); }
 // ============================================================
 function resetAll() {
   if (state.loadingInterval) clearInterval(state.loadingInterval);
-  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{} };
+  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{}, targetProfile:{} };
   document.getElementById('input-url').value=''; document.getElementById('input-username').value=''; document.getElementById('input-content-type').value=''; document.getElementById('input-platform').value='YouTube Shorts';
   document.getElementById('btn-download').href='#'; setStep(1);
 }
