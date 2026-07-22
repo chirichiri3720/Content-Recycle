@@ -965,6 +965,7 @@ async function freezeAndProceed() {
       expression_style: state.selectedExpression,
       final_scenes: finalScenes,
       target_profile: state.selectedScript.target_profile || state.targetProfile || {},
+      
     })
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1104,6 +1105,7 @@ async function proceedToGenerate() {
         expression_style: state.selectedExpression,
         scene_prompts: finalScenePrompts,
         kling_tasks: state.klingTasks,
+        flag : null,
         voice: {
           id: state.selectedVoice.id,
           voice_name: state.selectedVoice.voice_name,
