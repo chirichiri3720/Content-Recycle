@@ -168,6 +168,8 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .review-thumb img, .review-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
 .review-thumb .vt-tag { position: absolute; top: 4px; left: 4px; font-size: 8px; font-family: 'Space Mono', monospace; background: rgba(0,0,0,0.6); color: #fff; padding: 1px 5px; border-radius: 100px; }
 .review-thumb .loading-mini { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.review-thumb .loading-mini.generating-status { flex-direction: column; gap: 6px; font-size: 16px; padding: 6px; text-align: center; }
+.review-thumb .generating-status .gen-text { font-size: 9px; line-height: 1.3; color: var(--text3); font-family: 'Noto Sans JP', sans-serif; }
 .review-info { flex: 1; min-width: 0; }
 .review-role { font-size: 10px; color: var(--accent); font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 .review-narration { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 8px; word-break: break-all; }
@@ -1220,8 +1222,10 @@ function renderReview() {
     const tmpUrl = isThumbnail
       ? ''
       : (scene.scene === 7 ? `${BASE_IMG_URL}/tmp_movie7.png` : `${BASE_IMG_URL}/tmp${scene.scene}.mp4`);
-    const displayUrl = assetUrl || tmpUrl;
     const isFallback = !assetUrl;
+    // 動画シーンでまだ実素材が届いていない場合は、仮素材を出さず「生成中」表示にする
+    const stillGenerating = isFallback && type === 'video' && !isThumbnail;
+    const displayUrl = stillGenerating ? '' : (assetUrl || tmpUrl);
     const displayIsVideo = /\.mp4($|\?)/i.test(displayUrl);
     const narrationText = state.narrationEdits[i]?.current || scene.subtitle || scene.narration || '';
 
@@ -1239,6 +1243,8 @@ function renderReview() {
       im.onerror=()=>{ thumb.innerHTML='<div class="loading-mini">🖼</div>'; thumb.appendChild(tag); };
       thumb.appendChild(im);
       if (isFallback) { const tb=document.createElement('div'); tb.className='vt-tag'; tb.style.cssText='bottom:4px;left:4px;top:auto;background:rgba(108,99,255,0.7);'; tb.textContent='仮'; thumb.appendChild(tb); }
+    } else if (stillGenerating) {
+      thumb.innerHTML = '<div class="loading-mini generating-status pulse">⏳<span class="gen-text">このシーンは<br>まだ生成中です</span></div>';
     } else {
       thumb.innerHTML = '<div class="loading-mini pulse">⏳</div>';
     }
