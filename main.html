@@ -487,6 +487,10 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
           <span class="icon">⏳</span>
           <span>まだ生成中のシーンがあります。「未生成のシーンを生成する」を押すと状況を再確認します。すべて完了すると「動画を合成する」ボタンに切り替わります。</span>
         </div>
+        <div class="wait-banner" id="continue-compose-banner" style="display:none">
+          <span class="icon">⏳</span>
+          <span>動画合成が完了していない部分があります。「未完了の合成を再開する」を押すと続きを合成します。</span>
+        </div>
         <div id="review-list"></div>
       </div>
       <!-- 右: BGM + 字幕位置 -->
@@ -505,6 +509,7 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
     <div class="btn-row" style="margin-top:16px" id="step5-btn-row">
       <button class="btn btn-outline" onclick="goBackToStep4()">← 設定へ戻る</button>
       <button class="btn btn-outline" id="btn-continue-generation" onclick="continueGeneration()" style="flex:2;display:none">🔄 未生成のシーンを生成する</button>
+      <button class="btn btn-outline" id="btn-continue-compose" onclick="continueCompose()" style="flex:2;display:none">🔄 未完了の合成を再開する</button>
       <button class="btn btn-primary" id="btn-compose" onclick="proceedToCompose()" style="flex:2;display:none">動画を合成する →</button>    </div>
   </div>
 
@@ -596,7 +601,9 @@ let state = {
   targetProfile: {},
   klingTasks: [],
   generationFlag: null,
-  pendingTasks: []
+  pendingTasks: [],
+  composeFlag: null,
+  composePendingTasks: []
 };
 
 // STEP → 進捗バーのバケット
@@ -1127,6 +1134,8 @@ async function proceedToGenerate() {
     state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
     state.generationFlag = data.flag || null;   // ★追加
     state.pendingTasks   = data.pending_tasks || [];   // ★追加
+    state.composeFlag = null;                    // 新規生成のため合成の再開状態はリセット
+    state.composePendingTasks = [];
     hideLoading();
     renderReview(); renderStep5(); setStep(5);
     renderContinueButton();                      // ★追加
@@ -1322,7 +1331,7 @@ async function proceedToCompose() {
   const failsafe = setTimeout(() => { hideLoading(); setStep(5); showError('タイムアウト: 動画合成に5分以上かかっています。しばらく後に再度お試しください。'); }, 305000);
   try {
     const res = await fetch(COMPOSE_URL, { method:'POST', headers:{'Content-Type':'application/json'}, signal: controller.signal, body: JSON.stringify({
-      action: 'compose', session_id: state.sessionId,
+      action: 'compose', session_id: state.sessionId, flag: null,
       subtitle_position: state.subtitlePosition,
       bgm_id: state.selectedBgm?.id, bgm_storage_url: state.selectedBgm?.storage_url, bgm_volume: state.bgmVolume,
     }) });
@@ -1332,12 +1341,68 @@ async function proceedToCompose() {
     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
     if (data.status === 'failed' || data.error) throw new Error(data.error || '動画合成に失敗しました');
+
+    if (data.flag === 'continue') {
+      state.composeFlag = 'continue';
+      state.composePendingTasks = data.pending_tasks || [];
+      hideLoading(); setStep(5); renderContinueButton();
+      return;
+    }
+
     const videoUrl = validateVideoUrl(data.video_url);
     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
+    state.composeFlag = null; state.composePendingTasks = [];
     state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
   } catch (err) {
     clearTimeout(fetchTimeout); clearTimeout(failsafe); hideLoading(); setStep(5);
-    showError(err.name === 'AbortError' ? 'タイムアウト: 動画合成に5分以上かかっています。' : '合成エラー: ' + err.message);
+    if (err.name === 'AbortError') {
+      state.composeFlag = 'continue';
+      renderContinueButton();
+      showError('タイムアウト: 動画合成に5分以上かかっています。「未完了の合成を再開する」から続きを確認できます。');
+    } else {
+      showError('合成エラー: ' + err.message);
+    }
+  }
+}
+
+async function continueCompose() {
+  showLoading('合成の続きを確認中...', 'サーバー側で合成状況を再確認しています',
+    [{icon:'🔄',text:'合成状況を確認中'},{icon:'✅',text:'完了'}], 8000, true);
+  const controller = new AbortController();
+  const fetchTimeout = setTimeout(() => controller.abort(), 300000);
+  const failsafe = setTimeout(() => { hideLoading(); showError('タイムアウト: 動画合成に5分以上かかっています。しばらく後に再度お試しください。'); }, 305000);
+  try {
+    const res = await fetch(COMPOSE_URL, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, signal: controller.signal,
+      body: JSON.stringify({
+        action: 'compose',
+        flag: 'continue',
+        session_id: state.sessionId,
+        pending_tasks: state.composePendingTasks,
+      })
+    });
+    clearTimeout(fetchTimeout); clearTimeout(failsafe);
+    if (res.status === 429) { hideLoading(); showError('合成の実行回数が上限に達しました。'); return; }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text(); if (!text.trim()) throw new Error('レスポンスが空です');
+    let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
+    if (data.status === 'failed' || data.error) throw new Error(data.error || '動画合成に失敗しました');
+
+    if (data.flag === 'continue') {
+      state.composeFlag = 'continue';
+      state.composePendingTasks = data.pending_tasks || [];
+      hideLoading();
+      renderContinueButton();
+      return;
+    }
+
+    const videoUrl = validateVideoUrl(data.video_url);
+    if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
+    state.composeFlag = null; state.composePendingTasks = [];
+    state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
+  } catch (err) {
+    clearTimeout(fetchTimeout); clearTimeout(failsafe); hideLoading();
+    showError(err.name === 'AbortError' ? 'タイムアウト: 動画合成に5分以上かかっています。しばらく後に再度お試しください。' : '続きの合成確認でエラー: ' + err.message);
   }
 }
 
@@ -1483,20 +1548,26 @@ function goBackToStep4() { renderStep4(); setStep(4); }
 // ============================================================
 function resetAll() {
   if (state.loadingInterval) clearInterval(state.loadingInterval);
-  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{}, targetProfile:{}, klingTasks:[], generationFlag:null, pendingTasks:[] };
+  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{}, targetProfile:{}, klingTasks:[], generationFlag:null, pendingTasks:[], composeFlag:null, composePendingTasks:[] };
   document.getElementById('input-url').value=''; document.getElementById('input-username').value=''; document.getElementById('input-content-type').value=''; document.getElementById('input-platform').value='YouTube Shorts';
   document.getElementById('btn-download').href='#'; setStep(1);
 }
 
 function renderContinueButton() {
-  const pending = state.generationFlag === 'continue';
-  const banner       = document.getElementById('continue-generation-banner');
-  const btnContinue  = document.getElementById('btn-continue-generation');
-  const btnCompose   = document.getElementById('btn-compose');
+  const genPending     = state.generationFlag === 'continue';
+  const composePending = !genPending && state.composeFlag === 'continue';
 
-  if (banner)      banner.style.display      = pending ? 'flex' : 'none';
-  if (btnContinue) btnContinue.style.display = pending ? 'inline-flex' : 'none';
-  if (btnCompose)  btnCompose.style.display  = pending ? 'none' : 'inline-flex';
+  const banner             = document.getElementById('continue-generation-banner');
+  const btnContinue        = document.getElementById('btn-continue-generation');
+  const composeBanner      = document.getElementById('continue-compose-banner');
+  const btnContinueCompose = document.getElementById('btn-continue-compose');
+  const btnCompose         = document.getElementById('btn-compose');
+
+  if (banner)             banner.style.display             = genPending ? 'flex' : 'none';
+  if (btnContinue)        btnContinue.style.display         = genPending ? 'inline-flex' : 'none';
+  if (composeBanner)      composeBanner.style.display       = composePending ? 'flex' : 'none';
+  if (btnContinueCompose) btnContinueCompose.style.display  = composePending ? 'inline-flex' : 'none';
+  if (btnCompose)         btnCompose.style.display          = (genPending || composePending) ? 'none' : 'inline-flex';
 }
 
 // ============================================================
