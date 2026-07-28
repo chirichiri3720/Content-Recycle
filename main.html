@@ -379,6 +379,7 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
         <div class="loading-steps" id="loading-steps-container"></div>
         <div class="wait-banner" id="wait-banner" style="display:none"><span class="icon">⏱</span><span>動画の合成には最大5分かかる場合があります。<br>完了まで<strong>ページを閉じないでください。</strong></span></div>
         <div class="polling-progress" id="polling-progress" style="display:none"><div class="polling-bar-wrap"><div class="polling-bar-fill" id="polling-bar"></div></div><div class="polling-status" id="polling-status">レンダリング中...</div></div>
+        <button class="btn btn-outline" id="btn-loading-cancel" style="margin-top:24px;max-width:280px;margin-left:auto;margin-right:auto;display:none" onclick="cancelCurrentLoading()">キャンセル</button>
       </div>
     </div>
   </div>
@@ -609,7 +610,11 @@ let state = {
   generationFlag: null,
   pendingTasks: [],
   composeFlag: null,
-  composePendingTasks: []
+  composeRenderId: null,
+  composePendingTasks: [],
+  composePollCount: 0,
+
+  loadingCancelHandler: null
 };
 
 // STEP → 進捗バーのバケット
@@ -677,7 +682,7 @@ function setStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false) {
+function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false, cancelConfig = null) {
   const useSteps = steps || [{icon:'🌐',text:'記事を取得中'},{icon:'🔍',text:'コンテンツを解析中'},{icon:'🧠',text:'AIが要約を生成中'},{icon:'📝',text:'台本を作成中'}];
   document.getElementById('loading-title').textContent = title || 'AIが処理中...';
   document.getElementById('loading-sub').textContent   = sub   || 'しばらくお待ちください';
@@ -692,6 +697,21 @@ function showLoading(title, sub, steps, interval = 6000, showWaitBanner = false)
     if (idx < useSteps.length) { const c = document.getElementById(`ls-${idx+1}`); if (c) c.classList.add('active'); idx++; }
     else clearInterval(state.loadingInterval);
   }, interval);
+
+  // ★キャンセルボタン：cancelConfig = { label: string, onCancel: fn } を渡した場合のみ表示
+  const cancelBtn = document.getElementById('btn-loading-cancel');
+  if (cancelBtn) {
+    if (cancelConfig && typeof cancelConfig.onCancel === 'function') {
+      cancelBtn.textContent = cancelConfig.label || 'キャンセル';
+      cancelBtn.disabled = false;
+      cancelBtn.style.display = 'inline-flex';
+      state.loadingCancelHandler = cancelConfig.onCancel;
+    } else {
+      cancelBtn.style.display = 'none';
+      state.loadingCancelHandler = null;
+    }
+  }
+
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step-loading').classList.add('active');
 }
@@ -699,6 +719,25 @@ function hideLoading() {
   if (state.loadingInterval) { clearInterval(state.loadingInterval); state.loadingInterval = null; }
   document.getElementById('wait-banner').style.display = 'none';
   document.getElementById('polling-progress').style.display = 'none';
+  const cancelBtn = document.getElementById('btn-loading-cancel');
+  if (cancelBtn) { cancelBtn.style.display = 'none'; cancelBtn.disabled = false; }
+  state.loadingCancelHandler = null;
+}
+function cancelCurrentLoading() {
+  const btn = document.getElementById('btn-loading-cancel');
+  if (btn) { btn.disabled = true; btn.textContent = '中止しています...'; }
+  if (typeof state.loadingCancelHandler === 'function') {
+    const handler = state.loadingCancelHandler;
+    state.loadingCancelHandler = null;
+    handler();
+  }
+}
+// mock版options取得を中断可能にするための小さなヘルパー
+function delay(ms, signal) {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(resolve, ms);
+    if (signal) signal.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); });
+  });
 }
 function showError(msg) {
   const el = document.getElementById('errorToast');
@@ -752,9 +791,14 @@ async function startGeneration() {
   if (!state.selectedExpression) { showError('スタイルを選択してください'); return; }
   if (!url.startsWith('http')) { showError('有効な URL を入力してください'); return; }
   state.input = { userName, url, contentType, platform };
-  showLoading('AIが処理中...', 'しばらくお待ちください');
+  const controller = new AbortController();
+  let cancelReason = null;
+  showLoading('AIが処理中...', 'しばらくお待ちください', null, 6000, false, {
+    label: '✕ 台本生成を中止する',
+    onCancel: () => { cancelReason = 'user'; controller.abort(); }
+  });
   try {
-    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform, default_visual_type:state.defaultVisualType,
+    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, signal: controller.signal, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform, default_visual_type:state.defaultVisualType,
          expression_style: state.selectedExpression}) });
     hideLoading();
     if (res.status === 429) { setStep(1); showError('台本生成の実行回数が上限に達しました。'); return; }
@@ -768,18 +812,26 @@ async function startGeneration() {
     state.scriptCandidates = data.script_candidates || [];
     state.articleMeta = data.article_meta || {};
     state.targetProfile = data.target_profile || {};
-    // WH1側の判断を単一の正として採用(バックエンドが上書きした場合もこれで反映される)
     state.defaultVisualType = data.default_visual_type || state.defaultVisualType;
     state.selectedExpression = data.expression_style || state.selectedExpression;
     renderScripts(); setStep(2);
-  } catch (err) { hideLoading(); setStep(1); showError('エラー: ' + err.message); }
+  } catch (err) {
+    hideLoading(); setStep(1);
+    if (err.name === 'AbortError' && cancelReason === 'user') { showError('台本生成を中止しました'); return; }
+    showError('エラー: ' + err.message);
+  }
 }
 async function regenerateScript() {
   state.selectedScript = null; state.scriptCandidates = [];
-  showLoading('台本を再生成中...', 'AIが新しい台本を作成しています');
+  const controller = new AbortController();
+  let cancelReason = null;
+  showLoading('台本を再生成中...', 'AIが新しい台本を作成しています', null, 6000, false, {
+    label: '✕ 再生成を中止する',
+    onCancel: () => { cancelReason = 'user'; controller.abort(); }
+  });
   try {
     const { userName, url, contentType, platform } = state.input;
-    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform }) });
+    const res = await fetch(WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, signal: controller.signal, body: JSON.stringify({ user_name:userName, content_url:url, content_type:contentType, platform }) });
     hideLoading();
     if (res.status === 429) { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
@@ -787,7 +839,11 @@ async function regenerateScript() {
     if (data.error === 'limit_exceeded') { showError('台本生成の実行回数が上限に達しました。'); setStep(2); return; }
     state.sessionId = data.session_id; state.scriptCandidates = data.script_candidates || [];state.articleMeta = data.article_meta || {};state.targetProfile = data.target_profile || {};
     renderScripts(); setStep(2);
-  } catch (err) { hideLoading(); setStep(2); showError('再生成エラー: ' + err.message); }
+  } catch (err) {
+    hideLoading(); setStep(2);
+    if (err.name === 'AbortError' && cancelReason === 'user') { showError('再生成を中止しました'); return; }
+    showError('再生成エラー: ' + err.message);
+  }
 }
 
 // ============================================================
@@ -966,11 +1022,17 @@ async function freezeAndProceed() {
     };
   });
   if (finalScenes.some(s => !s.subtitle)) { showError('空の字幕・ナレーションがあります。各シーンを入力してください。'); return; }
-  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 30000);
+  const controller = new AbortController();
+  let cancelReason = null;
+  showLoading('台本を確定中...', 'ナレーションを保存し、強調語を分析しています', [{icon:'📝',text:'ナレーションを凍結中'},{icon:'🗂',text:'シーンを保存中'},{icon:'✨',text:'強調語を分析中'},{icon:'✅',text:'完了'}], 30000, false, {
+    label: '✕ 確定を中止する',
+    onCancel: () => { cancelReason = 'user'; controller.abort(); }
+  });
   try {
   const res = await fetch(SELECT_URL, { 
     method:'POST', 
     headers:{'Content-Type':'application/json'}, 
+    signal: controller.signal,
     body: JSON.stringify({
       action: 'select_and_freeze', 
       session_id: state.sessionId,
@@ -997,6 +1059,7 @@ async function freezeAndProceed() {
   } catch (err) { 
     hideLoading(); 
     setStep(3); 
+    if (err.name === 'AbortError' && cancelReason === 'user') { showError('台本の確定を中止しました'); return; }
     showError('台本確定エラー: ' + err.message); 
   }
 }
@@ -1016,21 +1079,30 @@ function scoreAndSort(items, mood) {
   }).sort((a,b) => b.total - a.total);
 }
 async function loadOptionsAndRenderStep4() {
-  showLoading('設定を準備中...', 'おすすめを計算しています', [{icon:'✨',text:'雰囲気を分析中'},{icon:'🎙',text:'音声候補を選定中'},{icon:'🎨',text:'スタイルを準備中'},{icon:'✅',text:'完了'}], 500);
+  const controller = new AbortController();
+  let cancelReason = null;
+  showLoading('設定を準備中...', 'おすすめを計算しています', [{icon:'✨',text:'雰囲気を分析中'},{icon:'🎙',text:'音声候補を選定中'},{icon:'🎨',text:'スタイルを準備中'},{icon:'✅',text:'完了'}], 500, false, {
+    label: '✕ 準備を中止する',
+    onCancel: () => { cancelReason = 'user'; controller.abort(); }
+  });
   try {
     let data;
     if (USE_MOCK_OPTIONS) {
-      await new Promise(r => setTimeout(r, 1500));
+      await delay(1500, controller.signal);
       const mood = state.selectedScript?.mood_profile || MOCK_OPTIONS.mood_profile;
       data = { mood_profile: mood, voices: scoreAndSort(MOCK_OPTIONS.voices, mood), bgms: scoreAndSort(MOCK_OPTIONS.bgms, mood) };
     } else {
-      const res = await fetch(OPTIONS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'get_options', session_id: state.sessionId }) });
+      const res = await fetch(OPTIONS_URL, { method:'POST', headers:{'Content-Type':'application/json'}, signal: controller.signal, body: JSON.stringify({ action:'get_options', session_id: state.sessionId }) });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       data = await res.json(); if (Array.isArray(data)) data = data[0];
     }
     state.options = { voices: data.voices||[], bgms: data.bgms||[], moodProfile: data.mood_profile || state.selectedScript?.mood_profile || null };
     hideLoading(); renderStep4(); setStep(4);
-  } catch (err) { hideLoading(); setStep(3); showError('設定取得エラー: ' + err.message); }
+  } catch (err) {
+    hideLoading(); setStep(3);
+    if (err.name === 'AbortError' && cancelReason === 'user') { showError('準備を中止しました'); return; }
+    showError('設定取得エラー: ' + err.message);
+  }
 }
 
 // ============================================================
@@ -1050,7 +1122,7 @@ function updateStep4LockState() {
       btn.disabled = true;
       btn.textContent = '⏳ 生成継続中です（STEP5で確認してください）';
     } else {
-      btn.textContent = '音声と画像を生成する →';
+      btn.textContent = '音声と動画を生成する →';
       validateStep4(); // 通常の選択済みチェックに戻す
     }
   }
@@ -1112,6 +1184,8 @@ async function proceedToGenerate() {
   if (!state.selectedVoice) { showError('ナレーション音声を選択してください'); return; }
 
   const isVideo = state.defaultVisualType === 'video';
+  const controller = new AbortController();
+  let cancelReason = null;
   showLoading(
     isVideo ? '動画を生成しています...' : '画像を仕上げています...',
     '音声・字幕を生成し、必要に応じて動画も作成しています',
@@ -1121,7 +1195,8 @@ async function proceedToGenerate() {
       { icon: isVideo ? '🎞' : '🖼', text: isVideo ? '動画クリップを生成中(Kling)' : '画像の仕上がりを確認中' },
       { icon:'✅', text:'完了' },
     ],
-    30000, true
+    30000, true,
+    { label: '✕ 生成を中止する', onCancel: () => { cancelReason = 'user'; controller.abort(); } }
   );
 
   const finalScenePrompts = bodyScenes().map((sc, i) => ({
@@ -1132,7 +1207,7 @@ async function proceedToGenerate() {
 
   try {
     const res = await fetch(GENERATE_URL, {
-      method:'POST', headers:{'Content-Type':'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json'}, signal: controller.signal,
       body: JSON.stringify({
         session_id: state.sessionId,
         selected_script_id: state.selectedScript.script_id,
@@ -1158,29 +1233,37 @@ async function proceedToGenerate() {
 
     const rawScenes = data.scenes || [];
     state.sceneMedia = Array.isArray(rawScenes) ? rawScenes : Object.values(rawScenes);
-    state.generationFlag = data.flag || null;   // ★追加
-    state.pendingTasks   = data.pending_tasks || [];   // ★追加
-    state.composeFlag = null;                    // 新規生成のため合成の再開状態はリセット
-    state.composePendingTasks = [];
+    state.generationFlag = data.flag || null;
+    state.pendingTasks   = data.pending_tasks || [];
+    state.composeFlag = null;
+    state.composeRenderId = null;
+    state.composePollCount = 0;
     hideLoading();
     renderReview(); renderStep5(); setStep(5);
-    renderContinueButton();                      // ★追加
-  } catch (err) { hideLoading(); setStep(4); showError('生成エラー: ' + err.message); }
+    renderContinueButton();
+  } catch (err) {
+    hideLoading(); setStep(4);
+    if (err.name === 'AbortError' && cancelReason === 'user') { showError('生成を中止しました'); return; }
+    showError('生成エラー: ' + err.message);
+  }
 }
 
 async function continueGeneration() {
+  const controller = new AbortController();
+  let cancelReason = null;
   showLoading('残りのシーンを確認中...', 'サーバー側で生成状況を再確認しています',
-    [{icon:'🔄',text:'生成状況を確認中'},{icon:'✅',text:'完了'}], 8000, true);
+    [{icon:'🔄',text:'生成状況を確認中'},{icon:'✅',text:'完了'}], 8000, true,
+    { label: '✕ 確認を中止する', onCancel: () => { cancelReason = 'user'; controller.abort(); } }
+  );
   try {
     const res = await fetch(GENERATE_URL, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
+      method: 'POST', headers: {'Content-Type':'application/json'}, signal: controller.signal,
       body: JSON.stringify({
         flag: 'continue',
         session_id: state.sessionId,
         pending_tasks: state.pendingTasks,  
       })
     });
-    // ...(以下、前回案と同様)
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text();
     if (!text.trim()) throw new Error('レスポンスが空です');
@@ -1200,10 +1283,11 @@ async function continueGeneration() {
     renderContinueButton();
   } catch (err) {
     hideLoading();
+    if (err.name === 'AbortError' && cancelReason === 'user') { renderContinueButton(); showError('確認を中止しました'); return; }
+    renderContinueButton();
     showError('続きの確認でエラー: ' + err.message);
   }
 }
-
 // ============================================================
 // 音声/BGM 共通 (STEP4・STEP5 共用)
 // ============================================================
@@ -1346,14 +1430,17 @@ async function proceedToCompose() {
     showError('まだ生成中のシーンがあります。先に「未生成のシーンを生成する」をお試しください');
     return;
   }
-  showLoading('動画を合成中...', 'Shotstackで最終レンダリングしています', [{icon:'💬',text:'字幕を焼き付け中'},{icon:'🎵',text:'BGMをミックス中'},{icon:'🎞',text:'Shotstackで合成中'},{icon:'✅',text:'完成'}], 35000, true);
+  const controller = new AbortController();
+  let cancelReason = null;
+  showLoading('動画を合成中...', 'Shotstackで最終レンダリングしています', [{icon:'💬',text:'字幕を焼き付け中'},{icon:'🎵',text:'BGMをミックス中'},{icon:'🎞',text:'Shotstackで合成中'},{icon:'✅',text:'完成'}], 35000, true,
+    { label: '✕ 合成を中止する', onCancel: () => { cancelReason = 'user'; controller.abort(); } }
+  );
   setTimeout(() => {
     document.getElementById('polling-progress').style.display = 'block';
     const bar = document.getElementById('polling-bar'); bar.style.width = '0%';
     requestAnimationFrame(() => { bar.style.transition = 'width 150s linear'; bar.style.width = '100%'; });
     document.getElementById('polling-status').textContent = '動画を合成中...';
   }, 100);
-  const controller = new AbortController();
   const fetchTimeout = setTimeout(() => controller.abort(), 300000);
   const failsafe = setTimeout(() => { hideLoading(); setStep(5); showError('タイムアウト: 動画合成に5分以上かかっています。しばらく後に再度お試しください。'); }, 305000);
   try {
@@ -1391,6 +1478,11 @@ async function proceedToCompose() {
     state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
   } catch (err) {
     clearTimeout(fetchTimeout); clearTimeout(failsafe); hideLoading(); setStep(5);
+    if (err.name === 'AbortError' && cancelReason === 'user') {
+      renderContinueButton();
+      showError('動画合成を中止しました');
+      return;
+    }
     if (err.name === 'AbortError') {
       state.composeFlag = 'continue';
       renderContinueButton();
@@ -1402,9 +1494,12 @@ async function proceedToCompose() {
 }
 
 async function continueCompose() {
-  showLoading('合成の続きを確認中...', 'サーバー側で合成状況を再確認しています',
-    [{icon:'🔄',text:'合成状況を確認中'},{icon:'✅',text:'完了'}], 8000, true);
   const controller = new AbortController();
+  let cancelReason = null;
+  showLoading('合成の続きを確認中...', 'サーバー側で合成状況を再確認しています',
+    [{icon:'🔄',text:'合成状況を確認中'},{icon:'✅',text:'完了'}], 8000, true,
+    { label: '✕ 確認を中止する', onCancel: () => { cancelReason = 'user'; controller.abort(); } }
+  );
   const fetchTimeout = setTimeout(() => controller.abort(), 300000);
   const failsafe = setTimeout(() => { hideLoading(); showError('タイムアウト: 応答がありません。しばらく後に再度お試しください。'); }, 305000);
   try {
@@ -1449,7 +1544,9 @@ async function continueCompose() {
     state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
   } catch (err) {
     clearTimeout(fetchTimeout); clearTimeout(failsafe); hideLoading();
-    showError(err.name === 'AbortError' ? 'タイムアウト: 応答がありません。しばらく後に再度お試しください。' : '続きの合成確認でエラー: ' + err.message);
+    if (err.name === 'AbortError' && cancelReason === 'user') { renderContinueButton(); showError('確認を中止しました'); return; }
+    if (err.name === 'AbortError') { renderContinueButton(); showError('タイムアウト: 応答がありません。しばらく後に再度お試しください。'); return; }
+    showError('続きの合成確認でエラー: ' + err.message);
   }
 }
 
@@ -1595,7 +1692,7 @@ function goBackToStep4() { renderStep4(); setStep(4); }
 // ============================================================
 function resetAll() {
   if (state.loadingInterval) clearInterval(state.loadingInterval);
-  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{}, targetProfile:{}, klingTasks:[], generationFlag:null, pendingTasks:[], composeFlag:null, composeRenderId: null, composePollCount: 0 };
+  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{}, targetProfile:{}, klingTasks:[], generationFlag:null, pendingTasks:[], composeFlag:null, composeRenderId: null, composePollCount: 0, loadingCancelHandler: null};
   document.getElementById('input-url').value=''; document.getElementById('input-username').value=''; document.getElementById('input-content-type').value=''; document.getElementById('input-platform').value='YouTube Shorts';
   document.getElementById('btn-download').href='#'; setStep(1);
 }
