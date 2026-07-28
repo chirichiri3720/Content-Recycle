@@ -489,7 +489,7 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
         </div>
         <div class="wait-banner" id="continue-compose-banner" style="display:none">
           <span class="icon">⏳</span>
-          <span>動画合成が完了していない部分があります。「未完了の合成を再開する」を押すと続きを合成します。</span>
+          <span>まだレンダリング中です。「合成を継続する」を押すと状況を再確認します。完了すると自動的に次の画面に進みます。</span>
         </div>
         <div id="review-list"></div>
       </div>
@@ -1340,18 +1340,27 @@ async function proceedToCompose() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text(); if (!text || !text.trim()) throw new Error('レスポンスが空です');
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
-    if (data.status === 'failed' || data.error) throw new Error(data.error || '動画合成に失敗しました');
-
-    if (data.flag === 'continue') {
+    // after
+    if (data.status === 'failed' && data.reason === 'timeout') {
+      // rendering中にタイムアウト → 継続可能。UIを「継続する」「戻る」のみに絞る
       state.composeFlag = 'continue';
-      state.composePendingTasks = data.pending_tasks || [];
+      state.composeRenderId = data.render_id || null;
+      state.composePollCount = data.poll_count || 0;
       hideLoading(); setStep(5); renderContinueButton();
+      return;
+    }
+
+    if (data.status === 'failed') {
+      // render_error など継続不可能な失敗 → 通常の「動画を合成する」ボタンに戻す(最初からやり直し)
+      state.composeFlag = null; state.composeRenderId = null; state.composePollCount = 0;
+      hideLoading(); setStep(5); renderContinueButton();
+      showError(data.error || '動画合成に失敗しました');
       return;
     }
 
     const videoUrl = validateVideoUrl(data.video_url);
     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
-    state.composeFlag = null; state.composePendingTasks = [];
+    state.composeFlag = null; state.composeRenderId = null; state.composePollCount = 0;
     state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
   } catch (err) {
     clearTimeout(fetchTimeout); clearTimeout(failsafe); hideLoading(); setStep(5);
@@ -1378,7 +1387,8 @@ async function continueCompose() {
         action: 'compose',
         flag: 'continue',
         session_id: state.sessionId,
-        pending_tasks: state.composePendingTasks,
+        render_id: state.composeRenderId,
+        poll_count: state.composePollCount,
       })
     });
     clearTimeout(fetchTimeout); clearTimeout(failsafe);
@@ -1548,14 +1558,15 @@ function goBackToStep4() { renderStep4(); setStep(4); }
 // ============================================================
 function resetAll() {
   if (state.loadingInterval) clearInterval(state.loadingInterval);
-  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{}, targetProfile:{}, klingTasks:[], generationFlag:null, pendingTasks:[], composeFlag:null, composePendingTasks:[] };
+  state = { input:{userName:'',url:'',contentType:'',platform:'YouTube Shorts'}, sessionId:null, scriptCandidates:[], selectedScript:null, narrationEdits:{}, defaultVisualType:'image', selectedExpression:null, options:{voices:[],bgms:[],moodProfile:null}, selectedVoice:null, selectedBgm:null, bgmVolume:0.3, subtitlePosition:'bottom', sceneMedia:[], scenePromptEdits:{}, videoUrl:null, metaInfo:null, loadingInterval:null, articleMeta:{}, targetProfile:{}, klingTasks:[], generationFlag:null, pendingTasks:[], composeFlag:null, composeRenderId: null, composePollCount: 0 };
   document.getElementById('input-url').value=''; document.getElementById('input-username').value=''; document.getElementById('input-content-type').value=''; document.getElementById('input-platform').value='YouTube Shorts';
   document.getElementById('btn-download').href='#'; setStep(1);
 }
 
+// renderContinueButton() はそのままのロジックで要件を満たしますが、念のため明示的にコメントを追加
 function renderContinueButton() {
   const genPending     = state.generationFlag === 'continue';
-  const composePending = !genPending && state.composeFlag === 'continue';
+  const composePending = !genPending && state.composeFlag === 'continue'; // timeout時のみtrue
 
   const banner             = document.getElementById('continue-generation-banner');
   const btnContinue        = document.getElementById('btn-continue-generation');
@@ -1567,6 +1578,7 @@ function renderContinueButton() {
   if (btnContinue)        btnContinue.style.display         = genPending ? 'inline-flex' : 'none';
   if (composeBanner)      composeBanner.style.display       = composePending ? 'flex' : 'none';
   if (btnContinueCompose) btnContinueCompose.style.display  = composePending ? 'inline-flex' : 'none';
+  // composePending時は「動画を合成する」を隠す → 残るのは「← 設定へ戻る」+「▶ 合成を継続する」のみ
   if (btnCompose)         btnCompose.style.display          = (genPending || composePending) ? 'none' : 'inline-flex';
 }
 
