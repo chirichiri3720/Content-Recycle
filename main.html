@@ -1195,7 +1195,7 @@ async function proceedToGenerate() {
       { icon: isVideo ? '🎞' : '🖼', text: isVideo ? '動画クリップを生成中(Kling)' : '画像の仕上がりを確認中' },
       { icon:'✅', text:'完了' },
     ],
-    30000, true,
+    20000, true,
     { label: '✕ 生成を中止する', onCancel: () => { cancelReason = 'user'; controller.abort(); } }
   );
 
