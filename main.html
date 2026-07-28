@@ -161,6 +161,9 @@ body::before { content: ''; position: fixed; inset: 0; background-image: linear-
 .subtitle-preset .sub-label { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 9px; color: var(--text2); font-family: 'Space Mono', monospace; }
 .subtitle-preset.selected .sub-label { color: var(--accent); }
 .subtitle-preset .sub-recommend { position: absolute; top: 4px; right: 4px; font-size: 8px; line-height: 1; padding: 2px 5px; border-radius: 999px; background: rgba(108,99,255,0.15); color: var(--accent); font-family: 'Space Mono', monospace; letter-spacing: 0.02em; }
+.settings-locked { pointer-events: none; opacity: 0.45; filter: grayscale(0.4); transition: opacity 0.2s ease; }
+.settings-lock-note { display: none; align-items: center; gap: 6px; font-size: 11px; color: var(--text3); margin-top: 10px; font-family: 'Space Mono', monospace; }
+.settings-lock-note.visible { display: flex; }
 
 /* ===== STEP5 シーン確認（生成済みメディア） ===== */
 .review-scene { display: flex; gap: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 12px; margin-bottom: 12px; }
@@ -463,16 +466,17 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
           <div class="panel-title">⚙️ 生成設定</div>
           <div class="mood-info-bar" id="mood-info"><span class="icon">✨</span><span id="mood-info-text">動画の雰囲気に合わせておすすめ順に並べています</span></div>
           <!-- 4. ナレーション音声 -->
-          <div class="settings-section" style="border-bottom:none;padding-bottom:0;margin-bottom:0">
+          <div class="settings-section" id="voice-section" style="border-bottom:none;padding-bottom:0;margin-bottom:0">
             <div class="settings-section-label">🎙 ナレーション音声</div>
             <div id="voice-list"></div>
+            <div class="settings-lock-note" id="voice-lock-note"><span>🔒</span><span>生成継続中は変更できません（STEP5で続きをご確認ください）</span></div>
           </div>
         </div>
       </div>
     </div>
     <div class="btn-row" style="margin-top:16px">
       <button class="btn btn-outline" onclick="goBackToStep3()">← 編集へ戻る</button>
-      <button class="btn btn-primary" id="btn-to-generate" onclick="proceedToGenerate()" disabled style="flex:2">音声と画像を生成する →</button>
+      <button class="btn btn-primary" id="btn-to-generate" onclick="proceedToGenerate()" disabled style="flex:2">音声と動画を生成する →</button>
     </div>
   </div>
 
@@ -495,14 +499,16 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
       </div>
       <!-- 右: BGM + 字幕位置 -->
       <div>
-        <div class="panel" style="margin-bottom:16px">
+        <div class="panel" style="margin-bottom:16px" id="bgm-panel">
           <div class="panel-title">🎵 BGM</div>
           <div class="mood-info-bar" id="mood-info2" style="margin-bottom:12px"><span class="icon">✨</span><span id="mood-info-text2">雰囲気に合わせておすすめ順</span></div>
           <div id="bgm-list"></div>
+          <div class="settings-lock-note" id="bgm-lock-note"><span>🔒</span><span>合成継続中は変更できません</span></div>
         </div>
-        <div class="panel">
+        <div class="panel" id="subtitle-panel">
           <div class="panel-title">💬 字幕位置</div>
           <div class="subtitle-preset-grid" id="subtitle-position-list" style="margin-top:8px"></div>
+          <div class="settings-lock-note" id="subtitle-lock-note"><span>🔒</span><span>合成継続中は変更できません</span></div>
         </div>
       </div>
     </div>
@@ -1030,6 +1036,26 @@ async function loadOptionsAndRenderStep4() {
 // ============================================================
 // STEP 4 設定
 // ============================================================
+// 追加
+function updateStep4LockState() {
+  const locked = state.generationFlag === 'continue';
+  const voiceSection  = document.getElementById('voice-section');
+  const voiceLockNote = document.getElementById('voice-lock-note');
+  if (voiceSection)  voiceSection.classList.toggle('settings-locked', locked);
+  if (voiceLockNote) voiceLockNote.classList.toggle('visible', locked);
+
+  const btn = document.getElementById('btn-to-generate');
+  if (btn) {
+    if (locked) {
+      btn.disabled = true;
+      btn.textContent = '⏳ 生成継続中です（STEP5で確認してください）';
+    } else {
+      btn.textContent = '音声と画像を生成する →';
+      validateStep4(); // 通常の選択済みチェックに戻す
+    }
+  }
+}
+
 function renderStep4() {
   renderSettingsSceneList();
   renderTargetProfileStep4();
@@ -1041,8 +1067,8 @@ function renderStep4() {
   }
   if (state.options.voices[0]) selectVoice(0);
   validateStep4();
+  updateStep4LockState(); // ★追加：生成継続待ちならナレーション音声とボタンをロック
 }
-
 
 // ターゲット層 + 主人公（出力予定）（右パネル上部・読み取り専用）
 function renderTargetProfileStep4() {
@@ -1210,6 +1236,7 @@ function buildAvRow(it, i, kind) {
 }
 function stopOtherAudios(current, scope) { document.querySelectorAll(`${scope} audio`).forEach(a => { if (a !== current) a.pause(); }); }
 function selectVoice(i) {
+  if (state.generationFlag === 'continue') return; // 生成継続中は変更不可
   document.querySelectorAll('#voice-list .av-option').forEach(el => el.classList.remove('selected'));
   const t = document.querySelector(`#voice-list .av-option[data-index="${i}"]`); if (t) t.classList.add('selected');
   state.selectedVoice = state.options.voices[i]; validateStep4();
@@ -1379,7 +1406,7 @@ async function continueCompose() {
     [{icon:'🔄',text:'合成状況を確認中'},{icon:'✅',text:'完了'}], 8000, true);
   const controller = new AbortController();
   const fetchTimeout = setTimeout(() => controller.abort(), 300000);
-  const failsafe = setTimeout(() => { hideLoading(); showError('タイムアウト: 動画合成に5分以上かかっています。しばらく後に再度お試しください。'); }, 305000);
+  const failsafe = setTimeout(() => { hideLoading(); showError('タイムアウト: 応答がありません。しばらく後に再度お試しください。'); }, 305000);
   try {
     const res = await fetch(COMPOSE_URL, {
       method: 'POST', headers: {'Content-Type':'application/json'}, signal: controller.signal,
@@ -1396,23 +1423,33 @@ async function continueCompose() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const text = await res.text(); if (!text.trim()) throw new Error('レスポンスが空です');
     let data = JSON.parse(text); if (Array.isArray(data)) data = data[0];
-    if (data.status === 'failed' || data.error) throw new Error(data.error || '動画合成に失敗しました');
 
-    if (data.flag === 'continue') {
+    // ★ここが今回のポイント：continueCompose() の返り値も再び timeout(=continue) になり得る
+    if (data.status === 'failed' && data.reason === 'timeout') {
       state.composeFlag = 'continue';
-      state.composePendingTasks = data.pending_tasks || [];
+      state.composeRenderId = data.render_id || state.composeRenderId; // render_idは維持されるはずだが念のため更新
+      state.composePollCount = data.poll_count || state.composePollCount;
       hideLoading();
       renderContinueButton();
+      return; // STEP5のまま。「継続する」ボタンは表示され続ける
+    }
+
+    if (data.status === 'failed') {
+      // render_error など継続不可能な失敗 → 通常の合成ボタンに戻す
+      state.composeFlag = null; state.composeRenderId = null; state.composePollCount = 0;
+      hideLoading();
+      renderContinueButton();
+      showError(data.error || '動画合成に失敗しました');
       return;
     }
 
     const videoUrl = validateVideoUrl(data.video_url);
     if (!videoUrl) throw new Error('有効な動画URLが返されませんでした');
-    state.composeFlag = null; state.composePendingTasks = [];
+    state.composeFlag = null; state.composeRenderId = null; state.composePollCount = 0;
     state.videoUrl = videoUrl; hideLoading(); renderVideo({ video_url: videoUrl }); setStep(6);
   } catch (err) {
     clearTimeout(fetchTimeout); clearTimeout(failsafe); hideLoading();
-    showError(err.name === 'AbortError' ? 'タイムアウト: 動画合成に5分以上かかっています。しばらく後に再度お試しください。' : '続きの合成確認でエラー: ' + err.message);
+    showError(err.name === 'AbortError' ? 'タイムアウト: 応答がありません。しばらく後に再度お試しください。' : '続きの合成確認でエラー: ' + err.message);
   }
 }
 
@@ -1580,6 +1617,16 @@ function renderContinueButton() {
   if (btnContinueCompose) btnContinueCompose.style.display  = composePending ? 'inline-flex' : 'none';
   // composePending時は「動画を合成する」を隠す → 残るのは「← 設定へ戻る」+「▶ 合成を継続する」のみ
   if (btnCompose)         btnCompose.style.display          = (genPending || composePending) ? 'none' : 'inline-flex';
+
+  // 合成継続中はBGM・字幕位置を固定し、continueCompose()が常に元の設定のまま再送されることを保証する
+  const bgmPanel        = document.getElementById('bgm-panel');
+  const subtitlePanel   = document.getElementById('subtitle-panel');
+  const bgmLockNote      = document.getElementById('bgm-lock-note');
+  const subtitleLockNote = document.getElementById('subtitle-lock-note');
+  if (bgmPanel)          bgmPanel.classList.toggle('settings-locked', composePending);
+  if (subtitlePanel)     subtitlePanel.classList.toggle('settings-locked', composePending);
+  if (bgmLockNote)       bgmLockNote.classList.toggle('visible', composePending);
+  if (subtitleLockNote)  subtitleLockNote.classList.toggle('visible', composePending);
 }
 
 // ============================================================
