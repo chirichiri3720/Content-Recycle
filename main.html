@@ -402,11 +402,16 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
     <div class="card" id="step2-waiting">
       <div class="card-title"><div class="icon">📨</div>送信完了しました</div>
       <div class="info-row"><span class="icon">🧠</span>AIが台本を生成しています。生成には1分〜5分かかる場合があります。</div>
-      <div style="text-align:center;padding:24px 0">
-        <div style="font-size:13px;color:var(--text2);margin-bottom:6px">経過時間</div>
-        <div id="elapsed-time" style="font-size:28px;font-weight:700;font-family:'Space Mono',monospace;color:var(--accent)">0分0秒</div>
-        <div id="elapsed-warning" style="display:none;font-size:11px;color:var(--accent2);margin-top:8px">予想より時間がかかっています。もうしばらくお待ちください。</div>
-      </div>
+      <div class="loading-container" style="padding:28px 20px 8px">
+         <div class="spinner"></div>
+         <div style="font-size:13px;color:var(--text2);margin-bottom:4px">経過時間</div>showWaitingScreen
+         <div id="elapsed-time" style="font-size:26px;font-weight:700;font-family:'Space Mono',monospace;color:var(--accent)">0分0秒</div>
+       </div>
+       <div class="wait-banner">
+         <span class="icon">🔄</span>
+         <span>1分ごとに自動で確認しています。今すぐ確認したい場合は下のボタンを押してください。</span>
+       </div>
+       <div id="elapsed-warning" style="display:none;font-size:11px;color:var(--accent2);text-align:center;margin-top:8px">予想より時間がかかっています。もうしばらくお待ちください。</div>
       <button class="btn btn-primary" id="btn-fetch-script" onclick="fetchScriptStatus()">📜 台本を取りに行く</button>
       <div class="btn-row">
         <button class="btn btn-outline" onclick="cancelGeneration()">✕ 生成を中止してやり直す</button>
@@ -941,30 +946,40 @@ async function startGeneration() {
 // STEP 2 待機画面(経過時間 + 台本を取りに行く)
 // ============================================================
 let elapsedTimerInterval = null;
-
+let autoPollInterval = null;
+const AUTO_POLL_MS = 60000; // 1分おきに自動確認
 function startElapsedTimer(createdAtIso) {
-  stopElapsedTimer();
-  const createdAt = new Date(createdAtIso).getTime();
-  const el = document.getElementById('elapsed-time');
-  const warnEl = document.getElementById('elapsed-warning');
-  const tick = () => {
-    const sec = Math.max(0, Math.floor((Date.now() - createdAt) / 1000));
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    if (el) el.textContent = `${m}分${s}秒`;
-    if (warnEl) warnEl.style.display = sec > 300 ? 'block' : 'none';
-  };
-  tick();
-  elapsedTimerInterval = setInterval(tick, 1000);
-}
-function stopElapsedTimer() {
-  if (elapsedTimerInterval) { clearInterval(elapsedTimerInterval); elapsedTimerInterval = null; }
-}
+   stopElapsedTimer();
+   const createdAt = new Date(createdAtIso).getTime();
+   const el = document.getElementById('elapsed-time');
+   const warnEl = document.getElementById('elapsed-warning');
+   const tick = () => {
+     const sec = Math.max(0, Math.floor((Date.now() - createdAt) / 1000));
+     const m = Math.floor(sec / 60);
+     const s = sec % 60;
+     if (el) el.textContent = `${m}分${s}秒`;
+
+   };
+   tick();
+   elapsedTimerInterval = setInterval(tick, 1000);
+
+  // 1分おきに自動でWH-statusを確認する
+   autoPollInterval = setInterval(() => {
+     fetchScriptStatus({ silent: true });
+   }, AUTO_POLL_MS);
+ }
+
+ function stopElapsedTimer() {
+   if (elapsedTimerInterval) { clearInterval(elapsedTimerInterval); elapsedTimerInterval = null; }
+   if (autoPollInterval) { clearInterval(autoPollInterval); autoPollInterval = null; }
+ }
+
 function showWaitingScreen() {
   document.getElementById('step2-waiting').style.display = 'block';
   document.getElementById('step2-scripts').style.display = 'none';
   const btn = document.getElementById('btn-fetch-script');
   if (btn) { btn.disabled = false; btn.textContent = '📜 台本を取りに行く'; }
+  const warnEl = document.getElementById('elapsed-warning'); if (warnEl) warnEl.style.display = 'none';
   startElapsedTimer(state.sessionCreatedAt || new Date().toISOString());
 }
 function showScriptListView() {
@@ -976,47 +991,49 @@ function cancelGeneration() {
   resetAll();
 }
 
-async function fetchScriptStatus() {
-  if (!state.sessionId) { showError('セッション情報が見つかりません'); return; }
-  const btn = document.getElementById('btn-fetch-script');
-  if (btn) { btn.disabled = true; btn.textContent = '確認中...'; }
-  try {
-    const res = await fetch(STATUS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: state.sessionId })
-    });
-    const text = await res.text();
-    if (!text || !text.trim()) throw new Error('WH-statusのレスポンスが空です');
-    let data = JSON.parse(text);
-    if (Array.isArray(data)) data = data[0];
+async function fetchScriptStatus(opts = {}) {
+   const silent = !!opts.silent;
+   if (!state.sessionId) { showError('セッション情報が見つかりません'); return; }
+   const btn = document.getElementById('btn-fetch-script');
+  if (!silent && btn) { btn.disabled = true; btn.textContent = '確認中...'; }
+   try {
+     const res = await fetch(STATUS_URL, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ session_id: state.sessionId })
+     });
+     const text = await res.text();
+     if (!text || !text.trim()) throw new Error('WH-statusのレスポンスが空です');
+     let data = JSON.parse(text);
+     if (Array.isArray(data)) data = data[0];
 
-    if (data.status === 'script_ready') {
-      state.scriptCandidates = data.script_candidates || [];
-      state.articleMeta = data.article_meta || {};
-      state.targetProfile = data.target_profile || {};
-      renderScripts();
-      showScriptListView();
-      return;
-    }
+     if (data.status === 'script_ready') {
+       state.scriptCandidates = data.script_candidates || [];
+       state.articleMeta = data.article_meta || {};
+       state.targetProfile = data.target_profile || {};
+       renderScripts();
+       showScriptListView();
+       return;
+     }
 
-    if (data.status === 'script_failed' || data.status === 'quota_exceeded') {
-      const message = data.status === 'quota_exceeded'
-        ? 'API利用制限に達しました。しばらく時間をおいてから再度お試しください。'
-        : (data.error_message || data.failed_reason || '台本の生成に失敗しました。もう一度お試しください。');
-      showError(message);
-      resetAll();
-      return;
-    }
+     if (data.status === 'script_failed' || data.status === 'quota_exceeded') {
+       const message = data.status === 'quota_exceeded'
+         ? 'API利用制限に達しました。しばらく時間をおいてから再度お試しください。'
+         : (data.error_message || data.failed_reason || '台本の生成に失敗しました。もう一度お試しください。');
+       showError(message);
+       resetAll();
+       return;
+     }
 
-    // pending / generating
-    showError('まだ台本を生成中です。もうしばらくお待ちください。');
-  } catch (err) {
-    showError('確認中にエラーが発生しました: ' + err.message);
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '📜 台本を取りに行く'; }
-  }
-}
+     // pending / generating
+     if (!silent) showError('まだ台本を生成中です。もうしばらくお待ちください。');
+   } catch (err) {
+     // 自動実行時のネットワーク瞬断等でエラートーストが1分おきに出るのを避ける
+     if (!silent) showError('確認中にエラーが発生しました: ' + err.message);
+   } finally {
+     if (!silent && btn) { btn.disabled = false; btn.textContent = '📜 台本を取りに行く'; }
+   }
+ }
 
 // ============================================================
 // STEP 2 台本選択
