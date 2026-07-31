@@ -404,12 +404,12 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
       <div class="info-row"><span class="icon">🧠</span>AIが台本を生成しています。生成には1分〜5分かかる場合があります。</div>
       <div class="loading-container" style="padding:28px 20px 8px">
          <div class="spinner"></div>
-         <div style="font-size:13px;color:var(--text2);margin-bottom:4px">経過時間</div>showWaitingScreen
+         <div style="font-size:13px;color:var(--text2);margin-bottom:4px">経過時間</div>
          <div id="elapsed-time" style="font-size:26px;font-weight:700;font-family:'Space Mono',monospace;color:var(--accent)">0分0秒</div>
        </div>
        <div class="wait-banner">
          <span class="icon">🔄</span>
-         <span>1分ごとに自動で確認しています。今すぐ確認したい場合は下のボタンを押してください。</span>
+         <span>1分半ごとに自動で確認しています。今すぐ確認したい場合は下のボタンを押してください。</span>
        </div>
        <div id="elapsed-warning" style="display:none;font-size:11px;color:var(--accent2);text-align:center;margin-top:8px">予想より時間がかかっています。もうしばらくお待ちください。</div>
       <button class="btn btn-primary" id="btn-fetch-script" onclick="fetchScriptStatus()">📜 台本を取りに行く</button>
@@ -590,20 +590,20 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
 // ============================================================
 // 定数 / Webhook
 // ============================================================
-// const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
-// const STATUS_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-status'
-// const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
-// const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
-// const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
-// const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
-// const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
-const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';  
-const STATUS_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-status';
-const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
-const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
-const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
-const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
-const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';
+const WEBHOOK_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle';
+const STATUS_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-status'
+const SELECT_URL    = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-select';
+const OPTIONS_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-options';
+const GENERATE_URL  = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-generate';
+const COMPOSE_URL   = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-compose';
+const SAVE_META_URL = 'https://weby.app.n8n.cloud/webhook/Content-Recycle-meta';
+// const WEBHOOK_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle';  
+// const STATUS_URL = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-status';
+// const SELECT_URL     = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-select';   // WH2 選択+凍結+scenes作成
+// const OPTIONS_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-options';  // WH3 voices/bgms/styles/mood
+// const GENERATE_URL   = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-generate'; // WH4+5 TTS→映像
+// const COMPOSE_URL    = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-compose';  // WH7 字幕+合成
+// const SAVE_META_URL  = 'https://weby.app.n8n.cloud/webhook-test/Content-Recycle-meta';
 const BASE_IMG_URL   = 'https://raw.githubusercontent.com/chirichiri3720/Content-Recycle/main/Tmp_Image';
 
 const VIDEO_URL_WHITELIST = [
@@ -947,7 +947,7 @@ async function startGeneration() {
 // ============================================================
 let elapsedTimerInterval = null;
 let autoPollInterval = null;
-const AUTO_POLL_MS = 60000; // 1分おきに自動確認
+const AUTO_POLL_MS = 90000; // 1分半おきに自動確認
 function startElapsedTimer(createdAtIso) {
    stopElapsedTimer();
    const createdAt = new Date(createdAtIso).getTime();
