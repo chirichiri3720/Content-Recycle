@@ -1,0 +1,4112 @@
+{
+  "config": {
+    "argv": [
+      "/home/kusukawa/.nvm/versions/node/v22.22.3/bin/node",
+      "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/node_modules/.bin/playwright",
+      "test"
+    ],
+    "configFile": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/playwright.config.ts",
+    "rootDir": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": true,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/test-results",
+        "repeatEach": 1,
+        "retries": 2,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "line",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "01_happy_path.spec.ts",
+      "file": "01_happy_path.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "ハッピーパス: STEP1〜STEP7 正常フロー @happy @smoke",
+          "file": "01_happy_path.spec.ts",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "STEP1: ページが正常に表示され、入力フォームが存在する @smoke",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1492,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:07:59.279Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-aa8ec5e8243e944b95e5",
+              "file": "01_happy_path.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "STEP1→2: 有効なURLを入力して送信するとSTEP2に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7443,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:08:01.013Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-92b2c5680a342378bfc9",
+              "file": "01_happy_path.spec.ts",
+              "line": 44,
+              "column": 7
+            },
+            {
+              "title": "STEP2→3: 台本カードを選択するとSTEP3（編集）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12644,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:08:08.487Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-5e7bdd05030e4c59037f",
+              "file": "01_happy_path.spec.ts",
+              "line": 70,
+              "column": 7
+            },
+            {
+              "title": "STEP2→3: 2枚目の台本カードも選択できる @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12664,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:08:21.159Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-ee338852467feb5a6227",
+              "file": "01_happy_path.spec.ts",
+              "line": 89,
+              "column": 7
+            },
+            {
+              "title": "STEP3→4: 編集画面で次へを押すとSTEP4（設定）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14310,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:08:33.871Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-77b7bf5d92cbe5b2e964",
+              "file": "01_happy_path.spec.ts",
+              "line": 102,
+              "column": 7
+            },
+            {
+              "title": "STEP3: シーンのナレーションテキストを編集できる @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12599,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:08:48.210Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-e760dafb9185a85109b2",
+              "file": "01_happy_path.spec.ts",
+              "line": 118,
+              "column": 7
+            },
+            {
+              "title": "STEP4→5: 設定完了後にSTEP5（確認）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 19473,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:09:00.839Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-ae300c2bb4cf055e581d",
+              "file": "01_happy_path.spec.ts",
+              "line": 136,
+              "column": 7
+            },
+            {
+              "title": "STEP4: BGMを変更できる @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 19634,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:09:20.338Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-ad3a5265112cd9aa5caa",
+              "file": "01_happy_path.spec.ts",
+              "line": 159,
+              "column": 7
+            },
+            {
+              "title": "STEP5→6: 合成ボタンを押すとSTEP6（動画プレビュー）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24605,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:09:39.999Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-303a7c708c3a54940493",
+              "file": "01_happy_path.spec.ts",
+              "line": 185,
+              "column": 7
+            },
+            {
+              "title": "STEP6→7: 承認ボタンを押すとSTEP7（完成）に遷移する @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24906,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:10:04.629Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-efbf40aef0711b0eeec0",
+              "file": "01_happy_path.spec.ts",
+              "line": 215,
+              "column": 7
+            },
+            {
+              "title": "STEP7: メタデータを編集できる @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24973,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:10:29.564Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-4223a59c7b5719708d02",
+              "file": "01_happy_path.spec.ts",
+              "line": 241,
+              "column": 7
+            },
+            {
+              "title": "STEP6: 却下ボタンを押すとSTEP5に戻る @happy",
+              "ok": true,
+              "tags": [
+                "happy",
+                "smoke",
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24526,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:10:54.563Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0c7b59bb10caf8879099-6a3d4f431973a103bf11",
+              "file": "01_happy_path.spec.ts",
+              "line": 274,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "02_error_cases.spec.ts",
+      "file": "02_error_cases.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "入力バリデーション @error",
+          "file": "02_error_cases.spec.ts",
+          "line": 27,
+          "column": 6,
+          "specs": [
+            {
+              "title": "空のURLで送信するとエラーメッセージが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2317,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:11:19.139Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-ac511d10d0ed8b2e1e78",
+              "file": "02_error_cases.spec.ts",
+              "line": 33,
+              "column": 7
+            },
+            {
+              "title": "不正なURL形式で送信するとエラーが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2214,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:11:21.479Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-912634854259c9aa6c53",
+              "file": "02_error_cases.spec.ts",
+              "line": 40,
+              "column": 7
+            },
+            {
+              "title": "非常に長いURLで送信しても適切にハンドリングされる",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2249,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:11:23.719Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-a610e80019616d500247",
+              "file": "02_error_cases.spec.ts",
+              "line": 46,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "WH1エラー: スクリプト生成失敗 @error",
+          "file": "02_error_cases.spec.ts",
+          "line": 54,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WH1がAPIクォータ超過(429)を返すとエラーメッセージが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6295,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:11:25.994Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-24def03bfd995245243d",
+              "file": "02_error_cases.spec.ts",
+              "line": 60,
+              "column": 7
+            },
+            {
+              "title": "WH1が500エラーを返すとエラーメッセージが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6892,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:11:32.313Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-f2396245982cc7c9cf00",
+              "file": "02_error_cases.spec.ts",
+              "line": 68,
+              "column": 7
+            },
+            {
+              "title": "WH1がネットワークエラーでもフリーズしない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2227,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:11:39.229Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-b815ce1aac3fe329bf8c",
+              "file": "02_error_cases.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "WH1が404を返すと記事取得失敗メッセージが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8507,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:11:41.481Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-8081bd7e3ea8fd4bb94f",
+              "file": "02_error_cases.spec.ts",
+              "line": 84,
+              "column": 7
+            },
+            {
+              "title": "WH1エラー後に再送信できる（リトライ可能）",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12343,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:11:50.010Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-5942c7d092e5ec266112",
+              "file": "02_error_cases.spec.ts",
+              "line": 91,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "WH2エラー: 台本選択失敗 @error",
+          "file": "02_error_cases.spec.ts",
+          "line": 107,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WH2が500エラーを返すとエラーメッセージが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 13540,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:12:02.375Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-d985d58af6940459806d",
+              "file": "02_error_cases.spec.ts",
+              "line": 117,
+              "column": 7
+            },
+            {
+              "title": "WH2エラー後にSTEP2で別の台本を選択できる",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 18436,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:12:15.937Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-695ffd0ff4ff35015e32",
+              "file": "02_error_cases.spec.ts",
+              "line": 126,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "WH3エラー: アセット生成失敗 @error",
+          "file": "02_error_cases.spec.ts",
+          "line": 145,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WH3が500エラーを返すとエラーが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 21201,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:12:34.395Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-7f35639bc7a4f2ab5636",
+              "file": "02_error_cases.spec.ts",
+              "line": 162,
+              "column": 7
+            },
+            {
+              "title": "WH3が部分的に失敗した場合（一部シーン欠落）でもクラッシュしない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 34290,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:12:55.615Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-ec5c228fb54106fa6cda",
+              "file": "02_error_cases.spec.ts",
+              "line": 171,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "WH4エラー: 動画合成失敗 @error",
+          "file": "02_error_cases.spec.ts",
+          "line": 188,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WH4が500エラーを返すとエラーが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 29084,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:13:29.926Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-90e3b74f62647409dc24",
+              "file": "02_error_cases.spec.ts",
+              "line": 209,
+              "column": 7
+            },
+            {
+              "title": "WH4がShotstack合成失敗を返すと適切なメッセージが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 29559,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:13:59.034Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-297a42458573bb97fa7e",
+              "file": "02_error_cases.spec.ts",
+              "line": 218,
+              "column": 7
+            },
+            {
+              "title": "WH4エラー後に再合成を試みられる",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 29855,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:14:28.616Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-a1c0d24abb2a03ca31c1",
+              "file": "02_error_cases.spec.ts",
+              "line": 226,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "n8nノード系エラー @error",
+          "file": "02_error_cases.spec.ts",
+          "line": 243,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WH1クォータチェックエラー: 月次クォータ超過メッセージが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14089,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:14:58.491Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-2858cae3ea5b6eafbdb8",
+              "file": "02_error_cases.spec.ts",
+              "line": 249,
+              "column": 7
+            },
+            {
+              "title": "Supabase書き込みエラー: DBエラーでも画面がフリーズしない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6995,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:15:12.604Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-3f6acc6b8e29a234cb9c",
+              "file": "02_error_cases.spec.ts",
+              "line": 259,
+              "column": 7
+            },
+            {
+              "title": "session_idが返ってこない場合でもクラッシュしない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7398,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:15:19.626Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-715ec9b09b17f5fbd50b",
+              "file": "02_error_cases.spec.ts",
+              "line": 270,
+              "column": 7
+            },
+            {
+              "title": "script_candidatesが空配列の場合のハンドリング",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7501,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:15:27.051Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-06ed27b885fbf1474cd0",
+              "file": "02_error_cases.spec.ts",
+              "line": 284,
+              "column": 7
+            },
+            {
+              "title": "WH2(select)がscenes欠落の不正レスポンスを返してもクラッシュしない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 25334,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:15:34.576Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-90476497127a1e8bcf4a",
+              "file": "02_error_cases.spec.ts",
+              "line": 295,
+              "column": 7
+            },
+            {
+              "title": "generate(旧WH3表記)がscenes空配列を返してもSTEP5がクラッシュせず表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20446,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:15:59.931Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-2d684ca23b2a037edf17",
+              "file": "02_error_cases.spec.ts",
+              "line": 314,
+              "column": 7
+            },
+            {
+              "title": "映像タイプ「動画」選択時、kling_tasksが空でもSTEP4に遷移しクラッシュしない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 17542,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:16:20.404Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f48f5b071a00448c4487-720d320204d8c75094de",
+              "file": "02_error_cases.spec.ts",
+              "line": 335,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "03_integration.spec.ts",
+      "file": "03_integration.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "統合テスト: 実Webhook疎通 @integration",
+          "file": "03_integration.spec.ts",
+          "line": 32,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WH1: 実記事URLからスクリプトが生成される",
+              "ok": true,
+              "tags": [
+                "integration"
+              ],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
+                      "location": {
+                        "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
+                        "line": 34,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:16:37.971Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
+                          "location": {
+                            "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
+                            "line": 34,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3e4f753e6285dd4f568c-7ca766116fdb1a359966",
+              "file": "03_integration.spec.ts",
+              "line": 38,
+              "column": 7
+            },
+            {
+              "title": "WH1→WH2: 台本選択からシーン編集画面まで遷移する",
+              "ok": true,
+              "tags": [
+                "integration"
+              ],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
+                      "location": {
+                        "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
+                        "line": 34,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:16:37.971Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
+                          "location": {
+                            "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
+                            "line": 34,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3e4f753e6285dd4f568c-306f229d8362ea5e22c6",
+              "file": "03_integration.spec.ts",
+              "line": 62,
+              "column": 7
+            },
+            {
+              "title": "セッションIDがWH1〜WH4を通じて一貫して使われる",
+              "ok": true,
+              "tags": [
+                "integration"
+              ],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
+                      "location": {
+                        "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
+                        "line": 34,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:16:37.972Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
+                          "location": {
+                            "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
+                            "line": 34,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3e4f753e6285dd4f568c-9144f9a66d83e2754b80",
+              "file": "03_integration.spec.ts",
+              "line": 83,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "統合テスト: Supabase確認 @integration",
+          "file": "03_integration.spec.ts",
+          "line": 126,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WH1完了後にsupabase scriptsテーブルにレコードが作成される",
+              "ok": true,
+              "tags": [
+                "integration"
+              ],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
+                      "location": {
+                        "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
+                        "line": 128,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:16:37.972Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "統合テストはRUN_INTEGRATION=trueで実行してください",
+                          "location": {
+                            "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/03_integration.spec.ts",
+                            "line": 128,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "3e4f753e6285dd4f568c-19ba6907fad6806a46ea",
+              "file": "03_integration.spec.ts",
+              "line": 131,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "04_endurance.spec.ts",
+      "file": "04_endurance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "耐久テスト: 繰り返し実行 @endurance",
+          "file": "04_endurance.spec.ts",
+          "line": 20,
+          "column": 6,
+          "specs": [
+            {
+              "title": "ハッピーパスを3回連続で実行してもstateが汚染されない",
+              "ok": true,
+              "tags": [
+                "endurance"
+              ],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 56947,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:16:37.989Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f38525ce1befddad39d1-51f22af88159f3550f8a",
+              "file": "04_endurance.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "STEP2で台本選択をキャンセルして戻る操作を5回繰り返してもUIが崩れない",
+              "ok": true,
+              "tags": [
+                "endurance"
+              ],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 18366,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:17:34.958Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f38525ce1befddad39d1-cea76c8938c10af17dd1",
+              "file": "04_endurance.spec.ts",
+              "line": 78,
+              "column": 7
+            },
+            {
+              "title": "ページをリロードすると初期状態に戻る（stateが永続化されていない）",
+              "ok": true,
+              "tags": [
+                "endurance"
+              ],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10615,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:17:53.349Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f38525ce1befddad39d1-825e8cec608ca1442484",
+              "file": "04_endurance.spec.ts",
+              "line": 100,
+              "column": 7
+            },
+            {
+              "title": "メモリ使用量が許容範囲内（繰り返し5回でページが重くならない）",
+              "ok": true,
+              "tags": [
+                "endurance"
+              ],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 42114,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:18:03.985Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f38525ce1befddad39d1-32caeb7873d714f7bced",
+              "file": "04_endurance.spec.ts",
+              "line": 121,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "耐久テスト: エラーからのリカバリ繰り返し @endurance",
+          "file": "04_endurance.spec.ts",
+          "line": 155,
+          "column": 6,
+          "specs": [
+            {
+              "title": "エラー→リカバリを3回繰り返してもUIが正常に機能する",
+              "ok": true,
+              "tags": [
+                "endurance"
+              ],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 22963,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:18:46.129Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f38525ce1befddad39d1-73dbb762b2217c0fde10",
+              "file": "04_endurance.spec.ts",
+              "line": 159,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "05_manual_checklist.spec.ts",
+      "file": "05_manual_checklist.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "人間テスト: 視覚的確認（スクリーンショット撮影） @manual",
+          "file": "05_manual_checklist.spec.ts",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "[人間確認] STEP1: UIレイアウト・ブランドカラーの確認",
+              "ok": true,
+              "tags": [
+                "manual"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2513,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:19:09.132Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7bba7eb103b74fc67467-1a980e364d33277bc495",
+              "file": "05_manual_checklist.spec.ts",
+              "line": 34,
+              "column": 7
+            },
+            {
+              "title": "[人間確認] STEP2: 台本カードのUI・内容確認",
+              "ok": true,
+              "tags": [
+                "manual"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7757,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:19:11.698Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7bba7eb103b74fc67467-d7dd582b5f66f6de1bb0",
+              "file": "05_manual_checklist.spec.ts",
+              "line": 49,
+              "column": 7
+            },
+            {
+              "title": "[人間確認] STEP3: シーン編集UIの確認",
+              "ok": true,
+              "tags": [
+                "manual"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15633,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:19:19.480Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7bba7eb103b74fc67467-ae4ed8fada1aabbaaef0",
+              "file": "05_manual_checklist.spec.ts",
+              "line": 64,
+              "column": 7
+            },
+            {
+              "title": "[人間確認] STEP4: BGM選択UIの確認",
+              "ok": true,
+              "tags": [
+                "manual"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14587,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:19:35.138Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7bba7eb103b74fc67467-a1c36d780b63b5118143",
+              "file": "05_manual_checklist.spec.ts",
+              "line": 82,
+              "column": 7
+            },
+            {
+              "title": "[人間確認] STEP5: シーン確認画面の確認",
+              "ok": true,
+              "tags": [
+                "manual"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 22254,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:19:49.751Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7bba7eb103b74fc67467-52040a13f9c8393285a9",
+              "file": "05_manual_checklist.spec.ts",
+              "line": 101,
+              "column": 7
+            },
+            {
+              "title": "[人間確認] STEP6: 動画プレビューの確認",
+              "ok": true,
+              "tags": [
+                "manual"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 26308,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:20:12.043Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7bba7eb103b74fc67467-b7e9be02af05941f361b",
+              "file": "05_manual_checklist.spec.ts",
+              "line": 125,
+              "column": 7
+            },
+            {
+              "title": "[人間確認] STEP7: 完成画面・メタデータ編集の確認",
+              "ok": true,
+              "tags": [
+                "manual"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24590,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:20:38.373Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "7bba7eb103b74fc67467-0d28ffee0f129a1fe601",
+              "file": "05_manual_checklist.spec.ts",
+              "line": 152,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "人間テスト: コンテンツ品質確認（AI出力チェック）",
+          "file": "05_manual_checklist.spec.ts",
+          "line": 182,
+          "column": 6,
+          "specs": [
+            {
+              "title": "[手動] AI生成台本の品質チェック項目",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "手動実行専用: npm run test:manual -- --headed で確認",
+                      "location": {
+                        "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/05_manual_checklist.spec.ts",
+                        "line": 184,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:02.991Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "手動実行専用: npm run test:manual -- --headed で確認",
+                          "location": {
+                            "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/05_manual_checklist.spec.ts",
+                            "line": 184,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7bba7eb103b74fc67467-132a371a4d1783b01d60",
+              "file": "05_manual_checklist.spec.ts",
+              "line": 186,
+              "column": 7
+            },
+            {
+              "title": "[手動] 生成動画のSNS適合性チェック",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "手動実行専用: npm run test:manual -- --headed で確認",
+                      "location": {
+                        "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/05_manual_checklist.spec.ts",
+                        "line": 184,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:02.992Z",
+                      "annotations": [
+                        {
+                          "type": "skip",
+                          "description": "手動実行専用: npm run test:manual -- --headed で確認",
+                          "location": {
+                            "file": "/home/kusukawa/Wise/Content-Recycle/content-recycle-tests/tests/e2e/05_manual_checklist.spec.ts",
+                            "line": 184,
+                            "column": 8
+                          }
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "7bba7eb103b74fc67467-d4752293ff1ab000db09",
+              "file": "05_manual_checklist.spec.ts",
+              "line": 197,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "06_step_details.spec.ts",
+      "file": "06_step_details.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "STEP1: 表現スタイル・映像タイプ選択 @smoke",
+          "file": "06_step_details.spec.ts",
+          "line": 25,
+          "column": 6,
+          "specs": [
+            {
+              "title": "URLのみ入力した状態ではスタイル未選択のため送信ボタンがdisabled",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1862,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:03.008Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-97d337120a5346a046f7",
+              "file": "06_step_details.spec.ts",
+              "line": 30,
+              "column": 7
+            },
+            {
+              "title": "スタイルカードを選択すると送信ボタンが有効になる",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2180,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:04.892Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-61e0be0ab62b251d937f",
+              "file": "06_step_details.spec.ts",
+              "line": 35,
+              "column": 7
+            },
+            {
+              "title": "2番目のスタイルを選択できる（排他選択）",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2013,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:07.099Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-b898e915854319ef1e1c",
+              "file": "06_step_details.spec.ts",
+              "line": 41,
+              "column": 7
+            },
+            {
+              "title": "3番目のスタイルを選択できる",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1997,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:09.134Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-2315435e7c4f966c1d7d",
+              "file": "06_step_details.spec.ts",
+              "line": 48,
+              "column": 7
+            },
+            {
+              "title": "映像タイプを画像に切り替えられる",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2023,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:11.154Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-ce9425c58bb3847557ff",
+              "file": "06_step_details.spec.ts",
+              "line": 54,
+              "column": 7
+            },
+            {
+              "title": "映像タイプを画像から動画へ切り替えられる（排他選択）",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1995,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:13.198Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-ad7e11dd32c3c1f0a05b",
+              "file": "06_step_details.spec.ts",
+              "line": 60,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP2: 台本カード詳細 @happy",
+          "file": "06_step_details.spec.ts",
+          "line": 71,
+          "column": 6,
+          "specs": [
+            {
+              "title": "台本未選択時に確定ボタンがdisabled",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7561,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:15.219Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-e9c7f0a62c26f5c25b5b",
+              "file": "06_step_details.spec.ts",
+              "line": 80,
+              "column": 7
+            },
+            {
+              "title": "台本選択後に確定ボタンが有効になる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6843,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:22.800Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-89769306dbe63fae6894",
+              "file": "06_step_details.spec.ts",
+              "line": 84,
+              "column": 7
+            },
+            {
+              "title": "台本カードにタイトルが表示される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7354,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:29.665Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-1248803088da41807f2e",
+              "file": "06_step_details.spec.ts",
+              "line": 89,
+              "column": 7
+            },
+            {
+              "title": "台本カードにコンセプト/概要が表示される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7267,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:37.040Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-33d2159d269b180166c2",
+              "file": "06_step_details.spec.ts",
+              "line": 96,
+              "column": 7
+            },
+            {
+              "title": "戻るボタンでSTEP1に戻り入力値が復元される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7528,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:44.330Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-01e387eccc752ddef29b",
+              "file": "06_step_details.spec.ts",
+              "line": 100,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP3: 編集機能詳細 @happy",
+          "file": "06_step_details.spec.ts",
+          "line": 110,
+          "column": 6,
+          "specs": [
+            {
+              "title": "空白のみのナレーションがあると設定へ進めずエラーが表示される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7555,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:51.881Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-d7dba0fd3f581fae7e77",
+              "file": "06_step_details.spec.ts",
+              "line": 115,
+              "column": 7
+            },
+            {
+              "title": "テキスト編集後に編集済みバッジが表示される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7547,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:21:59.460Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-9dce3052820158e3af77",
+              "file": "06_step_details.spec.ts",
+              "line": 123,
+              "column": 7
+            },
+            {
+              "title": "テキスト変更で合計秒数表示が更新される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7930,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:22:07.029Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-26a8a3d4c1bfacda0d61",
+              "file": "06_step_details.spec.ts",
+              "line": 129,
+              "column": 7
+            },
+            {
+              "title": "左パネルに記事情報エリアが存在する",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9610,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:22:14.981Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-6036ef8368a4be3d4aff",
+              "file": "06_step_details.spec.ts",
+              "line": 140,
+              "column": 7
+            },
+            {
+              "title": "戻るボタンでSTEP2に戻る",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8018,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:22:24.614Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-11a695a91647b8d2614f",
+              "file": "06_step_details.spec.ts",
+              "line": 145,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP4: 設定詳細 @happy",
+          "file": "06_step_details.spec.ts",
+          "line": 155,
+          "column": 6,
+          "specs": [
+            {
+              "title": "音声が自動選択されるため初期状態で次へボタンが有効",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10002,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:22:32.654Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-a8c68d7819b4953dfbaf",
+              "file": "06_step_details.spec.ts",
+              "line": 160,
+              "column": 7
+            },
+            {
+              "title": "シーン確認パネルにSTEP3で確定したナレーションが反映される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9991,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:22:42.679Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-c6cf9ac5a01bfaf0720f",
+              "file": "06_step_details.spec.ts",
+              "line": 165,
+              "column": 7
+            },
+            {
+              "title": "2番目の音声を選択できる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10536,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:22:52.701Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-ebae02b97a92b2b593e3",
+              "file": "06_step_details.spec.ts",
+              "line": 171,
+              "column": 7
+            },
+            {
+              "title": "戻るボタンでSTEP3に戻る",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12145,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:23:03.259Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-08874028476f83615dc8",
+              "file": "06_step_details.spec.ts",
+              "line": 178,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP5: 字幕位置・戻るボタン @happy",
+          "file": "06_step_details.spec.ts",
+          "line": 187,
+          "column": 6,
+          "specs": [
+            {
+              "title": "字幕位置プリセットが3種類表示される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 22515,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:23:15.428Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-23179951cf9e1edfa7c1",
+              "file": "06_step_details.spec.ts",
+              "line": 192,
+              "column": 7
+            },
+            {
+              "title": "字幕位置を上に変更できる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15594,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:23:37.969Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-45c62577498618447ce6",
+              "file": "06_step_details.spec.ts",
+              "line": 196,
+              "column": 7
+            },
+            {
+              "title": "字幕位置を中央に変更できる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14923,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:23:53.586Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-c979686ec5421f08b217",
+              "file": "06_step_details.spec.ts",
+              "line": 203,
+              "column": 7
+            },
+            {
+              "title": "戻るボタンでSTEP4に戻る",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 18697,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:24:08.532Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "de9de2158b521c9d4f08-9df8f678d5eb5e8817de",
+              "file": "06_step_details.spec.ts",
+              "line": 209,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "07_navigation_reset.spec.ts",
+      "file": "07_navigation_reset.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "プログレスインジケーター @smoke",
+          "file": "07_navigation_reset.spec.ts",
+          "line": 30,
+          "column": 6,
+          "specs": [
+            {
+              "title": "STEP1: prog-1がactive・prog-2はdone/activeでない",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1911,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:24:27.264Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-5c39a8f580088bf2c433",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "STEP2: prog-1がdone・prog-2がactive",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7431,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:24:29.194Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-d1cfaa63001ad488bd45",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 38,
+              "column": 7
+            },
+            {
+              "title": "STEP5: prog-1〜4がdone・prog-5がactive",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15349,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:24:36.646Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-0c9aa864e26b5fa8bbec",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 48,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP7: 完成画面詳細 @happy",
+          "file": "07_navigation_reset.spec.ts",
+          "line": 60,
+          "column": 6,
+          "specs": [
+            {
+              "title": "プラットフォームタブが3つ表示される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20486,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:24:52.013Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-d18d37d64a7b4413ca87",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 65,
+              "column": 7
+            },
+            {
+              "title": "YouTube Shortsタブが存在する",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20372,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:25:12.521Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-042b4232050d64f2f9e1",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 69,
+              "column": 7
+            },
+            {
+              "title": "TikTokタブが存在する",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20000,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:25:32.914Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-ddae996f22d78d5dcb41",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "Reelsタブが存在する",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20473,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:25:52.939Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-9f0f2b68bc6c292921fc",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "ダウンロードボタンのhrefが動画URLに設定されている",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20588,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:26:13.433Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-bec4f289cd6f69db74bc",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 87,
+              "column": 7
+            },
+            {
+              "title": "各タブに「すべてコピー」ボタンが存在する",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20538,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:26:34.045Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-066d7ebc34905215a837",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 95,
+              "column": 7
+            },
+            {
+              "title": "「次の動画を生成する」でSTEP1にリセットされ入力がクリアされる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20951,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:26:54.608Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-0ce0ff9f38e7c2d43d1d",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 100,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "台本再生成 @happy",
+          "file": "07_navigation_reset.spec.ts",
+          "line": 111,
+          "column": 6,
+          "specs": [
+            {
+              "title": "再生成ボタンが表示されている",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7303,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:27:15.581Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-3fcf554eacf33114bffa",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 120,
+              "column": 7
+            },
+            {
+              "title": "再生成ボタンをクリックすると台本が再取得される",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12283,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:27:22.908Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-1ed3e95524564e989b5c",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 124,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "WH3/WH4 429エラー @error",
+          "file": "07_navigation_reset.spec.ts",
+          "line": 135,
+          "column": 6,
+          "specs": [
+            {
+              "title": "WH3が429を返すとSTEP4に戻りエラーが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15792,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:27:35.214Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-3ea808b3fea7aaaa402a",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 136,
+              "column": 7
+            },
+            {
+              "title": "WH4が429を返すとSTEP5に戻りエラーが表示される",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 19296,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:27:51.027Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-2ed7f864b669018ff722",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 145,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "ハンバーガーメニュー @smoke",
+          "file": "07_navigation_reset.spec.ts",
+          "line": 158,
+          "column": 6,
+          "specs": [
+            {
+              "title": "ハンバーガーボタンでドロワーが開く",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2464,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:28:10.343Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-3b9447e4e77d7b5c1cc3",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 163,
+              "column": 7
+            },
+            {
+              "title": "✕ボタンでドロワーが閉じる",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1862,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:28:12.831Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-b44b335b9be57bc2a76c",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 168,
+              "column": 7
+            },
+            {
+              "title": "Escキーでドロワーが閉じる",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1958,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:28:14.716Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-334c51f3cd81aa22ee85",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 179,
+              "column": 7
+            },
+            {
+              "title": "ドロワーにgallery.htmlへのリンクが存在する",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1883,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:28:16.698Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5d367f960ce6b691e6e8-0bc937d0ae03fd2de12f",
+              "file": "07_navigation_reset.spec.ts",
+              "line": 186,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "08_media_interactions.spec.ts",
+      "file": "08_media_interactions.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "STEP5: ライトボックス @happy",
+          "file": "08_media_interactions.spec.ts",
+          "line": 19,
+          "column": 6,
+          "specs": [
+            {
+              "title": "サムネイルをクリックするとライトボックスが開く",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15244,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:28:18.625Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-be0d3fa3ea46760f782b",
+              "file": "08_media_interactions.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "×ボタンでライトボックスが閉じる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 16230,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:28:33.892Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-1dd4d0c6b1a6446e74db",
+              "file": "08_media_interactions.spec.ts",
+              "line": 29,
+              "column": 7
+            },
+            {
+              "title": "オーバーレイの余白クリックでライトボックスが閉じる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15606,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:28:50.146Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-be78997e030368f44871",
+              "file": "08_media_interactions.spec.ts",
+              "line": 36,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP6合成: 動画URLホワイトリスト検証 @error",
+          "file": "08_media_interactions.spec.ts",
+          "line": 46,
+          "column": 6,
+          "specs": [
+            {
+              "title": "許可リスト外ドメインのvideo_urlが返るとエラーが表示されSTEP5に留まる",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 19867,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:29:05.777Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-984f49ce9dfe0b9b59fd",
+              "file": "08_media_interactions.spec.ts",
+              "line": 47,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP7: メタ保存失敗時の耐性 @error",
+          "file": "08_media_interactions.spec.ts",
+          "line": 58,
+          "column": 6,
+          "specs": [
+            {
+              "title": "メタ保存(fire-and-forget)が500を返してもSTEP7表示はブロックされない",
+              "ok": true,
+              "tags": [
+                "error"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 21446,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:29:25.662Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-834510542c947673bb40",
+              "file": "08_media_interactions.spec.ts",
+              "line": 59,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "STEP7: コピー機能 @happy",
+          "file": "08_media_interactions.spec.ts",
+          "line": 67,
+          "column": 6,
+          "specs": [
+            {
+              "title": "コピー ボタンを押すと一時的に「コピー済み」表示に切り替わる",
+              "ok": true,
+              "tags": [
+                "happy"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20678,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-07-31T01:29:47.126Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e36255a0ca6ae9fe392f-8c4b6e46eae92a10935a",
+              "file": "08_media_interactions.spec.ts",
+              "line": 79,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-07-31T01:07:58.266Z",
+    "duration": 1329693.069,
+    "expected": 94,
+    "skipped": 6,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -89,10 +89,10 @@ describe('estDuration', () => {
     expect(win.estDuration(null)).toBe(2);
   });
 
-  it('日本語テキストは約5.5字/秒で見積もる（切り上げ+1秒バッファ）', () => {
-    // 20文字 / 5.0 = 4 → round(4) + 1 = 5
-    const text = 'あ'.repeat(20);
-    expect(win.estDuration(text)).toBe(5);
+  it('日本語テキストは7.0字/秒で見積もる（四捨五入・最低2秒）', () => {
+    // 21文字 / 7.0 = 3 → round(3) = 3
+    const text = 'あ'.repeat(21);
+    expect(win.estDuration(text)).toBe(3);
   });
 
   it('長文でも比例して長くなる', () => {
