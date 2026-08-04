@@ -407,11 +407,10 @@ video:-webkit-full-screen { object-fit: contain !important; width: 100%; height:
          <div style="font-size:13px;color:var(--text2);margin-bottom:4px">経過時間</div>
          <div id="elapsed-time" style="font-size:26px;font-weight:700;font-family:'Space Mono',monospace;color:var(--accent)">0分0秒</div>
        </div>
-       <div class="wait-banner">
-         <span class="icon">🔄</span>
-         <span>1分半ごとに自動で確認しています。今すぐ確認したい場合は下のボタンを押してください。</span>
+       <div class="wait-banner" id="fetch-suggest-banner" style="display:none">
+          <span class="icon" id="fetch-suggest-icon">💡</span>
+          <span id="fetch-suggest-text">台本を一度取りに行きましょう</span>
        </div>
-       <div id="elapsed-warning" style="display:none;font-size:11px;color:var(--accent2);text-align:center;margin-top:8px">予想より時間がかかっています。もうしばらくお待ちください。</div>
       <button class="btn btn-primary" id="btn-fetch-script" onclick="fetchScriptStatus()">📜 台本を取りに行く</button>
       <div class="btn-row">
         <button class="btn btn-outline" onclick="cancelGeneration()">✕ 生成を中止してやり直す</button>
@@ -946,32 +945,41 @@ async function startGeneration() {
 // STEP 2 待機画面(経過時間 + 台本を取りに行く)
 // ============================================================
 let elapsedTimerInterval = null;
-let autoPollInterval = null;
-const AUTO_POLL_MS = 90000; // 1分半おきに自動確認
+const SUGGEST_FETCH_SEC = 90;  // このタイミングで「取りに行きましょう」を表示
+const URGENT_FETCH_SEC = 300; 
 function startElapsedTimer(createdAtIso) {
    stopElapsedTimer();
    const createdAt = new Date(createdAtIso).getTime();
    const el = document.getElementById('elapsed-time');
-   const warnEl = document.getElementById('elapsed-warning');
+   const banner = document.getElementById('fetch-suggest-banner');
+   const bannerIcon = document.getElementById('fetch-suggest-icon');
+   const bannerText = document.getElementById('fetch-suggest-text');
    const tick = () => {
      const sec = Math.max(0, Math.floor((Date.now() - createdAt) / 1000));
      const m = Math.floor(sec / 60);
      const s = sec % 60;
      if (el) el.textContent = `${m}分${s}秒`;
 
+      if (sec >= URGENT_FETCH_SEC) {
+        if (banner) { banner.style.display = 'flex'; banner.style.borderColor = 'rgba(255,101,132,0.4)'; banner.style.background = 'rgba(255,101,132,0.08)'; }
+        if (bannerIcon) bannerIcon.textContent = '⚠';
+        if (bannerIcon) bannerIcon.style.color = 'var(--accent2)';
+        if (bannerText) { bannerText.textContent = '台本の生成はおそらく完了しています。台本を取りに行きましょう'; bannerText.style.color = 'var(--accent2)'; }
+      } else if (sec >= SUGGEST_FETCH_SEC) {
+        if (banner) { banner.style.display = 'flex'; banner.style.borderColor = 'rgba(108,99,255,0.2)'; banner.style.background = 'rgba(108,99,255,0.07)'; }
+        if (bannerIcon) { bannerIcon.textContent = '💡'; bannerIcon.style.color = 'var(--accent)'; }
+        if (bannerText) { bannerText.textContent = '台本を一度取りに行きましょう'; bannerText.style.color = 'var(--text2)'; }
+      } else {
+        if (banner) banner.style.display = 'none';
+      }
    };
    tick();
    elapsedTimerInterval = setInterval(tick, 1000);
 
-  // 1分おきに自動でWH-statusを確認する
-   autoPollInterval = setInterval(() => {
-     fetchScriptStatus({ silent: true });
-   }, AUTO_POLL_MS);
  }
 
  function stopElapsedTimer() {
    if (elapsedTimerInterval) { clearInterval(elapsedTimerInterval); elapsedTimerInterval = null; }
-   if (autoPollInterval) { clearInterval(autoPollInterval); autoPollInterval = null; }
  }
 
 function showWaitingScreen() {
@@ -979,7 +987,7 @@ function showWaitingScreen() {
   document.getElementById('step2-scripts').style.display = 'none';
   const btn = document.getElementById('btn-fetch-script');
   if (btn) { btn.disabled = false; btn.textContent = '📜 台本を取りに行く'; }
-  const warnEl = document.getElementById('elapsed-warning'); if (warnEl) warnEl.style.display = 'none';
+  const banner = document.getElementById('fetch-suggest-banner'); if (banner) banner.style.display = 'none';
   startElapsedTimer(state.sessionCreatedAt || new Date().toISOString());
 }
 function showScriptListView() {
