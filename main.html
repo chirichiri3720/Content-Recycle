@@ -945,7 +945,7 @@ async function startGeneration() {
 // STEP 2 待機画面(経過時間 + 台本を取りに行く)
 // ============================================================
 let elapsedTimerInterval = null;
-const SUGGEST_FETCH_SEC = 90;  // このタイミングで「取りに行きましょう」を表示
+const SUGGEST_FETCH_SEC = 120;  // このタイミングで「取りに行きましょう」を表示
 const URGENT_FETCH_SEC = 300; 
 function startElapsedTimer(createdAtIso) {
    stopElapsedTimer();
